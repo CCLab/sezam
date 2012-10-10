@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}
+        <div class="span6">
+            <h2>Log in</h2>
+        </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="span8">
+                <div class="form" >
+                    <form class="form-horizontal" name="account_login" enctype="multipart/form-data" action="?next={{ next|default:"/" }}" method="post">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                        <div class="control-group">
+                            <div class="controls">
+                                {% for error in form.non_field_errors %}
+                                <span class="label label-important">{{ error|escape }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="control-group">
+                            <label for="id_username" class="control-label">{{ form.username.label }}</label>
+                            <div class="controls">{{ form.username }}
+                                {% if form.username.errors %}
+                                <span class="label label-important">{{ form.username.errors|join:"; "|escape }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="id_password" class="control-label">{{ form.password.label }}</label>
+                            <div class="controls">{{ form.password }}
+                                {% if form.password.errors %}
+                                <span class="label label-important">{{ form.username.errors|join:"; "|escape }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <div class="controls">
+                                <input class="btn btn-primary" type="submit" name="save" value="Log in »" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block content-related %}
+        <div class="row">
+            <div class="span6">
+                <p>Forgotten your password? <a href="/accounts/password/reset">Click to reset</a></p>
+                <p>If you don't have an account, you can <a href="/accounts/register/">sign up</a> for one.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

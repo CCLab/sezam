@@ -1,0 +1,40 @@
+{% load i18n %}
+    <!-- Navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li class="active"><a href="/request/new">Request</a></li>
+                        <li class="active"><a href="/request">View requests</a></li>
+                        <li class="active"><a href="/authority">Authorities</a></li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        {% if user.is_authenticated %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <!-- <li class="nav-header">Actions</li> -->
+                                <li><a href="/request/search/?user={{user.slug}}">{% trans 'My requests' %}</a></li>
+                                <li><a href="/request/new">{% trans 'Make a request' %}</a></li>
+                                <li><a href="/accounts/password/change">{% trans 'Password change' %}</a></li>
+                                <li><a href="/help">{% trans 'Help' %}</a></li>
+                                <li class="divider"></li>
+                                <li><a href="/accounts/logout">Log out</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="active"><a href="/accounts/login">Log in</a></li>
+                        <li class="active"><a href="/accounts/register">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
