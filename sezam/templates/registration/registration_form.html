@@ -18,6 +18,15 @@
                         {% csrf_token %}
 
                         <div class="control-group">
+                            <label for="id_first_name " class="control-label">{{ form.first_name.label }}</label>
+                            <div class="controls">{{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <span class="label label-important">{{ form.first_name.errors|join:"; "|escape }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="control-group">
                             <label for="id_username " class="control-label">{{ form.username.label }}</label>
                             <div class="controls">{{ form.username }}
                                 {% if form.username.errors %}
@@ -53,14 +62,14 @@
                             </div>
                         </div>
 
-                        <!-- <div class="control-group"> -->
-                        <!--     <div class="controls"> -->
-                        <!--         {{ form.tos }}<label for="id_tos" class="control-label">{{ form.tos.label }}</label> -->
-                        <!--         {% if form.tos.errors %} -->
-                        <!--         <span class="label label-important">{{ form.tos.errors|join:"; "|escape }}</span> -->
-                        <!--         {% endif %} -->
-                        <!--     </div> -->
-                        <!-- </div> -->
+                        <div class="control-group">
+                            <div class="controls">
+                                {{ form.tos }}<label for="id_tos" class="control-label">{{ form.tos.label }}</label>
+                                {% if form.tos.errors %}
+                                <span class="label label-important">{{ form.tos.errors|join:"; "|escape }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
 
                         <div class="control-group">
                             <div class="controls">

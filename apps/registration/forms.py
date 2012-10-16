@@ -29,6 +29,10 @@ class RegistrationForm(forms.Form):
     registration backend.
     
     """
+    first_name = forms.CharField(widget=forms.TextInput(render_value=False),
+                                label=_("First name"))
+    last_name = forms.CharField(widget=forms.TextInput(render_value=False),
+                                label=_("Last name"))
     username = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
