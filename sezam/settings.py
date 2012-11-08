@@ -17,8 +17,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'sezam',
-        'USER': 'postgres',
-        'PASSWORD': 'antipartygang',
+        'USER': 'sezamsu',
+        'PASSWORD': 'yootooQuieng8CeR',
         'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }

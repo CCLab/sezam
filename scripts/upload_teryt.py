@@ -141,8 +141,8 @@ def process_tree(src):
     # Uploading section.
     if not Uploader.upload_territorytype(territorycode, VERBOSE):
         return False
-    if not Uploader.upload_territory(territory, VERBOSE):
-        return False
+    # if not Uploader.upload_territory(territory, VERBOSE):
+    #     return False
     return True
 
 

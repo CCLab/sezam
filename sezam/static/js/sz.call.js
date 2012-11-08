@@ -15,7 +15,7 @@ $('#auth_tree').bind(
     }
 );
 
-$('li').bind(
+$('#authority_pagination').bind(
     'click',
     function(event) {
         alert($(this).text());
