@@ -83,14 +83,15 @@ STATICFILES_FINDERS = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-   'django.contrib.auth.context_processors.auth',
-   'django.core.context_processors.debug',
-   'django.core.context_processors.i18n',
-   'django.core.context_processors.media',
-   'django.core.context_processors.static',
-   'django.core.context_processors.tz',
-   'django.contrib.messages.context_processors.messages'
-   )
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.request',
+)
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'y9j25i5y09uu5)ts)x+h_3#6&amp;yo4&amp;mft49&amp;6mi%(2f7i4*v6a_'
@@ -131,7 +132,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'apps.authority',
+    'apps.browser',
+    'apps.backend',
+    'apps.vocabulary',
+    # 3rd party modules
     'apps.registration',
+    'xpaginate',
+    'mptt',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -165,7 +173,6 @@ LOGGING = {
 
 
 # Registration settings
-
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
@@ -173,3 +180,9 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'testing@example.com'
+
+# MPTT settings
+MPTT_ADMIN_LEVEL_INDENT = 20
+
+# Pagination settings
+PAGINATE_BY = 20

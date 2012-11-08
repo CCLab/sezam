@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.utils.translation import ugettext_lazy as _
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -7,6 +8,7 @@ admin.autodiscover()
 
 urlpatterns= patterns('',
     url(r'^$', 'apps.browser.views.display_index', {'template': 'index'}),
+    url(r'^authority/', include('apps.authority.urls')),
     url(r'^accounts/', include('apps.registration.backends.default.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
