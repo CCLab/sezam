@@ -13,8 +13,8 @@ class Vocabulary(models.Model):
     """
     Abstract model for all vocabularies.
     """
-    name= models.CharField(max_length=1000, help_text=_(u'Name'))
-    order= models.IntegerField(default=100, help_text=_(u'Order'))
+    name= models.CharField(max_length=1000, verbose_name=_(u'Name'))
+    order= models.IntegerField(default=100, verbose_name=_(u'Order'))
 
     class Meta:
         abstract= True
@@ -28,7 +28,7 @@ class SlugVocabulary(models.Model):
     """
     Abstract model for all vocabularies with slug.
     """
-    slug= models.SlugField(max_length=100, unique=True, help_text=_(u'Slug'))
+    slug= models.SlugField(max_length=100, unique=True, verbose_name=_(u'Slug'))
 
     class Meta:
         abstract= True
@@ -48,11 +48,10 @@ class TreeVocabulary(MPTTModel):
     """
     Abstract class for tree-like vocabularies
     """
-    name= models.CharField(max_length=1000, help_text=_(u'Name'))
+    name= models.CharField(max_length=1000, verbose_name=_(u'Name'))
     parent= TreeForeignKey('self', null=True, blank=True,
-        related_name='children', limit_choices_to=models.Q(parent__isnull=True))
-        # TO-DO: Investigate if to replace every ``parent__isnull=True`` with ``parent=None`` improves performance.
-    order= models.IntegerField(default=100, null=True, help_text=_(u'Order'))
+        related_name='children')
+    order= models.IntegerField(default=100, null=True, verbose_name=_(u'Order'))
 
     class MPTTMeta:
         order_insertion_by= ('name',)
@@ -79,7 +78,7 @@ class TerritoryType(Vocabulary):
     For Poland: wojewodztwo, gmina, miasto, etc.
     """
     display_name= models.CharField(max_length=50, blank=True, null=True,
-                                   help_text=_(u'Name tp display'))
+                                   verbose_name=_(u'Name tp display'))
 
 
 class Territory(AuthorityCategory):
@@ -92,8 +91,9 @@ class Territory(AuthorityCategory):
     but it makes no sense to use it in several counries simulteneously.
     """
     code= models.CharField(max_length=50, blank=True, null=True,
-                           help_text=_(u'Code of the territory'))
-    type= models.ForeignKey(TerritoryType, help_text=_(u'Type of the territory'))
+                           verbose_name=_(u'Territory Code'))
+    type= models.ForeignKey(TerritoryType,
+                            verbose_name=_(u'Territory Type'))
 
     class MPTTMeta:
         order_insertion_by= ('parent',)
@@ -108,59 +108,63 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 
     Inherits from TreeVocabulary to support Authority -> Department relation.
     """
-    description= models.CharField(max_length=3000, null=True, blank=True,
-        help_text=_(u'Description'))
+    description= models.TextField(null=True, blank=True,
+        verbose_name=_(u'Description'))
     notes= models.CharField(max_length=1000, null=True, blank=True,
-        help_text=_(u'Notes'))
-    category= models.ForeignKey(AuthorityCategory, help_text=_(u'Authority category'))
+        verbose_name=_(u'Notes'))
+    category= models.ForeignKey(AuthorityCategory,
+                                verbose_name=_(u'Authority category'))
 
     # ADDRESS DETAILS
-    address_street= models.CharField(max_length=200, help_text=_(u'Street'))
+    address_street= models.CharField(max_length=200, verbose_name=_(u'Street'))
     # TO-DO: foreign key to the Vocabulary of the streets
-    address_num= models.CharField(max_length=200, # Number is separated from street
-        help_text=_(u'Building and office number')) # to get street linked to ULIC
+    address_num= models.CharField(max_length=200, verbose_name=_(u'Office'),
+                                  help_text=_(u'Building and office number'))
     address_line1= models.CharField(max_length=200, null=True, blank=True,
-        help_text=_(u'Address (additional line 1)'))
+        verbose_name=_(u'Address (additional line 1)'))
     address_line2= models.CharField(max_length=200, null=True, blank=True,
-        help_text=_(u'Address (additional line 2)'))
+        verbose_name=_(u'Address (additional line 2)'))
     address_postalcode= models.CharField(max_length=6,
-        help_text=_(u'Postal code'))
-    address_city= models.CharField(max_length=100, help_text=_(u'City'))
+        verbose_name=_(u'Postal code'), help_text=_(u'Digits only!'))
+    address_city= models.CharField(max_length=100, verbose_name=_(u'City'))
 
     # TELEPHONES
-    tel_code= models.CharField(max_length=3, help_text=_(u'Telephone code'))
-    tel_number= models.CharField(max_length=20, help_text=_(u'Telephone')) # TO-DO: control format. Make char(9)!!!
+    tel_code= models.CharField(max_length=3, verbose_name=_(u'tel code'),
+                               help_text=_(u'Example: 45'))
+    tel_number= models.CharField(max_length=20, verbose_name=_(u'Telephone'), # TO-DO: control format. Make char(9)!!!
+                                 help_text=_(u'Digits only! Example: 504566462'))
     tel_internal= models.CharField(max_length=50, null=True, blank=True, 
-        help_text=_(u'Internal code'))
+        verbose_name=_(u'Internal'))
     tel1_code= models.CharField(max_length=3, null=True, blank=True,
-        help_text=_(u'Telephone 1 code'))
+        verbose_name=_(u'Tel 1 code'))
     tel1_number= models.CharField(max_length=20, null=True, blank=True,
-        help_text=_(u'Telephone 1'))
+        verbose_name=_(u'Telephone 1'))
     tel2_code= models.CharField(max_length=3, null=True, blank=True,
-        help_text=_(u'Telephone 2 code'))
+        verbose_name=_(u'Tel 2 code'))
     tel2_number= models.CharField(max_length=20, null=True, blank=True,
-        help_text=_(u'Telephone 2'))
-    fax_code= models.CharField(max_length=3, null=True, blank=True,
-        help_text=_(u'Fax code'))
-    fax_number= models.CharField(max_length=20, help_text=_(u'Fax'))
+        verbose_name=_(u'Telephone 2'))
+    fax_code= models.CharField(max_length=3, verbose_name=_(u'Fax code'))
+    fax_number= models.CharField(max_length=20, verbose_name=_(u'Fax'))
 
     # E-MAILS
-    email= models.EmailField(max_length=254, help_text=_(u'E-mail'))
-    email_secretary= models.EmailField(max_length=254, null=True, blank=True,
-        help_text=_(u'E-mail of the secretary'))
-    email_info= models.EmailField(max_length=254, null=True, blank=True,
-        help_text=_(u'Info e-mail'))
+    email= models.EmailField(max_length=254, verbose_name=_(u'E-mail'))
+    email_secretary= models.EmailField(max_length=254, blank=True,
+        verbose_name=_(u'secretary e-mail'))
+    email_info= models.EmailField(max_length=254, blank=True,
+        verbose_name=_(u'info e-mail'))
 
     # WWW
-    web_site= models.URLField(null=True, blank=True, help_text=_(u'Web-site'))
+    web_site= models.URLField(null=True, blank=True, verbose_name=_(u'Web-site'))
 
     # Responsible person.
     official= models.CharField(max_length=200,
-        help_text=_(u'Official representative'))
+        help_text=_(u'Title of official position'),
+        verbose_name=_(u'Official'))
     official_name= models.CharField(max_length=200,
-        help_text=_(u'Official representative name'))
+        help_text=_(u'Official representative name'), verbose_name=_(u'Name'))
     official_lastname= models.CharField(max_length=200,
-        help_text=_(u'Official representative last name'))
+        help_text=_(u'Official representative last name'),
+        verbose_name=_(u'Last name'))
 
 
 # class AuthorityStat(models.Model):
@@ -170,15 +174,15 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 #     Data in this model cannot be updated manually.
 #     """
 #     authority= models.ForeignKey(AuthorityProfile,
-#         help_text=_(u'Authority Profile'))
+#         verbose_name=_(u'Authority Profile'))
 #     requests_num= models.IntegerField(default=0,
-#         help_text=_(u'Number of requests to the Authority'))
+#         verbose_name=_(u'Number of requests to the Authority'))
 #     positive= models.IntegerField(default=0,
-#         help_text=_(u'Number of requests to the Authority properly answered'))
+#         verbose_name=_(u'Number of requests to the Authority properly answered'))
 #     positive_but= models.IntegerField(default=0,
-#         help_text=_(u'Number of requests to the Authority answered, but...'))
+#         verbose_name=_(u'Number of requests to the Authority answered, but...'))
 #     negative= models.IntegerField(default=0,
-#         help_text=_(u'Number of requests to the Authority not answered'))
+#         verbose_name=_(u'Number of requests to the Authority not answered'))
 
 #     def __unicode__(self):
 #         return "%s: requests %d ('yes' %d, 'yes, but' %d, 'no' %d)"\
@@ -199,10 +203,10 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 
 #     Data in this model cannot be updated manually.
 #     """
-#     user= models.ForeignKey(User, help_text=_(u'User'))
+#     user= models.ForeignKey(User, verbose_name=_(u'User'))
 #     # TO-DO: Foreign key - to User or to UserProfile?
 #     requests_num= models.IntegerField(default=0,
-#         help_text=_(u'Number of requests to the Authority'))
+#         verbose_name=_(u'Number of requests to the Authority'))
     
 #     def __unicode__(self):
 #         return "%s (requests %d)" % (
@@ -214,12 +218,12 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 #     Request in a Thread.
 #     """
 #     authority= models.ForeignKey(AuthorityProfile,
-#                                  help_text=_(u'Authority Profile'))
-#     user= models.ForeignKey(User, help_text=_(u'User'))
+#                                  verbose_name=_(u'Authority Profile'))
+#     user= models.ForeignKey(User, verbose_name=_(u'User'))
 #     subject= models.CharField(max_length=255, null=True, blank=True,
-#                               help_text=_(u'Subject'))
-#     body= models.TextField(help_text=_(u'Request'))
-#     sent= models.DateField(auto_now_add= True, help_text=_(u'Request'))
+#                               verbose_name=_(u'Subject'))
+#     body= models.TextField(verbose_name=_(u'Request'))
+#     sent= models.DateField(auto_now_add= True, verbose_name=_(u'Request'))
 #     # TO-DO: save tags and keywords (depend on the search mechanism)
 
 

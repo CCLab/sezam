@@ -223,6 +223,14 @@ def process_extracted_data(dset):
         # INSERT new record!!!
         create_element(record, category)
 
+    # Re-build the tree for AuthorityCategory
+    if VERBOSE: print "Re-building the MPTT structure."
+    try:
+        AuthorityCategory.objects.rebuild()
+        if VERBOSE: print "Re-building complete."
+    except Exception as e:
+        print e
+
     # Report "orphans".
     if uncategorized:
         print "%s %s %s:" % (
