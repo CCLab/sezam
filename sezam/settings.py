@@ -141,7 +141,6 @@ INSTALLED_APPS = (
     'apps.registration',
     'xpaginate',
     'mptt',
-    'gunicorn',
 )
 
 # A sample logging configuration. The only tangible logging
