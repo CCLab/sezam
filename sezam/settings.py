@@ -1,6 +1,7 @@
 # Django settings for sezam project.
 import os
 import sys
+from platform import platform
 
 ROOT_PATH = os.path.dirname(__file__)
 
@@ -65,7 +66,10 @@ STATIC_ROOT = os.path.join(ROOT_PATH, 'static/')
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 # WARNING: Absolute path for the development period only!
-STATIC_URL = 'http://localhost:8000/static/'
+if 'Darwin' in platform():  # local
+    STATIC_URL = 'http://localhost:8000/static/'
+elif 'Linux' in platform():  # server
+    STATIC_URL = 'http://sezam.centrumcyfrowe.pl:3002/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
