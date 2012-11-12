@@ -136,8 +136,9 @@ INSTALLED_APPS = (
     'apps.browser',
     'apps.backend',
     'apps.vocabulary',
+
     # 3rd party modules
-    'apps.registration',
+    'registration',
     'xpaginate',
     'mptt',
 )
