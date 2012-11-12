@@ -109,7 +109,9 @@ def extract_types(lst):
     """
     Extract types of territory into the list.
     """
-    terr_types= {k[u'nazdod'] for k in lst}
+    terr_types= set(k[u'nazdod'] for k in lst)
+    # terr_types= zip(dict(k[u'nazdod'] for k in lst))
+    print terr_types
     return list(terr_types)
 
 
