@@ -21,7 +21,8 @@ class AuthorityProfileAdmin(admin.ModelAdmin):
     search_fields= ('description', 'notes', 'address_street',
         'address_postalcode', 'address_city', 'tel_number', 'tel1_number',
         'tel2_number', 'fax_number', 'email', 'email_secretary', 'email_info',
-        'web_site', 'official', 'official_name', 'official_lastname',)
+        'web_site', 'web_site1', 'official', 'official_name',
+        'official_lastname',)
 
     list_filter= ('category',)
 
@@ -33,7 +34,7 @@ class AuthorityProfileAdmin(admin.ModelAdmin):
         ('tel_code', 'tel_number', 'tel_internal',),
         ('tel1_code', 'tel1_number',), ('tel2_code', 'tel2_number',),
         ('fax_code', 'fax_number',), ('email', 'email_secretary', 'email_info',),
-        'web_site', 'notes',)
+        ('web_site', 'web_site1'), 'notes',)
 
 admin.site.register(TerritoryType, TerritoryTypeAdmin)
 

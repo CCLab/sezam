@@ -155,6 +155,9 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 
     # WWW
     web_site= models.URLField(null=True, blank=True, verbose_name=_(u'Web-site'))
+    web_site1= models.URLField(null=True, blank=True,
+        verbose_name=_(u'Web-site 1'),
+        help_text=_(u'Public Information Bulletin'))
 
     # Responsible person.
     official= models.CharField(max_length=200,
