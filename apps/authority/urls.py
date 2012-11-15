@@ -7,8 +7,14 @@ urlpatterns = patterns('apps.browser.views',
 
     url(r'^tree/$', 'get_authority_tree'),
 
-    url(r'^list/$', 'get_authority_list', {'template': 'includes/authority_list'},
-        name='get_authority_list'),
+    url(r'^list/$', 'get_authority_list',
+        {'template': 'includes/authority_list'}, name='get_authority_list'),
+
+    url(r'^list/(?P<id>[-\w]+)/$', 'get_authority_list',
+        {'template': 'includes/authority_list'}, name='get_authority_list_id'),
+
+    url(r'^(?P<slug>[-\w]+)/$', 'get_authority_info',
+        {'template': 'authority_info.html'}, name='get_authority_info'),
 
     url(r'^(?P<id>[-\w]+)/$', 'display_authority',
         {'template': 'authority.html'}, name='display_authority'),

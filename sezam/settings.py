@@ -88,12 +88,12 @@ STATICFILES_FINDERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
 )
 
@@ -140,7 +140,6 @@ INSTALLED_APPS = (
     'apps.browser',
     'apps.backend',
     'apps.vocabulary',
-
     # 3rd party modules
     'apps.registration',
     'xpaginate',
@@ -190,4 +189,4 @@ DEFAULT_FROM_EMAIL = 'testing@example.com'
 MPTT_ADMIN_LEVEL_INDENT = 20
 
 # Pagination settings
-PAGINATE_BY = 20
+PAGINATE_BY = 50

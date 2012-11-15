@@ -2,6 +2,7 @@
 Models for project-wide vocabularies.
 """
 
+import re
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -168,6 +169,23 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
     official_lastname= models.CharField(max_length=200,
         help_text=_(u'Official representative last name'),
         verbose_name=_(u'Last name'))
+
+
+    def save(self, *args, **kwargs):
+	"""
+        Override save:
+        - get rid of non-digits in postalcode, telephone numbers and codes.
+	"""
+        self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
+        self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
+        self.tel_number= re.sub('[^0-9]+', '', self.tel_number)
+        self.tel1_code= re.sub('[^0-9]+', '', self.tel1_code)
+        self.tel1_number= re.sub('[^0-9]+', '', self.tel1_number)
+        self.tel2_code= re.sub('[^0-9]+', '', self.tel2_code)
+        self.tel2_number= re.sub('[^0-9]+', '', self.tel2_number)
+        self.fax_code= re.sub('[^0-9]+', '', self.fax_code)
+        self.fax_number= re.sub('[^0-9]+', '', self.fax_number)
+        super(AuthorityProfile, self).save(*args, **kwargs)
 
 
 # class AuthorityStat(models.Model):

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+  {% include "includes/authority_breadcrumb" %}
+
+  <div class="content span7">
+
+    <div class="row row-fluid">
+      <h2>{{ result.name }}</h2>
+    </div>
+
+    <div class="row row-fluid">
+      <p>{% if result.web_site %} Official web-site: {{ result.web_site|urlize }}{% endif %}</p>
+      <p>{% if result.web_site1 %} Buletin of public information: {{ result.web_site1|urlize }}{% endif %}</p>
+    </div>
+
+    <div class="row row-fluid">
+      <div class="span3">
+        <p><strong>Address:</strong>
+          <address>
+          {{ result.address_street }} {{ result.address_num }}
+          <br>{{ result.address_postalcode|slice:":2" }}-{{ result.address_postalcode|slice:"2:5" }} {{ result.address_city }}</br>
+          </address>
+        </p>
+      </div>
+      <div class="span3">
+        <p>
+          <strong>Telephones:</strong>
+          <address> ({{ result.tel_code }}) {{ result.tel_number|slice:":3" }} {{ result.tel_number|slice:"3:5" }} {{ result.tel_number|slice:"5:" }} {{ result.tel_internal|default:'' }}
+          {% if result.tel1_number %}
+          <br>({{ result.tel1_code }}) {{ result.tel1_number|slice:":3" }} {{ result.tel1_number|slice:"3:5" }} {{ result.tel1_number|slice:"5:" }} {{ result.tel1_internal|default:'' }}
+          {% endif %}
+          {% if result.tel2_number %}
+          <br>({{ result.tel2_code }}) {{ result.tel2_number|slice:":3" }} {{ result.tel2_number|slice:"3:5" }} {{ result.tel2_number|slice:"5:" }} {{ result.tel2_internal|default:'' }}
+          {% endif %}
+          </address>
+        </p>
+      </div>
+      <div class="span2">
+        <p><strong>Fax:</strong>
+          <address> ({{ result.fax_code }}) {{ result.fax_number|slice:":3" }} {{ result.fax_number|slice:"3:5" }} {{ result.fax_number|slice:"5:" }}</address>
+        </p>
+      </div>
+    </div>
+
+    {% if result.official_lastname %}
+    <div class="row row-fluid">
+      <p><strong>Official:</strong>
+      {{ result.official|default:'' }}  <em>{{ result.official_name|default:'' }} {{ result.official_lastname|default:'' }}</em></p>
+    </div>
+    {% endif %}
+
+    {% if result.description %}
+    <div class="row row-fluid">
+      <p><strong>Description</strong></p>
+      <p class="small">{{ result.description|default:''|urlize }}</p>
+    </div>
+    {% endif %}
+
+    {% if result.notes %}
+    <div class="row row-fluid">
+      <p><strong>Notes</strong></p>
+      <p class="small">{{ result.notes|default:'' }}</p>
+    </div>
+    {% endif %}
+
+    <div class="btn-group">
+      <a class="btn btn-small btn-info" href="#"> Follow this authority</a>
+      <a class="btn btn-small btn-primary" href="#"><i class="icon-envelope icon-white"></i> Make request</a>
+    </div>
+  </div>
+    
+  <div class="content">
+    <div class="row">
+      <h4>Requests</h4>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

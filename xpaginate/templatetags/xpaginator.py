@@ -146,7 +146,9 @@ class RenderXPage(Node):
     def render(self, context):
         
         try:
-            context['xpaginate'] = XPaginate(self.uri.resolve(context), self.total_items.resolve(context), self.current.resolve(context), self.per_page, self.show, self.jump, self.range)
+            context['xpaginate'] = XPaginate(self.uri.resolve(context),
+                self.total_items.resolve(context), self.current.resolve(context),
+                self.per_page, self.show, self.jump, self.range)
         except:
             pass
         

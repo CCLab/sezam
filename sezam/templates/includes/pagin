@@ -1,3 +1,6 @@
+    {% load xpaginator %}
+    {% xpaginator pageURI total_item current 50 3 True 3 %}
+
     <div id="authority_pagination" class="pagination pagination-mini">
       {% if xpaginate.total_pages > 1 %}
       <ul>
@@ -29,3 +32,5 @@
       </ul>
       {% endif %}
     </div>
+
+    <script src="{{ STATIC_URL }}js/sz.authpagin.js"></script>

@@ -29,8 +29,6 @@ def display_authority(request, **kwargs):
     if request.method == 'POST':
         raise Http404
     template= kwargs.get('template', 'authority.html')
-    # results= AuthorityProfile.objects.all().order_by('name')
-    # data= {'results': results, 'page_title': _(u'Public Authorities')}
     data= {'page_title': _(u'Public Authorities')}
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -81,30 +79,39 @@ def retrieve_authority_list(id=None):
             id= int(id)
         except:
             return None
+
         try:
             category= AuthorityCategory.objects.get(id=id)
         except AuthorityCategory.MultipleObjectsReturned:
             category= AuthorityCategory.objects.filter(id=id)[0]
         except AuthorityCategory.DoesNotExist:
             return None
-        return AuthorityProfile.objects.filter(category=category)\
+
+        category= [category]
+        if not category[0].is_leaf_node():
+            try:
+                category.extend(category[0].get_descendants())
+            except Exception as e:
+                print e
+        return AuthorityProfile.objects.filter(category__in=category)\
             .order_by('name')
     else:
         return AuthorityProfile.objects.all().order_by('name')
 
 
-def get_authority_list(request, **kwargs):
+def get_authority_list(request, id=None, **kwargs):
     """
     Display the list of authority, filtered.
     """
     template= kwargs.get('template', 'authority_list')
-    id= request.GET.get('id', None)
     if request.method == 'POST':
         raise Http404
+
     result= retrieve_authority_list(id)
     if result is None:
         raise Http404
     items= result.count()
+
     paginator= Paginator(result, PAGINATE_BY)
     try:
         page= int(request.GET.get('page', '1'))
@@ -114,8 +121,48 @@ def get_authority_list(request, **kwargs):
         results= paginator.page(page)
     except (EmptyPage, InvalidPage):
         results= paginator.page(paginator.num_pages)
+
+    # Pagination depends on the current node.
+    if id:
+        pageURI= '%s/?page=' % id
+    else:
+        pageURI= '?page='
+
     return render_to_response(template, {'results': results,
-        'total_item': items, 'pageURI': '?page=', 'current': page},
+        'total_item': items, 'current': page,
+        'pageURI': pageURI, 'per_page': PAGINATE_BY},
         context_instance=RequestContext(request))
     # TO-DO: Implement URI Generator for pageURI: http://www.djangosnippets.org/snippets/1734/
 
+
+def get_authority_info(request, slug, **kwargs):
+    """
+    Display all the details of a selected authority.
+    """
+    template= kwargs.get('template', 'authority_list')
+    if request.method == 'POST':
+        raise Http404
+    try:
+        result= AuthorityProfile.objects.get(slug=slug)
+    except AuthorityProfile.MultipleObjectsReturned:
+        result= AuthorityProfile.objects.filter(slug=slug).order_by('name')[0]
+    except AuthorityCategory.DoesNotExist:
+        raise Http404
+
+    # Fill categories for breadcrumbs.
+    category, categories= None, []
+    try:
+        category= result.category
+    except:
+        category= None
+    if category:
+        try:
+            categories= list(category.get_ancestors())
+        except:
+            categories= []
+        categories.append(category)
+
+    return render_to_response(template, {'result': result,
+                                         'categories': categories,
+                                         'page_title': result.name},
+        context_instance=RequestContext(request))

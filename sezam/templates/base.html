@@ -23,6 +23,9 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
 
+    <!-- loading jQuery for dependencies -->
+    <script src="{{ STATIC_URL }}js/jquery-1.8.2.js"></script>
+
     <title>{{ page_title }}</title>
   
   </head>
@@ -51,11 +54,9 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="{{ STATIC_URL }}js/jquery-1.8.2.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
     <script src="{{ STATIC_URL }}js/tree.jquery.js"></script>
     <script src="{{ STATIC_URL }}js/sz.gui.js"></script> <!-- Sezam gui functions -->
-    <script src="{{ STATIC_URL }}js/sz.call.js"></script> <!-- Sezam calls & response -->
 
   </body>
 </html>

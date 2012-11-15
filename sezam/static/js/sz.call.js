@@ -3,7 +3,7 @@ $('#auth_tree').bind(
     'tree.click',
     function(event) {
         var node = event.node;
-        $('#authority_list').html('&nbsp;').load('/authority/list/?id=' + String(node.id));
+        $('#authority_list').html('&nbsp;').load('/authority/list/' + String(node.id));
     }
 );
 
@@ -12,13 +12,6 @@ $('#auth_tree').bind(
     'tree.init',
     function(event) {
         $('#authority_list').html('&nbsp;').load('/authority/list/');
-    }
-);
-
-$('#authority_pagination').bind(
-    'click',
-    function(event) {
-        alert($(this).text());
     }
 );
 
