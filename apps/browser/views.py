@@ -92,7 +92,7 @@ def retrieve_authority_list(id=None):
             try:
                 category.extend(category[0].get_descendants())
             except Exception as e:
-                print e
+                pass
         return AuthorityProfile.objects.filter(category__in=category)\
             .order_by('name')
     else:
