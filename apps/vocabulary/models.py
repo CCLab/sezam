@@ -144,7 +144,8 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         verbose_name=_(u'Tel 2 code'))
     tel2_number= models.CharField(max_length=20, null=True, blank=True,
         verbose_name=_(u'Telephone 2'))
-    fax_code= models.CharField(max_length=3, verbose_name=_(u'Fax code'))
+    fax_code= models.CharField(max_length=3, null=True, blank=True,
+                               verbose_name=_(u'Fax code'))
     fax_number= models.CharField(max_length=20, verbose_name=_(u'Fax'))
 
     # E-MAILS
