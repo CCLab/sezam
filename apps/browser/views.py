@@ -107,8 +107,6 @@ def get_authority_list(request, id=None, **kwargs):
     if request.method == 'POST':
         raise Http404
 
-    print "before retrieve_authority_list"
-
     result= retrieve_authority_list(id)
     if result is None:
         raise Http404
@@ -124,15 +122,15 @@ def get_authority_list(request, id=None, **kwargs):
     except (EmptyPage, InvalidPage):
         results= paginator.page(paginator.num_pages)
 
-    print "before id"
-
     # Pagination depends on the current node.
     if id:
         pageURI= '%s/?page=' % str(id)
     else:
         pageURI= '?page='
 
-    print "after id"
+    print {'results': results,
+        'total_item': items, 'current': page,
+        'pageURI': pageURI, 'per_page': PAGINATE_BY}
 
     return render_to_response(template, {'results': results,
         'total_item': items, 'current': page,
