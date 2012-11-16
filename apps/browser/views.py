@@ -103,7 +103,7 @@ def get_authority_list(request, id=None, **kwargs):
     """
     Display the list of authority, filtered.
     """
-    template= kwargs.get('template', 'authority_list')
+    template= kwargs.get('template', 'includes/authority_list')
     if request.method == 'POST':
         raise Http404
 
@@ -127,10 +127,6 @@ def get_authority_list(request, id=None, **kwargs):
         pageURI= '%s/?page=' % str(id)
     else:
         pageURI= '?page='
-
-    print {'results': results,
-        'total_item': items, 'current': page,
-        'pageURI': pageURI, 'per_page': PAGINATE_BY}
 
     return render_to_response(template, {'results': results,
         'total_item': items, 'current': page,
