@@ -124,7 +124,7 @@ def get_authority_list(request, id=None, **kwargs):
 
     # Pagination depends on the current node.
     if id:
-        pageURI= '%s/?page=' % id
+        pageURI= '%s/?page=' % str(id)
     else:
         pageURI= '?page='
 
