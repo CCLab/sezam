@@ -7,7 +7,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns= patterns('',
-    url(r'^$', 'apps.browser.views.display_index', {'template': 'index'}),
+    url(r'^$', 'apps.browser.views.display_index', {'template': 'index.html'}),
     url(r'^authority/', include('apps.authority.urls')),
     url(r'^accounts/', include('apps.registration.backends.default.urls')),
 

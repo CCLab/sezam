@@ -9,6 +9,7 @@ from django.template import RequestContext
 from django.db.models import Q
 
 from apps.vocabulary.models import AuthorityCategory, AuthorityProfile, Territory
+from apps.browser.forms import MakeRequestForm
 from sezam.settings import PAGINATE_BY
 
 
@@ -16,7 +17,7 @@ def display_index(request, **kwargs):
     """
     Display index page.
     """
-    template= kwargs.get('template', 'index')
+    template= kwargs.get('template', 'index.html')
     return render_to_response(template, {
         'page_title': _(u'Name')},
         context_instance=RequestContext(request))
@@ -28,7 +29,7 @@ def display_authority(request, **kwargs):
     """
     if request.method == 'POST':
         raise Http404
-    template= kwargs.get('template', 'authority.html')
+    template= kwargs.get('template', 'authorities.html')
     data= {'page_title': _(u'Public Authorities')}
     return render_to_response(template, data,
         context_instance=RequestContext(request))
@@ -135,11 +136,23 @@ def get_authority_list(request, id=None, **kwargs):
     # TO-DO: Implement URI Generator for pageURI: http://www.djangosnippets.org/snippets/1734/
 
 
+def get_authority(slug):
+    """
+    Extract Authority from the model by its slug.
+    """
+    try:
+        return AuthorityProfile.objects.get(slug=slug)
+    except AuthorityProfile.MultipleObjectsReturned:
+        return AuthorityProfile.objects.filter(slug=slug).order_by('name')[0]
+    except AuthorityCategory.DoesNotExist:
+        return None
+
+
 def get_authority_info(request, slug, **kwargs):
     """
     Display all the details of a selected authority.
     """
-    template= kwargs.get('template', 'authority_list')
+    template= kwargs.get('template', 'authority.html')
     if request.method == 'POST':
         raise Http404
     try:
@@ -147,6 +160,10 @@ def get_authority_info(request, slug, **kwargs):
     except AuthorityProfile.MultipleObjectsReturned:
         result= AuthorityProfile.objects.filter(slug=slug).order_by('name')[0]
     except AuthorityCategory.DoesNotExist:
+        raise Http404
+
+    result= get_authority(slug)
+    if result is None:
         raise Http404
 
     # Fill categories for breadcrumbs.
@@ -165,4 +182,27 @@ def get_authority_info(request, slug, **kwargs):
     return render_to_response(template, {'result': result,
                                          'categories': categories,
                                          'page_title': result.name},
+        context_instance=RequestContext(request))
+
+
+def new_authority_request(request, slug, **kwargs):
+    """
+    Display the form for making a request to the Authority (slug).
+    """
+    template= kwargs.get('template', 'request.html')
+    result= get_authority(slug)
+    if result is None:
+        raise Http404
+    if result.official_lastname:
+        initial= {'authority_name': '%s %s' % (result.official_name,
+                                               result.official_lastname)}
+    else:
+        initial= {'authority_name': result.name}
+    if request.user.is_anonymous():
+        initial.update({'user_name': ''})
+    else:
+        initial.update({'user_name': request.user.get_full_name()})
+    return render_to_response(template, {
+        'result': result,
+        'form': MakeRequestForm(initial=initial)},
         context_instance=RequestContext(request))

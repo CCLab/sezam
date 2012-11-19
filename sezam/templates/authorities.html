@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <!-- Filter panel -->
+  <div class="span3">
+    <div class="row row-fluid"><h2>Filter</h2></div>
+    <!-- Search panel -->
+    <div class="row row-fluid">
+      <form class="navbar-search pull-left">
+        <input type="text" class="search-query" placeholder="Search">
+      </form>
+    </div>
+
+    <div class="row">&nbsp;</div>
+
+    {% include "includes/authority_tree" %}
+
+    <script src="{{ STATIC_URL }}js/sz.call.js"></script> <!-- Sezam calls -->
+
+    <div class="row row-fluid">
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#">Can't find authority?</a></li>
+        <li class="disabled"><a href="#">&nbsp;</a></li>
+        <li class="disabled"><a href="#">List of ALL authorities »</a></li>
+        <li>
+          <ul class="nav nav-pills">
+            <li><a href="#">PDF</a></li>
+            <li><a href="#">CSV</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- list of authorities -->
+  <div class="span8">
+    <div class="row row-fluid">
+      <h2>Public Authorities</h2>
+    </div>
+
+    {% include "includes/authority_list" %}
+
+    <div id="spinner" class="span7"><center><img src="{{ STATIC_URL }}img/spinner.gif"/></center></div>
+
+  </div>    
+</div>
+
+{% endblock %}

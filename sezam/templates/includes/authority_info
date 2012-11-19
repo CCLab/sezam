@@ -1,9 +1,13 @@
-{% extends "base.html" %}
-{% block content %}
-
-<div class="container">
-
-  {% include "includes/authority_breadcrumb" %}
+  <div class="row">
+    <div class="span7 pull-left">
+      <ul class="breadcrumb">
+        {% for category in categories %}
+        <li><a href="/authority/list/{{ category.id }}">{{ category.name|title }}</a> <span class="divider">/</span></li>
+        {% endfor %}
+        <li class="active">{{ result.name|slice:":20" }}{% if result.name|length > 20 %}...{% endif %}</li>
+      </ul>
+    </div>
+  </div>
 
   <div class="content span7">
 
@@ -38,11 +42,13 @@
           </address>
         </p>
       </div>
+      {% if result.fax_number %}
       <div class="span2">
         <p><strong>Fax:</strong>
           <address> ({{ result.fax_code }}) {{ result.fax_number|slice:":3" }} {{ result.fax_number|slice:"3:5" }} {{ result.fax_number|slice:"5:" }}</address>
         </p>
       </div>
+      {% endif %}
     </div>
 
     {% if result.official_lastname %}
@@ -68,16 +74,6 @@
 
     <div class="btn-group">
       <a class="btn btn-small btn-info" href="#"> Follow this authority</a>
-      <a class="btn btn-small btn-primary" href="#"><i class="icon-envelope icon-white"></i> Make request</a>
+      <a class="btn btn-small btn-primary" href="/authority/{{ result.slug }}/request/new/"><i class="icon-envelope icon-white"></i> Make request</a>
     </div>
   </div>
-    
-  <div class="content">
-    <div class="row">
-      <h4>Requests</h4>
-    </div>
-  </div>
-
-</div>
-
-{% endblock %}
