@@ -9,7 +9,11 @@
           <div class="control-group">&nbsp;</div>
           <div class="control-group">
             {{ form.request_subject.errors }}
-            {{ form.request_subject.label }} {% if not form.request_subject.value %}<span class="label label-warning">{% trans 'The subject increases chances for faster reaction' %}</span> {% endif %} {{ form.request_subject }}
+            {{ form.request_subject.label }} 
+            {% if request_id %}
+              {% if not form.request_subject.value %}<span class="label label-warning">{% trans 'The subject increases chances for faster reaction' %}</span> {% endif %} 
+            {% endif %}
+            {{ form.request_subject }}
           </div>
           <div class="control-group">
             {{ form.request_body.errors }}
