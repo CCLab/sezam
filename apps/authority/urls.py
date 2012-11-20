@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns('apps.browser.views',
+urlpatterns = patterns('apps.authority.views',
     url(r'^$', 'display_authority', {'template': 'authorities.html'},
         name='display_authorities'),
 
@@ -18,7 +18,4 @@ urlpatterns = patterns('apps.browser.views',
 
     url(r'^(?P<id>[-\w]+)/$', 'display_authority',
         {'template': 'authorities.html'}, name='display_authority'),
-
-    url(r'^(?P<slug>[-\w]+)/request/new/$', 'new_authority_request',
-        {'template': 'request.html'}, name='new_authority_request'),
 )

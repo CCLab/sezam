@@ -9,14 +9,16 @@
           {% if xpaginate.has_jump_previous %}
             {% for a in xpaginate.previous_page_jump %}
         <li><a href="{{ xpaginate.uri }}{{ a }}">{{ a }}</a></li>
-        <li class="disabled"><a>...</a></li>
             {% endfor %}
+        <li class="disabled"><a>...</a></li>
           {% endif %}
           {% for a in xpaginate.previous_pages %}
+            {% if a > 0 %} <!-- eliminate -1 link -->
         <li><a href="{{ xpaginate.uri }}{{ a }}">{{ a }}</a></li>
+            {% endif %}
           {% endfor %}
         {% endif %}
-          
+        
         <li class="active"><a href="#">{{ xpaginate.current }}</a></li>
           
         {% if xpaginate.has_next %}

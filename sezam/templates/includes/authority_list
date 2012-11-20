@@ -17,7 +17,7 @@
               <div class="span2 row-fluid btn-group pull-right">
                 <a class="btn btn-small btn-info" href="#"><i class="icon-info-sign icon-white"></i> </a>
                 <a class="btn btn-small btn-info" href="/authority/{{ result.slug }}">Profile</a>
-                <a class="btn btn-small btn-primary" href="#"><i class="icon-envelope icon-white"></i> </a>
+                <a class="btn btn-small btn-primary" href="/request/{{ result.slug }}/"><i class="icon-envelope icon-white"></i> </a>
               </div>
             </td>
           </tr>

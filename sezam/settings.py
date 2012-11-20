@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'apps.authority',
+    'apps.pia_request',
     'apps.browser',
     'apps.backend',
     'apps.vocabulary',

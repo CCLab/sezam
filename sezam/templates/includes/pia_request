@@ -1,0 +1,46 @@
+  {% load i18n %}
+
+    <!-- Request -->
+      <div class="container">
+        <form class="form-vertical well span7" id="request_preview" enctype="multipart/form-data" action="/request/{% if request_id %}{{ request_id }}/{% endif%}preview/" method="post">
+          {% csrf_token %}
+          {{ form.authority_name.label }} {% for auth in authority %}<span class="label label-info">{{ auth.name }}</span> {% if not forloop.last %}&nbsp; {% endif %} {% endfor %}
+          {{ form.authority_name }} {{ form.authority_slug }}
+          <div class="control-group">&nbsp;</div>
+          <div class="control-group">
+            {{ form.request_subject.errors }}
+            {{ form.request_subject.label }} {% if not form.request_subject.value %}<span class="label label-warning">{% trans 'The subject increases chances for faster reaction' %}</span> {% endif %} {{ form.request_subject }}
+          </div>
+          <div class="control-group">
+            {{ form.request_body.errors }}
+            <span class="help-block">{{ form.request_body.label }}</span>
+            <div class="controls">{{ form.request_body }}
+              <div class="span3 pull-right">
+                <p>{% trans "Write your request in <strong>simple, precise language</strong>." %}</p>
+                <p>{% trans "Ask for <strong>specific</strong> documents or information, this site is not suitable for general enquiries."%}</p>
+                <p>{% trans "Keep it <strong>focused</strong>, you'll be more likely to get what you want" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
+                <div class="form-actions">
+                  {% if request_id %}
+                  <input class="btn" id="new_request" type="submit" value='{% trans "Refresh preview" %}' />
+                  {% else %}
+                  <input class="btn btn-primary" id="new_request" type="submit" value='{% trans "Preview request" %}' />
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+    {% if request_id %}
+      <form class="form-vertical well span7" id="request_post" enctype="multipart/form-data" action="/request/{{ request_id }}/send/" method="post">
+          {% csrf_token %}
+        <p><strong>{{ form.request_subject.label }}:</strong> {{ form.request_subject.value }}</p>
+        <p><strong>{{ form.request_body.label }}:</strong>
+          {{ form.request_body.value|linebreaks|urlize }}</p>
+                <div class="form-actions">
+                  <input class="btn btn-primary" id="new_request" type="submit" value='{% trans "Send request" %}' />
+                </div>
+      </form>
+    {% endif %}
+
+      </div>

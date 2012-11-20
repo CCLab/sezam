@@ -74,6 +74,6 @@
 
     <div class="btn-group">
       <a class="btn btn-small btn-info" href="#"> Follow this authority</a>
-      <a class="btn btn-small btn-primary" href="/authority/{{ result.slug }}/request/new/"><i class="icon-envelope icon-white"></i> Make request</a>
+      <a class="btn btn-small btn-primary" href="/request/{{ result.slug }}/"><i class="icon-envelope icon-white"></i> Make request</a>
     </div>
   </div>

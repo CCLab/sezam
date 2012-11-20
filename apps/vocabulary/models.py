@@ -190,34 +190,65 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         super(AuthorityProfile, self).save(*args, **kwargs)
 
 
-# class AuthorityStat(models.Model):
-#     """
-#     Authority statistics.
+class PIAUser(User):
+    """
+    Proxy to User of Public Information Access system
+    (used for custom-built registration).
+    """
+    # TO-DO: e-mail as username, implement django-registration-email
+    # http://pypi.python.org/pypi/django-registration-email/0.2.2
 
-#     Data in this model cannot be updated manually.
-#     """
-#     authority= models.ForeignKey(AuthorityProfile,
-#         verbose_name=_(u'Authority Profile'))
-#     requests_num= models.IntegerField(default=0,
-#         verbose_name=_(u'Number of requests to the Authority'))
-#     positive= models.IntegerField(default=0,
-#         verbose_name=_(u'Number of requests to the Authority properly answered'))
-#     positive_but= models.IntegerField(default=0,
-#         verbose_name=_(u'Number of requests to the Authority answered, but...'))
-#     negative= models.IntegerField(default=0,
-#         verbose_name=_(u'Number of requests to the Authority not answered'))
+    class Meta:
+        abstract= True
 
-#     def __unicode__(self):
-#         return "%s: requests %d ('yes' %d, 'yes, but' %d, 'no' %d)"\
-#             % (self.authority.name, self.requests_num, self.positive,
-#                self.positive_but, self.negative)
+    def __unicode__(self):
+        return '%s (%s)' % (self.username, self.get_full_name())
 
 
-# class UserProfile(User):
-#     """
-#     User Profile.
-#     """
-#     # TO-DO: e-mail as username
+class UserProfile(models.Model):
+    """
+    Custom user profile with additional information.
+    All the fields are optional.
+    """
+    user= models.ForeignKey(User, unique=True, help_text=_(u'User profile'))
+    company= models.CharField(max_length=300, null=True, blank=True,
+                              verbose_name=_(u'Company/organizaion'))
+    # ADDRESS DETAILS
+    address_street= models.CharField(max_length=300, null=True, blank=True,
+                                     verbose_name=_(u'Street'),
+        help_text=_(u'Street name, building and office number'))
+    address_line1= models.CharField(max_length=300, null=True, blank=True,
+        verbose_name=_(u'Address (additional line 1)'))
+    address_line2= models.CharField(max_length=200, null=True, blank=True,
+        verbose_name=_(u'Address (additional line 2)'))
+    address_postalcode= models.CharField(max_length=6, null=True, blank=True,
+        verbose_name=_(u'Postal code'), help_text=_(u'Digits only!'))
+    address_city= models.CharField(max_length=100, null=True, blank=True,
+                                   verbose_name=_(u'City'))
+    # TELEPHONES
+    tel_code= models.CharField(max_length=3, null=True, blank=True,
+        verbose_name=_(u'tel code'), help_text=_(u'Example: 45'))
+    tel_number= models.CharField(max_length=20, null=True, blank=True,
+                                 verbose_name=_(u'Telephone'),
+        help_text=_(u'Digits only! Example: 504566462'))
+    tel_internal= models.CharField(max_length=50, null=True, blank=True,
+                                   verbose_name=_(u'Internal'))
+    # WWW
+    web_site= models.URLField(null=True, blank=True, verbose_name=_(u'Web-site'))
+
+    def save(self, *args, **kwargs):
+	"""
+        Override save:
+        - get rid of non-digits in postalcode, telephone numbers and codes.
+	"""
+        self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
+        self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
+        self.tel_number= re.sub('[^0-9]+', '', self.tel_number)
+        super(UserProfile, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.user.username, self.user.get_full_name())
+
 
 
 # class UserStat(models.Model):
