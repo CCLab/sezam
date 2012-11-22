@@ -1,0 +1,5 @@
+{{% load humanize %}
+{% load i18n %}
+
+{% trans 'This is a public information request. The user who sent it, has agreed with the terms of Public Information Access. You have 14 days to answer this request' %}
+}

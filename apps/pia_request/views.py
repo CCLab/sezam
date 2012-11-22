@@ -44,6 +44,7 @@ def preview_request(request, id=None, **kwargs):
     """
     Preview request: if a new one, than create a draft, if with ID - update it.
     """
+    # TO-DO: Re-factor!
     template= kwargs.get('template', 'request.html')
     if request.method != 'POST':
         raise Http404
@@ -97,4 +98,27 @@ def preview_request(request, id=None, **kwargs):
     return render_to_response(template, {
         'authority': authority, 'request_id': request_id,
         'form': MakeRequestForm(initial=initial)},
+        context_instance=RequestContext(request))
+
+
+def send_request(request, id=None, **kwargs):
+    """
+    Send request to authority.
+    """
+    template= kwargs.get('template', 'request.html')
+    if request.method != 'POST':
+        raise Http404
+    form= MakeRequestForm(request.POST)
+    return render_to_response(template, {'request_id': id},
+        context_instance=RequestContext(request))
+
+
+def view_request(request, id=None, **kwargs):
+    """
+    View request by given ID.
+    """
+    template= kwargs.get('template', 'request.html')
+    if request.method != 'POST':
+        raise Http404
+    return render_to_response(template, {'request_id': id},
         context_instance=RequestContext(request))

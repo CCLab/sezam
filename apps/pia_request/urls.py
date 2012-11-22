@@ -21,5 +21,10 @@ urlpatterns = patterns('apps.pia_request.views',
 
     # View request message thread.
     url(r'^(?P<id>[-\w]+)/$', 'view_request',
-        {'template': 'base.html'}, name='view_request_id'),
+        {'template': 'request.html'}, name='view_request_id'),
+
+    # Preview already created draft.
+    url(r'^(?P<id>[-\w]+)/send/$', 'send_request',
+        {'template': 'request.html', 'email_template': 'request_email.txt'},
+        name='send_request_id'),
 )
