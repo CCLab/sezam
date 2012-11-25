@@ -177,7 +177,6 @@ def get_authority_info(request, slug, **kwargs):
     authority_queryset= PIARequest.objects.filter(
         authority=authority).order_by('created')
     for authority_request in authority_queryset:
-        print authority_request.status
         authority_requests.append({'object': authority_request,
             'status': PIA_REQUEST_STATUS[status_keys.index(authority_request.status)][1]})
  
