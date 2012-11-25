@@ -2,5 +2,5 @@
         {% for category in categories %}
         <li><a href="/authority/list/{{ category.id }}">{{ category.name|title }}</a> <span class="divider">/</span></li>
         {% endfor %}
-        <li class="active">{{ result.name|slice:":20" }}{% if result.name|length > 20 %}...{% endif %}</li>
+        <li class="active">{{ authority.name|slice:":20" }}{% if authority.name|length > 20 %}...{% endif %}</li>
       </ul>
