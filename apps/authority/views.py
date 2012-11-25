@@ -9,6 +9,7 @@ from django.template import RequestContext
 from django.db.models import Q
 
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
+from apps.pia_request.models import PIARequest, PIA_REQUEST_STATUS
 from sezam.settings import PAGINATE_BY
 
 
@@ -18,8 +19,9 @@ def display_authority(request, **kwargs):
     """
     if request.method == 'POST':
         raise Http404
+    user_message= request.session.pop('user_message', {})
     template= kwargs.get('template', 'authorities.html')
-    data= {'page_title': _(u'Public Authorities')}
+    data= {'page_title': _(u'Public Authorities'), 'user_message': user_message}
     return render_to_response(template, data,
         context_instance=RequestContext(request))
 
@@ -139,26 +141,27 @@ def get_authority(slug):
 
 def get_authority_info(request, slug, **kwargs):
     """
-    Display all the details of a selected authority.
+    Display the details on the selected authority:
+
+    * Authority info (contacts, description, etc.)
+
+    * Authority requests.
+
+    Also fill the Breadcrumb by category.
     """
     template= kwargs.get('template', 'authority.html')
+    user_message= request.session.pop('user_message', {})
     if request.method == 'POST':
         raise Http404
-    try:
-        result= AuthorityProfile.objects.get(slug=slug)
-    except AuthorityProfile.MultipleObjectsReturned:
-        result= AuthorityProfile.objects.filter(slug=slug).order_by('name')[0]
-    except AuthorityCategory.DoesNotExist:
-        raise Http404
 
-    result= get_authority(slug)
-    if result is None:
+    authority= get_authority(slug)
+    if authority is None:
         raise Http404
 
     # Fill categories for breadcrumbs.
     category, categories= None, []
     try:
-        category= result.category
+        category= authority.category
     except:
         category= None
     if category:
@@ -168,7 +171,17 @@ def get_authority_info(request, slug, **kwargs):
             categories= []
         categories.append(category)
 
-    return render_to_response(template, {'result': result,
-                                         'categories': categories,
-                                         'page_title': result.name},
+    # Fill requests list.
+    authority_requests= list()
+    status_keys= [k[0] for k in PIA_REQUEST_STATUS]
+    authority_queryset= PIARequest.objects.filter(
+        authority=authority).order_by('created')
+    for authority_request in authority_queryset:
+        print authority_request.status
+        authority_requests.append({'object': authority_request,
+            'status': PIA_REQUEST_STATUS[status_keys.index(authority_request.status)][1]})
+ 
+    return render_to_response(template, {'authority': authority,
+        'authority_requests': authority_requests, 'categories': categories,
+        'page_title': authority.name, 'user_message': user_message},
         context_instance=RequestContext(request))

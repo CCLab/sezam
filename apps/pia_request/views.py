@@ -1,11 +1,15 @@
-from django.shortcuts import get_object_or_404, render_to_response
-from django.http import Http404
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.core.mail import send_mail
+from django.http import Http404
 
+from apps.pia_request.models import PIARequestDraft, PIARequest
 from apps.vocabulary.models import AuthorityProfile
-from apps.pia_request.models import PIARequestDraft
 from apps.pia_request.forms import MakeRequestForm
+from apps.backend import get_domain_name
 
 
 def new_request(request, slug=None, **kwargs):
@@ -42,75 +46,149 @@ def new_request(request, slug=None, **kwargs):
 
 def preview_request(request, id=None, **kwargs):
     """
-    Preview request: if a new one, than create a draft, if with ID - update it.
+    Preview request.
+    If it's a new one, create a draft, otherwise (has ID) update it.
     """
-    # TO-DO: Re-factor!
     template= kwargs.get('template', 'request.html')
     if request.method != 'POST':
         raise Http404
     form= MakeRequestForm(request.POST)
 
-    # TO-DO: process non-valid form
-    if form.is_valid():
-        pass
-    else:
-        pass
-
-    # Prepare initial values.
-    try:
-        initial= dict(tuple((k, v[0]) for k, v in dict(request.POST).iteritems()\
-                        if k not in (u'csrfmiddlewaretoken', u'authority_slug')))
-    except:
-        initial= {}
-
     # Slugs should be saved in the list for the case
     # it is a draft of the request to several Authorities.
-    if len(initial) > 0:
-        initial.update({'authority_slug': eval(request.POST[u'authority_slug'])})
+    try:
+        authority_slug= eval(request.POST[u'authority_slug'])
+    except:
+        authority_slug= []
     authority= []
     try: # Try to find Authority.
-        for slug in initial['authority_slug']:
+        for slug in authority_slug:
             authority.append(AuthorityProfile.objects.get(slug=slug))
     except AuthorityProfile.DoesNotExist:
         raise Http404
-    if request.user.is_anonymous():
-        initial.update({'user_name': ''})
+
+    if form.is_valid():
+        if id: # Already saved, need to be updated.
+            piarequest_draft= PIARequestDraft.objects.get(id=int(id))
+            piarequest_draft.subject= form.cleaned_data['request_subject']
+            piarequest_draft.body= form.cleaned_data['request_body']
+            piarequest_draft.authority_slug= ','.join(authority_slug)
+        else:
+            try:
+                piarequest_draft= PIARequestDraft.objects.create(user=request.user,
+                    subject=form.cleaned_data['request_subject'],
+                    body=form.cleaned_data['request_body'],
+                    authority_slug=','.join(authority_slug))
+            except Exception as e:
+                pass # TO-DO: Process exceptions (for example anonymous user)
+        piarequest_draft.save()
+        request_id= piarequest_draft.id
     else:
-        initial.update({'user_name': request.user.get_full_name()})
+        request_id= None
 
-    # TO-DO: process Anonymous User
-
-    if id: # Already saved, need to be updated.
-        piarequest_draft= PIARequestDraft.objects.get(id=int(id))
-        piarequest_draft.subject= initial['request_subject']
-        piarequest_draft.body= initial['request_body']
-        piarequest_draft.authority_slug= initial['authority_slug']
-    else:
-        try:
-            piarequest_draft= PIARequestDraft.objects.create(user=request.user,
-                subject=initial['request_subject'], body=initial['request_body'],
-                authority_slug=','.join(initial['authority_slug']))
-        except Exception as e:
-            pass # TO-DO: Process exception
-    piarequest_draft.save()
-    request_id= piarequest_draft.id
-
-    return render_to_response(template, {
-        'authority': authority, 'request_id': request_id,
-        'form': MakeRequestForm(initial=initial)},
+    return render_to_response(template, {'form': form,
+        'authority': authority, 'request_id': request_id},
         context_instance=RequestContext(request))
 
 
 def send_request(request, id=None, **kwargs):
     """
-    Send request to authority.
+    Processing the request to authority:
+
+    * registers new request in the DB
+
+    * sends the message to the selected Authorities (should always be a list,
+      even if it is a request to only one authority). The field `TO` is being
+      filled out according to the pattern:
+      request-<request_id>@<domain>,
+      where <request_id> is an ID of a newly created request.
+
+    * successful e-mails are stored in `successful` dict, failed are in `failed`
+      (if message sending failed, newly created request is deleted from the DB)
+      
+    * cleans out draft
     """
-    template= kwargs.get('template', 'request.html')
+    template= kwargs.get('template', 'request_email.txt')
     if request.method != 'POST':
         raise Http404
-    form= MakeRequestForm(request.POST)
-    return render_to_response(template, {'request_id': id},
-        context_instance=RequestContext(request))
+
+    message_body= request.POST.get('request_body')
+    message_subject = ''.join( # No newlines in Email subject!
+        request.POST.get('request_subject').splitlines())
+    authority_slug= eval( # Convert to a list.
+        request.POST.get('authority_slug'))
+
+    successful, successful_slugs, failed= list(), set(), list()
+    for slug in authority_slug:
+        # Get the To field.
+        authority= AuthorityProfile.objects.get(slug=slug)
+        try:
+            message_to= authority.email
+        except:
+            failed.append('<a href="/authority/%s">%s</a>' % (
+                authority.slug, authority.name))
+            continue
+
+        # Register new request in the DB.
+        pia_request= PIARequest.objects.create(subject= message_subject,
+            body=message_body, authority=authority, user=request.user,
+            authority_email=message_to)
+
+        # Generate unique ``From`` field.
+        message_from= 'request-%s@%s' % (pia_request.id, get_domain_name())
+
+        # Send message to the Authority and check if it doesn't fail.
+        message_content= render_to_string(template, {'content': message_body,
+            'info_email': 'info@%s' % get_domain_name()})
+        try:
+            send_mail(message_subject, message_content, message_from, [message_to],
+                      fail_silently=False)
+            successful.append('<a href="/authority/%s">%s</a>' % (
+                authority.slug, authority.name))
+            successful_slugs.add(authority.slug)
+        except Exception as e:
+            pia_request.delete()
+            failed.append('<a href="/authority/%s">%s</a>' % (
+                authority.slug, authority.name))
+
+    message_draft= PIARequestDraft.objects.get(id=int(id))
+    if len(authority_slug) == len(successful):
+        try: # Remove draft if nothing failed.
+            message_draft.delete()
+        except:
+            pass # TO-DO: Log it!
+    elif len(authority_slug) == len(failed):
+        pass # This doesn't affect the draft - it stays the same.
+    else: # Remove from the draft those slugs that were successful.
+        draft_slugs= set(message_draft.authority_slug.split(','))
+        message_draft.authority_slug= ','.join(
+            list(draft_slugs - successful_slugs))
+        try:
+            message_draft.save()
+        except:
+            pass # TO-DO: Log it!
+
+    # Report the results.
+    user_message= {'success': None, 'fail': None}
+    if successful:
+        user_message['success']= _(
+            u'Successfully sent request(s) to: %s') % ', '.join(successful)
+    if failed:
+        user_message['fail']= _(
+            u'Request(s) sending failed: %s') % ', '.join(failed)
+
+    # Report the results to the user session.
+    request.session['user_message']= user_message
+
+    # Re-direct (depending on the Authorities and Failed status).
+    if len(authority_slug) == len(failed):
+        # If all are failed, return to the draft page.
+        return redirect(request.META.get('HTTP_REFERER'), user_message)
+    else: # Otherwise:
+        if len(authority_slug) == 1:  # Authority profile.
+            return redirect('/authority/%s' % authority_slug[0])
+        else: # Or list of Authorities in case of a mass message.
+            return redirect(reverse('display_authorities'))
 
 
 def view_request(request, id=None, **kwargs):

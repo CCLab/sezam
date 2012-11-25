@@ -8,6 +8,8 @@
 
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.template.defaultfilters import slugify
+import random
+import string
 import re
 
 LATIN_MAP = {
@@ -123,4 +125,3 @@ def slugify_unique(value, model, slugfield="slug"):
         if not model.objects.filter(**{slugfield: potential}).count():
             return potential
         suffix += 1
-

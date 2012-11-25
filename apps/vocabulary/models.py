@@ -133,7 +133,7 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
     tel_code= models.CharField(max_length=3, verbose_name=_(u'tel code'),
                                help_text=_(u'Example: 45'))
     tel_number= models.CharField(max_length=20, verbose_name=_(u'Telephone'), # TO-DO: control format. Make char(9)!!!
-                                 help_text=_(u'Digits only! Example: 504566462'))
+                                 help_text=_(u'Digits only! Example: 4430976'))
     tel_internal= models.CharField(max_length=50, null=True, blank=True, 
         verbose_name=_(u'Internal'))
     tel1_code= models.CharField(max_length=3, null=True, blank=True,
