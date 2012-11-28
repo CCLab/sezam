@@ -1,73 +1,82 @@
+  {% load i18n %}
     <div class="row">
-      <div class="span8">
+      <div class="span10">
         <h2>{{ authority.name }}</h2>
       </div>
     </div>
-
     <div class="row">
-      <div class="span8">
-        <p>{% if authority.web_site %} Official web-site: {{ authority.web_site|urlize }}{% endif %}</p>
-        <p>{% if authority.web_site1 %} Buletin of public information: {{ authority.web_site1|urlize }}{% endif %}</p>
+      <div class="span10">
+        <div class="btn-group">
+          <a class="btn btn-small btn-info" href="#"> {% trans 'Follow this authority' %}</a>
+          <a class="btn btn-small btn-primary" href="/request/{{ authority.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Send request' %}</a>
+        </div>
       </div>
     </div>
 
     <div class="row">
+      &nbsp;
+    </div>
+
+    <div class="row">
+      <div class="span8">
+        <p>{% if authority.web_site %}<strong>{% trans 'Official web-site' %}:</strong> {{ authority.web_site|urlize }}{% endif %}</p>
+        <p>{% if authority.web_site1 %}<strong>{% trans 'Buletin of public information' %}:</strong> {{ authority.web_site1|urlize }}{% endif %}</p>
+      </div>
+    </div>
+
+    {% if authority.official_lastname %}
+    <div class="row">
+      <div class="span8">
+        <p><strong>{% trans 'Official' %}:</strong>
+          {{ authority.official|default:'' }}  <em>{{ authority.official_name|default:'' }} {{ authority.official_lastname|default:'' }}</em></p>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
       <div class="span3">
-        <p><strong>Address:</strong>
+        <p><strong>{% trans 'Address' %}:</strong>
           <address>
           {{ authority.address_street }} {{ authority.address_num }}
           <br>{{ authority.address_postalcode|slice:":2" }}-{{ authority.address_postalcode|slice:"2:5" }} {{ authority.address_city }}</br>
           </address>
         </p>
       </div>
-      <div class="span2">
+      <div class="span3">
         <p>
-          <strong>Telephones:</strong>
-          <address> ({{ authority.tel_code }}) {{ authority.tel_number|slice:":3" }} {{ authority.tel_number|slice:"3:5" }} {{ authority.tel_number|slice:"5:" }} {{ authority.tel_internal|default:'' }}
+          <strong>{% trans 'Telephones' %}:</strong>
+          <address> ({{ authority.tel_code }}) {{ authority.tel_number|slice:":3" }} {{ authority.tel_number|slice:"3:5" }} {{ authority.tel_number|slice:"5:" }} {% if authority.tel_internal %}({% trans 'internal' %} {{ authority.tel_internal }}) {% endif %}
+
           {% if authority.tel1_number %}
-          <br>({{ authority.tel1_code }}) {{ authority.tel1_number|slice:":3" }} {{ authority.tel1_number|slice:"3:5" }} {{ authority.tel1_number|slice:"5:" }} {{ authority.tel1_internal|default:'' }}
+          <br>({{ authority.tel1_code }}) {{ authority.tel1_number|slice:":3" }} {{ authority.tel1_number|slice:"3:5" }} {{ authority.tel1_number|slice:"5:" }} {% if authority.tel1_internal %}({% trans 'internal' %} {{ authority.tel1_internal }}) {% endif %}
           {% endif %}
           {% if authority.tel2_number %}
-          <br>({{ authority.tel2_code }}) {{ authority.tel2_number|slice:":3" }} {{ authority.tel2_number|slice:"3:5" }} {{ authority.tel2_number|slice:"5:" }} {{ authority.tel2_internal|default:'' }}
+          <br>({{ authority.tel2_code }}) {{ authority.tel2_number|slice:":3" }} {{ authority.tel2_number|slice:"3:5" }} {{ authority.tel2_number|slice:"5:" }} {% if authority.tel2_internal %}({% trans 'internal' %} {{ authority.tel2_internal }}) {% endif %}
           {% endif %}
           </address>
         </p>
       </div>
       {% if authority.fax_number %}
       <div class="span2">
-        <p><strong>Fax:</strong>
+        <p><strong>{% trans 'Fax' %}:</strong>
           <address> ({{ authority.fax_code }}) {{ authority.fax_number|slice:":3" }} {{ authority.fax_number|slice:"3:5" }} {{ authority.fax_number|slice:"5:" }}</address>
         </p>
       </div>
       {% endif %}
     </div>
 
-    {% if authority.official_lastname %}
-    <div class="row">
-      <div class="span8">
-        <p><strong>Official:</strong>
-          {{ authority.official|default:'' }}  <em>{{ authority.official_name|default:'' }} {{ authority.official_lastname|default:'' }}</em></p>
-      </div>
-    </div>
-    {% endif %}
-
     {% if authority.description %}
     <div class="row">
-      <p><strong>Description</strong></p>
-      <p class="small">{{ authority.description|default:''|urlize }}</p>
+      <div class="span10">
+        <p>{{ authority.description|default:''|linebreaks|urlize }}</p>
+      </div>
     </div>
     {% endif %}
 
     {% if authority.notes %}
     <div class="row">
-      <p><strong>Notes</strong></p>
-      <p class="small">{{ authority.notes|default:'' }}</p>
-    </div>
-    {% endif %}
-
-    <div class="row span8">
-      <div class="btn-group">
-        <a class="btn btn-small btn-info" href="#"> Follow this authority</a>
-        <a class="btn btn-small btn-primary" href="/request/{{ authority.slug }}/"><i class="icon-envelope icon-white"></i> Make request</a>
+      <div class="span10">
+        <p><small><strong>{% trans 'Notes' %}:</strong> {{ authority.notes|default:'' }}</small></p>
       </div>
     </div>
+    {% endif %}

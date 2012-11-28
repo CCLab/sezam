@@ -41,7 +41,7 @@
 
           <!-- data containers -->
           <input name="request_subject" type="text" value="{{ form.request_subject.value }}" style="display: none;"></input>
-          <input name="request_body" type="text" value="{{ form.request_body.value }}" style="display: none;"></input>
+          <input name="request_body" type="text" value="{{ form.request_body.value|linebreaks }}" style="display: none;"></input>
           <input name="authority_slug" type="text" value="{{ form.authority_slug.value }}" style="display: none;"></input>
 
           <p class="lead"><strong>{{ form.request_subject.label }}:</strong> {{ form.request_subject.value }}</p>

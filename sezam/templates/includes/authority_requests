@@ -5,11 +5,11 @@
       </div>
     </div>
 
-    <div class="row span8">
+    <div class="row span10">
       {% if authority_requests %}
       {% for authority_request in authority_requests %}
       <div class="row">
-        <p class="lead"><a href="/request/{{ authority_request.id }}/">{{ authority_request.object.subject }}</a>
+        <p class="lead"><a href="/request/{{ authority_request.object.request_id }}/">{{ authority_request.object.subject }}</a>
           <br/><span class=
                 {% if authority_request.object.status = 'in_progress' %}"label"
                 {% elif authority_request.object.status = 'successful' %}"label label-success"

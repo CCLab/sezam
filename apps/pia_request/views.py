@@ -6,11 +6,12 @@ from django.template import RequestContext
 from django.core.mail import send_mail
 from django.http import Http404
 
-from apps.pia_request.models import PIARequestDraft, PIARequest
+from apps.pia_request.models import PIARequestDraft, PIARequest, PIA_REQUEST_STATUS
 from apps.vocabulary.models import AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm
 from apps.backend import get_domain_name
-
+from apps.backend.utils import increment_id
+from apps.backend.html2text import html2text
 
 def new_request(request, slug=None, **kwargs):
     """
@@ -112,7 +113,7 @@ def send_request(request, id=None, **kwargs):
     if request.method != 'POST':
         raise Http404
 
-    message_body= request.POST.get('request_body')
+    message_body= html2text(request.POST.get('request_body'))
     message_subject = ''.join( # No newlines in Email subject!
         request.POST.get('request_subject').splitlines())
     authority_slug= eval( # Convert to a list.
@@ -129,25 +130,26 @@ def send_request(request, id=None, **kwargs):
                 authority.slug, authority.name))
             continue
 
-        # Register new request in the DB.
-        pia_request= PIARequest.objects.create(subject= message_subject,
-            body=message_body, authority=authority, user=request.user,
-            authority_email=message_to)
-
         # Generate unique ``From`` field.
-        message_from= 'request-%s@%s' % (pia_request.id, get_domain_name())
+        new_request_id= increment_id(PIARequest, 'request_id')
+        message_from= 'request-%s@%s' % (new_request_id, get_domain_name())
 
-        # Send message to the Authority and check if it doesn't fail.
+        # Render the message body.
         message_content= render_to_string(template, {'content': message_body,
             'info_email': 'info@%s' % get_domain_name()})
-        try:
+
+        try: # sending the message to the Authority and check if it doesn't fail.
             send_mail(message_subject, message_content, message_from, [message_to],
                       fail_silently=False)
+            # Register new request in the DB.
+            pia_request= PIARequest.objects.create(request_id=new_request_id,
+                email_to=message_to, email_from=message_from,
+                subject= message_subject, body=message_body,
+                authority=authority, user=request.user, orig=True)
             successful.append('<a href="/authority/%s">%s</a>' % (
                 authority.slug, authority.name))
             successful_slugs.add(authority.slug)
         except Exception as e:
-            pia_request.delete()
             failed.append('<a href="/authority/%s">%s</a>' % (
                 authority.slug, authority.name))
 
@@ -191,12 +193,16 @@ def send_request(request, id=None, **kwargs):
             return redirect(reverse('display_authorities'))
 
 
-def view_request(request, id=None, **kwargs):
+def view_thread(request, request_id=None, **kwargs):
     """
-    View request by given ID.
+    View request thread by given ID.
     """
-    template= kwargs.get('template', 'request.html')
-    if request.method != 'POST':
+    template= kwargs.get('template', 'thread.html')
+    if request.method == 'POST':
         raise Http404
-    return render_to_response(template, {'request_id': id},
+    thread= list(PIARequest.objects.filter(
+        request_id=int(request_id)).order_by('created'))
+    status_keys= [k[0] for k in PIA_REQUEST_STATUS]
+    return render_to_response(template, {'thread': thread,
+        'request_status': PIA_REQUEST_STATUS[status_keys.index(thread[0].status)][1]},
         context_instance=RequestContext(request))

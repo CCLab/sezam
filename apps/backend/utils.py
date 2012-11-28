@@ -125,3 +125,15 @@ def slugify_unique(value, model, slugfield="slug"):
         if not model.objects.filter(**{slugfield: potential}).count():
             return potential
         suffix += 1
+
+def increment_id(model, field):
+    """
+    Get the maximum of `field`, return its value increment to 1.
+    """
+    try:
+        return model.objects.values(field).distinct()\
+                   .order_by('-'+field)[0][field] + 1
+    except IndexError: # No records yet
+        return 1
+    except TypeError: # Non-integer/float field cannot be incremented.
+        return None
