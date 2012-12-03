@@ -9,7 +9,9 @@ from django.template import RequestContext
 from django.db.models import Q
 
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
-from apps.pia_request.models import PIARequest, PIA_REQUEST_STATUS
+from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
+from apps.pia_request.models import PIARequest, PIAThread
+from apps.backend import get_domain_name
 from sezam.settings import PAGINATE_BY
 
 
@@ -172,18 +174,29 @@ def get_authority_info(request, slug, **kwargs):
         categories.append(category)
 
     # Fill requests list.
-    authority_requests= list()
-    status_keys= [k[0] for k in PIA_REQUEST_STATUS]
     try:
-        authority_queryset= PIARequest.objects.filter(
-            authority=authority, orig=True).order_by('created')
-    except:
-        authority_queryset= list()
-    for authority_request in authority_queryset:
-        authority_requests.append({'object': authority_request,
-            'status': PIA_REQUEST_STATUS[status_keys.index(authority_request.status)][1]})
+        pia_requests= PIARequest.objects.filter(
+            authority=authority).order_by('latest_thread_post')
+    except Exception as e:
+        print e
+        pia_requests= list()
+
+    # Filter form initial values.
+    initial={'keywords': ''}
  
     return render_to_response(template, {'authority': authority,
-        'authority_requests': authority_requests, 'categories': categories,
-        'page_title': authority.name, 'user_message': user_message},
+        'pia_requests': pia_requests, 'categories': categories,
+        'form': PIAFilterForm(initial=initial), 'user_message': user_message,
+        'page_title': '%s - %s' % (authority.name, get_domain_name)},
         context_instance=RequestContext(request))
+
+
+def find_authority(request, **kwargs):
+    """ Look for the Authority to make request to.
+        """
+    template= kwargs.get('template', 'index.html')
+    return render_to_response(template, {
+        'page_title': _(u'Look for the authority') + ' - ' + get_domain_name()},
+        context_instance=RequestContext(request))
+
+

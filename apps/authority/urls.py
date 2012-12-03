@@ -5,13 +5,18 @@ urlpatterns = patterns('apps.authority.views',
     url(r'^$', 'display_authority', {'template': 'authorities.html'},
         name='display_authorities'),
 
+    url(r'^find/$', 'find_authority', {'template': 'coming_soon.html'},
+        name='find_authority'),
+
     url(r'^tree/$', 'get_authority_tree'),
 
     url(r'^list/$', 'get_authority_list',
-        {'template': 'includes/authority_list'}, name='get_authority_list'),
+        {'template': 'includes/authority_list.html'},
+        name='get_authority_list'),
 
     url(r'^list/(?P<id>\d+)/$', 'get_authority_list',
-        {'template': 'includes/authority_list'}, name='get_authority_list_id'),
+        {'template': 'includes/authority_list.html'},
+        name='get_authority_list_id'),
 
     url(r'^(?P<slug>[-\w]+)/$', 'get_authority_info',
         {'template': 'authority.html'}, name='get_authority_info'),

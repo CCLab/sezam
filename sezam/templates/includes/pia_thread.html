@@ -1,0 +1,38 @@
+  {% load i18n %}
+
+      <!-- Thread -->
+      <div class="span7">
+        {% for msg in thread %}
+        <div class="row">
+          <div>
+            {% if forloop.counter0 = 0 %}
+            <h2>{{ msg.subject }}</h2>
+            <p class="lead">{% trans 'Request from' %} <a href="#">{{ msg.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.authority.slug }}/">{{ msg.authority.name }}</a>
+              <br/><span class=
+                         {% if msg.status = 'in_progress' %}"label"
+                         {% elif msg.status = 'successful' %}"label label-success"
+                         {% elif msg.status = 'part_successful' %}"label label-success"
+                         {% elif msg.status = 'refused' %}"label label-important"
+                         {% elif msg.status = 'overdue' %}"label label-warning"
+                         {% elif msg.status = 'long_overdue' %}"label label-warning"
+                         {% elif msg.status = 'no_info' %}"label label-info"
+                         {% endif %}>{{ request_status }}</span>
+            </p>
+            {% endif %}
+          </div>
+          
+          <div class="well {% if msg.is_response %} {% else %} {% if forloop.counter0 = 0 %} well-yellow {% else %} well-white {% endif %} {% endif %}">
+            <div class="content">
+              <strong>
+                <p>{% trans 'From: ' %}
+                  {% if msg.is_response %} {{ msg.authority.name }} {% else %} {{ msg.user.get_full_name }} {% endif %}</p>
+                <p>{{ msg.created }}</p>
+              </strong>
+            </div>
+            <div class="content">
+              {{ msg.body|linebreaks|urlize }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>

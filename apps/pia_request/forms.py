@@ -28,7 +28,6 @@ class MakeRequestForm(forms.Form):
             )
         )
     request_subject= forms.CharField(
-        required=False,
         label=_(u'Request summary'),
         widget=forms.TextInput(
             attrs={
@@ -41,7 +40,7 @@ class MakeRequestForm(forms.Form):
         label=_(u'Your request'),
         widget=forms.Textarea(
             attrs={
-                'class': 'span4'
+                'class': 'span4',
                 }
             ),
         )
@@ -67,3 +66,23 @@ class MakeRequestForm(forms.Form):
             self.fields['request_subject'].initial= ''
             self.fields['authority_name'].initial= ''
             self.fields['authority_slug'].initial= ''
+
+class PIAFilterForm(forms.Form):
+    """ Form for filtering request list.
+        """
+    keywords= forms.CharField(label=_(u'Keywords'), widget=forms.TextInput(
+        attrs={'class': 'span3', 'placeholder': _(u'Keywords')}))
+    date_after= forms.DateField(required=False, label=_(u'Made between'),
+        widget=forms.TextInput(
+            attrs={'class': 'span2', 'id': 'date_after'}))
+    date_before= forms.DateField(required=False, label=_(u'and'),
+        widget=forms.TextInput(
+            attrs={'class': 'span2', 'id': 'date_before'}))
+
+
+    def __init__(self, *args, **kwargs):
+        initial= kwargs.pop('initial', None)
+        super(PIAFilterForm, self).__init__(*args, **kwargs)
+        if initial:
+            for init_key, init_val in initial.iteritems():
+                self.fields[init_key].initial= init_val

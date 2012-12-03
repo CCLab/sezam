@@ -14,7 +14,7 @@
 
     <div class="row">&nbsp;</div>
 
-    {% include "includes/authority_tree" %}
+    {% include "includes/authority_tree.html" %}
 
     <script src="{{ STATIC_URL }}js/sz.call.js"></script> <!-- Sezam calls -->
 
@@ -36,13 +36,13 @@
   <!-- list of authorities -->
   <div class="span8">
 
-    {% include "includes/user_message" %}
+    {% include "includes/user_message.html" %}
 
     <div class="row row-fluid">
       <h2>Public Authorities</h2>
     </div>
 
-    {% include "includes/authority_list" %}
+    {% include "includes/authority_list.html" %}
 
     <div id="spinner" class="span7"><center><img src="{{ STATIC_URL }}img/spinner.gif"/></center></div>
 

@@ -34,5 +34,5 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-#Project specific
-sezam-src.xcodeproj/*
+#XCode
+*xcodeproj

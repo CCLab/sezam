@@ -6,6 +6,7 @@ $(function() {
     });
 });
 
+
 // $('.authority-profile').click(
 //     function(evt) {
 //         var $this = $(evt.target);     

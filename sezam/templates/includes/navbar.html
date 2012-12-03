@@ -10,10 +10,10 @@
                 </button>
                 <div class="nav-collapse collapse">
                     <ul class="nav">
-                        <li class="active"><a href="/">Home</a></li>
-                        <li class="active"><a href="/request/new">Request</a></li>
-                        <li class="active"><a href="/request">View requests</a></li>
-                        <li class="active"><a href="/authority">Authorities</a></li>
+                        <li class="active"><a href="/">{% trans 'Home' %}</a></li>
+                        <li class="active"><a href="/authority/find/">{% trans 'Request' %}</a></li>
+                        <li class="active"><a href="/request/">{% trans 'View requests' %}</a></li>
+                        <li class="active"><a href="/authority/">{% trans 'Authorities' %}</a></li>
                     </ul>
                     <ul class="nav pull-right">
                         {% if user.is_authenticated %}
@@ -22,7 +22,7 @@
                             <ul class="dropdown-menu">
                                 <!-- <li class="nav-header">Actions</li> -->
                                 <li><a href="/request/search/?user={{user.slug}}">{% trans 'My requests' %}</a></li>
-                                <li><a href="/request/new">{% trans 'Make a request' %}</a></li>
+                                <li><a href="/request/new/">{% trans 'Make a request' %}</a></li>
                                 <li><a href="/accounts/password/change">{% trans 'Password change' %}</a></li>
                                 <li><a href="/help">{% trans 'Help' %}</a></li>
                                 <li class="divider"></li>

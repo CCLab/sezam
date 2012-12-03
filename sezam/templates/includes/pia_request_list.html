@@ -1,0 +1,71 @@
+  {% load i18n %}
+    <div class="row">
+        <div class="span8">
+            {% if authority %}
+            <h3>{% trans 'Requests to' %} {{ authority.name }}</h3>
+            {% else %}
+            <h3>{% trans 'Public Information Access Requests' %}</h3>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row span10">
+        {% if pia_requests %}
+
+        <form class="form-inline span10" name="formPIAFilterForm" id="form_PIAFilterForm" enctype="multipart/form-data" action="#" method="get">
+            {% csrf_token %}
+            <div class="control-group">
+                {{ form.keywords.label }} {{ form.keywords }}
+                &nbsp;
+                {{ form.date_after.label }} {{ form.date_after }}
+                &nbsp;
+                {{ form.date_before.label }} {{ form.date_before }}
+                &nbsp;
+                <input class="btn" name="filter_list" type="submit" value='{% trans "Filter" %}' />
+            </div>
+            <div class="row btn-group">
+                <a class="btn btn-small active" href="#">{% trans 'all requests' %}</a>
+                <a class="btn btn-small" href="#">{% trans 'successful requests' %}</a>
+                <a class="btn btn-small" href="#">{% trans 'unsuccessful requests' %}</a>
+                <a class="btn btn-small" href="#">{% trans 'unresolved requests' %}</a>
+            </div>
+        </form>
+        <script>
+            $(function(){
+              $('#date_after').datepicker({format: 'mm-dd-yyyy'})
+              .on('changeDate', function(ev){
+                  $('#date_after').datepicker('hide');
+                  });
+              $('#date_before').datepicker({format: 'mm-dd-yyyy'})
+              .on('changeDate', function(ev){
+                  $('#date_before').datepicker('hide');
+                  });
+              });
+        </script>
+
+          {% for pia_request in pia_requests %}
+        <div class="row">
+            <div class="span6">
+                <h4><a href="/request/{{ pia_request.id }}/">{{ pia_request.summary }}</a></h4>
+                <span class=
+                    {% if pia_request.status = 'in_progress' %}"label"
+                    {% elif pia_request.status = 'successful' %}"label label-success"
+                    {% elif pia_request.status = 'part_successful' %}"label label-success"
+                    {% elif pia_request.status = 'refused' %}"label label-important"
+                    {% elif pia_request.status = 'overdue' %}"label label-warning"
+                    {% elif pia_request.status = 'long_overdue' %}"label label-warning"
+                    {% elif pia_request.status = 'no_info' %}"label label-info"
+                    {% endif %}
+                    >{% trans pia_request.get_status_display %}</span>
+                {% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/request/filter/?username={{ pia_request.user.userprofile.slug }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}
+            </div>
+            <div class="span4 pull-right">
+                <blockquote>{{ pia_request.latest_thread_post.body|default:""|slice:":150" }}...
+                </blockquote>
+            </div>
+        </div>
+          {% endfor %}
+        {% else %}
+        <p>{% trans 'There are no requests so far. ' %} <a href="/request/{{ authority.slug }}/">{% trans 'Make the first' %}</a>.</p>
+        {% endif %}
+    </div>

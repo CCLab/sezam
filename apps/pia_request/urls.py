@@ -2,6 +2,10 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('apps.pia_request.views',
+    # View/filter requests.
+    url(r'^$', 'request_list', {'template': 'requests.html'},
+        name='request_list'),
+
     # Preview request with no id (create draft).
     url(r'^preview/$', 'preview_request',
         {'template': 'request.html'}, name='preview_request'),
@@ -19,7 +23,8 @@ urlpatterns = patterns('apps.pia_request.views',
     url(r'^(?P<id>[-\w]+)/preview/$', 'preview_request',
         {'template': 'request.html'}, name='preview_request_id'),
 
-    # Preview already created draft.
+    # Send the request.
     url(r'^(?P<id>[-\w]+)/send/$', 'send_request',
-        {'template': 'request_email.txt'}, name='send_request_id'),
+        {'template': 'request.html', 'email_template': 'request_email.txt'},
+        name='send_request_id'),
 )

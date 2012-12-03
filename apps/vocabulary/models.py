@@ -1,5 +1,4 @@
-"""
-Models for project-wide vocabularies.
+""" Models for project-wide vocabularies.
 """
 
 import re
@@ -157,7 +156,8 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         verbose_name=_(u'info e-mail'))
 
     # WWW
-    web_site= models.URLField(null=True, blank=True, verbose_name=_(u'Web-site'))
+    web_site= models.URLField(null=True, blank=True,
+        verbose_name=_(u'Web-site'))
     web_site1= models.URLField(null=True, blank=True,
         verbose_name=_(u'Web-site 1'),
         help_text=_(u'Public Information Bulletin'))
@@ -171,12 +171,15 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
     official_lastname= models.CharField(max_length=200,
         help_text=_(u'Official representative last name'),
         verbose_name=_(u'Last name'))
+    
+    # When the record was created.
+    created= models.DateField(auto_now_add=True, verbose_name=_(u'Created'))
 
 
     def save(self, *args, **kwargs):
 	"""
-        Override save:
-        - get rid of non-digits in postalcode, telephone numbers and codes.
+    Override save:
+    - get rid of non-digits in postalcode, telephone numbers and codes.
 	"""
         self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
         self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
@@ -190,27 +193,12 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         super(AuthorityProfile, self).save(*args, **kwargs)
 
 
-class PIAUser(User):
-    """
-    Proxy to User of Public Information Access system
-    (used for custom-built registration).
-    """
-    # TO-DO: e-mail as username, implement django-registration-email
-    # http://pypi.python.org/pypi/django-registration-email/0.2.2
-
-    class Meta:
-        abstract= True
-
-    def __unicode__(self):
-        return '%s (%s)' % (self.username, self.get_full_name())
-
-
-class UserProfile(models.Model):
-    """
-    Custom user profile with additional information.
-    All the fields are optional.
-    """
-    user= models.ForeignKey(User, unique=True, help_text=_(u'User profile'))
+class UserProfile(User):
+    """ Custom user profile with additional information.
+        All the fields are optional, except of slug.
+        """
+    slug= models.SlugField(max_length=100, unique=True,
+                           verbose_name=_(u'Slug'))
     company= models.CharField(max_length=300, null=True, blank=True,
                               verbose_name=_(u'Company/organizaion'))
     # ADDRESS DETAILS
@@ -234,13 +222,16 @@ class UserProfile(models.Model):
     tel_internal= models.CharField(max_length=50, null=True, blank=True,
                                    verbose_name=_(u'Internal'))
     # WWW
-    web_site= models.URLField(null=True, blank=True, verbose_name=_(u'Web-site'))
+    web_site= models.URLField(null=True, blank=True,
+                              verbose_name=_(u'Web-site'))
+    
+    userpic= models.URLField(default='/static/img/default_userpic.gif',
+        verbose_name=_(u'Avatar'), help_text=_(u'Choose a picture'))
 
     def save(self, *args, **kwargs):
-	"""
-        Override save:
+	""" Override save:
         - get rid of non-digits in postalcode, telephone numbers and codes.
-	"""
+        """
         self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
         self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
         self.tel_number= re.sub('[^0-9]+', '', self.tel_number)
@@ -248,48 +239,3 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return '%s (%s)' % (self.user.username, self.user.get_full_name())
-
-
-
-# class UserStat(models.Model):
-#     """
-#     Statistics for User.
-
-#     Data in this model cannot be updated manually.
-#     """
-#     user= models.ForeignKey(User, verbose_name=_(u'User'))
-#     # TO-DO: Foreign key - to User or to UserProfile?
-#     requests_num= models.IntegerField(default=0,
-#         verbose_name=_(u'Number of requests to the Authority'))
-    
-#     def __unicode__(self):
-#         return "%s (requests %d)" % (
-#             self.user.get_full_name(), self.requests_num)
-
-
-# class UserRequest(models.Model):
-#     """
-#     Request in a Thread.
-#     """
-#     authority= models.ForeignKey(AuthorityProfile,
-#                                  verbose_name=_(u'Authority Profile'))
-#     user= models.ForeignKey(User, verbose_name=_(u'User'))
-#     subject= models.CharField(max_length=255, null=True, blank=True,
-#                               verbose_name=_(u'Subject'))
-#     body= models.TextField(verbose_name=_(u'Request'))
-#     sent= models.DateField(auto_now_add= True, verbose_name=_(u'Request'))
-#     # TO-DO: save tags and keywords (depend on the search mechanism)
-
-
-# class AuthorityResponse(models.Model):
-#     """
-#     Response from Authority.
-#     """
-#     # TO-DO
-
-
-# class UserShare(models.Model):
-#     """
-#     User shared documents from the Response of Authority.
-#     """
-#     # TO-DO
