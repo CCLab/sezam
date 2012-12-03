@@ -36,6 +36,7 @@ class AuthorityProfileAdmin(admin.ModelAdmin):
         ('fax_code', 'fax_number',), ('email', 'email_secretary', 'email_info',),
         ('web_site', 'web_site1'), 'notes',)
 
+admin.site.unregister(TerritoryType)
 admin.site.register(TerritoryType, TerritoryTypeAdmin)
 
 admin.site.register(AuthorityCategory, AuthorityCategoryAdmin)
