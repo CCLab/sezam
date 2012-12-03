@@ -95,7 +95,6 @@ def clear_latest_flag(sender, **kwargs):
         See note on de-normalization in the description of PIARequest.
         """
     if sender == PIAThread:
-        print sender, kwargs
         if kwargs.get('created', False):
             instance= kwargs.get('instance')
             instance.request.latest_thread_post= instance

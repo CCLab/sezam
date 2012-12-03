@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.core.mail import send_mail
 from django.http import Http404
 
-from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIA_REQUEST_STATUS
+from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread
 from apps.vocabulary.models import AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.backend import get_domain_name
@@ -51,7 +51,6 @@ def new_request(request, slug=None, **kwargs):
     else:
 
         # TO-DO: reaction for POST here (several Authorities).
-
         initial.update({'authority_name': ' ', 'authority_slug': ' '})
     if request.user.is_anonymous():
         initial.update({'user_name': ''})
@@ -98,7 +97,6 @@ def save_request_draft(request, id=None, **kwargs):
                     subject=form.cleaned_data['request_subject'],
                     body=form.cleaned_data['request_body'])
             except Exception as e:
-                print e
                 pass # TO-DO: Process exceptions (for example anonymous user)
         piarequest_draft.save()
         request_id= piarequest_draft.id
@@ -186,7 +184,6 @@ def send_request(request, id=None, **kwargs):
                 authority.slug, authority.name))
             successful_slugs.add(authority.slug)
         except Exception as e:
-            print e
             pia_request.delete() # Wipe from the db, if it cannot be send.
             failed.append('<a href="/authority/%s">%s</a>' % (
                 authority.slug, authority.name))

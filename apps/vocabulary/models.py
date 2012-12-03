@@ -10,9 +10,8 @@ from apps.backend.utils import slugify_unique
 
 
 class Vocabulary(models.Model):
-    """
-    Abstract model for all vocabularies.
-    """
+    """ Abstract model for all vocabularies.
+        """
     name= models.CharField(max_length=1000, verbose_name=_(u'Name'))
     order= models.IntegerField(default=100, verbose_name=_(u'Order'))
 
@@ -25,9 +24,8 @@ class Vocabulary(models.Model):
 
 
 class SlugVocabulary(models.Model):
-    """
-    Abstract model for all vocabularies with slug.
-    """
+    """ Abstract model for all vocabularies with slug.
+        """
     slug= models.SlugField(max_length=100, unique=True, verbose_name=_(u'Slug'))
 
     class Meta:
@@ -37,17 +35,15 @@ class SlugVocabulary(models.Model):
         return self.slug
 
     def save(self, *args, **kwargs):
-	"""
-        Override save: slugify uniquely.
-	"""
+	""" Override save: slugify uniquely.
+        """
         self.slug= slugify_unique(self.name, self.__class__)
         super(SlugVocabulary, self).save(*args, **kwargs)
 
 
 class TreeVocabulary(MPTTModel):
-    """
-    Abstract class for tree-like vocabularies
-    """
+    """ Abstract class for tree-like vocabularies.
+        """
     name= models.CharField(max_length=1000, verbose_name=_(u'Name'))
     parent= TreeForeignKey('self', null=True, blank=True,
         related_name='children')
@@ -64,32 +60,30 @@ class TreeVocabulary(MPTTModel):
 
 
 class AuthorityCategory(TreeVocabulary, SlugVocabulary):
-    """
-    A classification Tree for authorities.
-
-    Only the leaf objects of this class can be
-    used as foreign keys for Authority.
-    """
+    """ A classification Tree for authorities.
+        
+        Only the leaf objects of this class can be used as foreign keys
+        for Authority.
+        """
 
 
 class TerritoryType(Vocabulary):
-    """
-    Type of the territory.
-    For Poland: wojewodztwo, gmina, miasto, etc.
-    """
+    """ Type of the territory.
+        For Poland: wojewodztwo, gmina, miasto, etc.
+        """
     display_name= models.CharField(max_length=50, blank=True, null=True,
                                    verbose_name=_(u'Name tp display'))
 
 
 class Territory(AuthorityCategory):
-    """
-    Classified vocabulary of the territories.
-    the Cities (Gmina), Provinces (Wojewodstwo), District (Powiat).
-
-    There is no vocabulary for Countries, as the platform is country specific.
-    It is possible to adapt it for similar tasks in other countries than Poland,
-    but it makes no sense to use it in several counries simulteneously.
-    """
+    """ Classified vocabulary of the territories: Cities (Gmina), Provinces 
+        (Wojewodstwo), District (Powiat).
+        
+        There is no vocabulary for Countries, as the platform is country
+        specific. It is possible to adapt it for similar tasks in other
+        countries than Poland, but it makes no sense to use it in several 
+        counries simulteneously.
+        """
     code= models.CharField(max_length=50, blank=True, null=True,
                            verbose_name=_(u'Territory Code'))
     type= models.ForeignKey(TerritoryType,
@@ -103,11 +97,10 @@ class Territory(AuthorityCategory):
 
 
 class AuthorityProfile(TreeVocabulary, SlugVocabulary):
-    """
-    Authority reference.
-
-    Inherits from TreeVocabulary to support Authority -> Department relation.
-    """
+    """ Authority reference.
+        
+        Inherits from TreeVocabulary to support Authority->Department relation.
+        """
     description= models.TextField(null=True, blank=True,
         verbose_name=_(u'Description'))
     notes= models.CharField(max_length=1000, null=True, blank=True,
@@ -177,10 +170,9 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 
 
     def save(self, *args, **kwargs):
-	"""
-    Override save:
-    - get rid of non-digits in postalcode, telephone numbers and codes.
-	"""
+	""" Override save: get rid of non-digits in postalcode, telephone numbers
+        and codes.
+        """
         self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
         self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
         self.tel_number= re.sub('[^0-9]+', '', self.tel_number)

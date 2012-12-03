@@ -178,7 +178,6 @@ def get_authority_info(request, slug, **kwargs):
         pia_requests= PIARequest.objects.filter(
             authority=authority).order_by('latest_thread_post')
     except Exception as e:
-        print e
         pia_requests= list()
 
     # Filter form initial values.
