@@ -126,6 +126,7 @@ def slugify_unique(value, model, slugfield="slug"):
             return potential
         suffix += 1
 
+
 def increment_id(model, field):
     """
     Get the maximum of `field`, return its value increment to 1.
@@ -137,3 +138,23 @@ def increment_id(model, field):
         return 1
     except TypeError: # Non-integer/float field cannot be incremented.
         return None
+
+
+def re_subject(line):
+    """ Constructing a subject in a manner 'Re[N]: subject line' or 
+        'Re(N): subject line', based on the given line.
+        
+        If there's already such a pattern, increment N, otherwise simply add
+        'Re: ' to the beginning.
+        """
+    caseRe= re.match(r'(?P<num>Re\:)', line)
+    caseReN= re.match(r'Re(\[|\()(?P<num>\d+)(\]|\))', line)
+    try:
+        return line.replace(caseReN.group('num'),
+                            str(int(caseReN.group('num'))+1))
+    except:
+        try:
+            return line.replace(caseRe.group('num'), 'Re[1]:')
+        except:
+            pass
+    return 'Re: ' + line

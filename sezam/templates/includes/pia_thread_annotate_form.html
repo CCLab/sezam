@@ -1,0 +1,21 @@
+{% load i18n %}
+
+{% if form %}
+          <div class="row">
+              <div class="well">
+                  <form class="form-vertical" name="formAnnotate" id="annotation" enctype="multipart/form-data" action="/request/{{ request_id }}/annotate/" method="post">
+                      {% csrf_token %}
+                      <span id="form_annotate"></span>
+                      <div class="control-group">
+                          {{ form.comment.label }} &nbsp;
+                          {% for error in form.comment.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                          {{ form.comment }}
+                      </div>
+                      <div class="form-actions">
+                          <input class="btn btn-primary" name="post_comment" type="submit" value='{% trans "Submit" %}' />
+                          <input class="btn" name="cancel_comment" type="submit" value='{% trans "Cancel" %}' />
+                      </div>
+                  </form>
+              </div>
+          </div>
+{% endif %}

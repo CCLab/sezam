@@ -67,6 +67,32 @@ class MakeRequestForm(forms.Form):
             self.fields['authority_name'].initial= ''
             self.fields['authority_slug'].initial= ''
 
+
+class ReplyDraftForm(forms.Form):
+    """ Much reduced version of MakeRequestForm, used for drafts of the replies
+        only, not for general ones.
+        """
+    subject= forms.CharField(label=_(u'Subject'),
+        widget=forms.TextInput(attrs={'class': 'span6'}))
+    body= forms.CharField(label=_(u'Reply'),
+        widget=forms.Textarea(attrs={'class': 'span7', 'id': 'id_request_body'}))
+
+    def __init__(self, *args, **kwargs):
+        initial= kwargs.pop('initial', None)
+        super(ReplyDraftForm, self).__init__(*args, **kwargs)
+        if initial:
+            for init_key, init_val in initial.iteritems():
+                self.fields[init_key].initial= init_val
+
+
+class CommentForm(forms.Form):
+    """ Form for comments, can also be used in Blog, or anywhere where it isn't
+        necessary to have a subject and from-to fields. Simple text.
+        """
+    comment= forms.CharField(label=_(u'Your comment here'),
+        widget=forms.Textarea(attrs={'class': 'span6', 'id': 'id_comment'}))
+
+
 class PIAFilterForm(forms.Form):
     """ Form for filtering request list.
         """

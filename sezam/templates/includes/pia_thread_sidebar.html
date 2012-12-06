@@ -5,14 +5,24 @@
         <div class="nav nav-pills nav-stacked">
           <ul class="nav nav-list">
             <li class="nav-header">{% trans 'Anyone' %}</li>
-            <li class="active"><a href="/request/{{ thread.0.id }}/follow/">Follow this request</a></li>
-            <li><a href="/request/{{ thread.0.id }}/comment/">Add comment</a></li>
-            <li><a href="/request/{{ thread.0.id }}/download">Download a zip file of all correspondence</a></li>
+            <li class="active"><a href="/request/{{ thread.0.request.id }}/follow/">Follow this request</a></li>
+            <li><a href="/request/{{ thread.0.request.id }}/annotate/#form_annotate">Add an annotation</a></li>
+            <li><a href="/request/{{ thread.0.request.id }}/download/">Download a zip file of all correspondence</a></li>
             {% if user.is_authenticated %}
-              {% ifequal user thread.0.user %}
-            <li class="nav-header">{% trans 'Only' %} {{ thread.0.user.get_full_name }}</li>
-            <li><a href="/request/{{ thread.0.id }}/response#followup">Write a reply</a></li>
-            <li><a href="/request/{{ thread.0.id }}/update_status/">Update the status of this request</a></li>
+              {% ifequal user thread.0.request.user %}
+            <li class="nav-header">{% trans 'Only' %} {{ thread.0.request.user.get_full_name }}</li>
+            <li><a href="/request/{{ request_id }}/reply/#form_reply">Write a reply</a></li>
+            <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                    Update the status of this request
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    {% for status in request_status %}
+                    <li><a href="/request/{{ thread.0.request.id }}/status/{{ status.0 }}">{{ status.1 }}</a></li>
+                    {% endfor %}
+                </ul>
+              </li>
               {% endifequal %}
             {% endif %}
           </ul>

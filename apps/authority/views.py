@@ -55,7 +55,8 @@ def get_authority_tree(request, **kwargs):
     else:
         # The first 2 levels by default.
         for root in AuthorityCategory.objects.root_nodes().order_by('order'):
-            root_dict= {'label': '<h4>%s</h4>' % root.name, 'id': root.id, 'children': []}
+            root_dict= {'label': '<h4>%s</h4>' % root.name, 'id': root.id,
+                        'children': []}
             for child in root.get_children():
                 root_dict['children'].append({'load_on_demand': True,
                     'label': child.name, 'id': child.id})
@@ -64,10 +65,9 @@ def get_authority_tree(request, **kwargs):
 
 
 def retrieve_authority_list(id=None):
-    """
-    Retrieve the list of Authorities from the db,
-    depending on whether a Category id specified or not.
-    """
+    """ Retrieve the list of Authorities from the db, depending on whether
+        a Category id specified or not.
+        """
     if id:
         try:
             id= int(id)
@@ -94,9 +94,8 @@ def retrieve_authority_list(id=None):
 
 
 def get_authority_list(request, id=None, **kwargs):
-    """
-    Display the list of authority, filtered.
-    """
+    """ Display the list of authority, filtered.
+        """
     template= kwargs.get('template', 'includes/authority_list')
     if request.method == 'POST':
         raise Http404
@@ -176,7 +175,7 @@ def get_authority_info(request, slug, **kwargs):
     # Fill requests list.
     try:
         pia_requests= PIARequest.objects.filter(
-            authority=authority).order_by('latest_thread_post')
+            authority=authority).order_by('-created')
     except Exception as e:
         pia_requests= list()
 

@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.vocabulary.models import AuthorityProfile
-from apps.backend.models import GenericPost, GenericMessage, GenericFile
+from apps.backend.models import GenericText, GenericPost, GenericMessage, GenericFile
 from apps.backend.utils import increment_id
 
 PIA_REQUEST_STATUS= (
@@ -39,19 +39,6 @@ class PIAAttachment(GenericFile):
 
     def __unicode__(self):
         return filename
-
-
-class PIARequestDraft(GenericPost):
-    """ A draft of PIA request. Being deleted right after the request is sent.
-        """
-    authority_slug= CharField(max_length=1000,
-                              verbose_name=_(u'Recipients (slugs)'))
-    user= ForeignKey(User, help_text=_(u'Request from user'))
-    lastchanged= DateTimeField(auto_now=True,
-                               verbose_name=_(u'Last time changed'))
-
-    def __unicode__(self):
-        return self.subject[20:]
 
 
 class PIARequest(Model):
@@ -89,10 +76,37 @@ class PIAThread(PIAMessage):
                               verbose_name=_(u'Is it a response?'))
 
 
+class PIAAnnotation(GenericText):
+    """ Annotation to a message in the Thread.
+        """
+    thread_message= ForeignKey(PIAThread, related_name='annotations',
+                               verbose_name=_(u'Message'))
+    user= ForeignKey(User, verbose_name=_(u'User'))
+    created= DateTimeField(auto_now_add=True, verbose_name=_(u'Posted'))
+
+
+class PIARequestDraft(GenericPost):
+    """ A draft of PIA request. Being deleted right after the request is sent.
+        
+        A draft of the reply to the Authority can also be saved,
+        `thread_message` points to the message in the thread, to which the reply
+        is intended.
+        """
+    authority_slug= CharField(max_length=1000,
+                              verbose_name=_(u'Recipients (slugs)'))
+    user= ForeignKey(User, help_text=_(u'Request from user'))
+    lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
+    thread_message= OneToOneField(PIAThread, null=True, blank=True,
+        default=None, related_name='draft', verbose_name=_(u'Message'))
+    
+    def __unicode__(self):
+        return self.subject[20:]
+
+
 @receiver(post_save)
 def clear_latest_flag(sender, **kwargs):
-    """ Filling the latest message in the Thread.
-        See note on de-normalization in the description of PIARequest.
+    """ Filling the latest message in the Thread (see the note on 
+        de-normalization in the PIARequest description).
         """
     if sender == PIAThread:
         if kwargs.get('created', False):

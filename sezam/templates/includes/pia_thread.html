@@ -1,38 +1,80 @@
   {% load i18n %}
 
+      {% include "includes/user_message.html" %}
+
       <!-- Thread -->
       <div class="span7">
         {% for msg in thread %}
-        <div class="row">
-          <div>
-            {% if forloop.counter0 = 0 %}
-            <h2>{{ msg.subject }}</h2>
-            <p class="lead">{% trans 'Request from' %} <a href="#">{{ msg.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.authority.slug }}/">{{ msg.authority.name }}</a>
-              <br/><span class=
-                         {% if msg.status = 'in_progress' %}"label"
-                         {% elif msg.status = 'successful' %}"label label-success"
-                         {% elif msg.status = 'part_successful' %}"label label-success"
-                         {% elif msg.status = 'refused' %}"label label-important"
-                         {% elif msg.status = 'overdue' %}"label label-warning"
-                         {% elif msg.status = 'long_overdue' %}"label label-warning"
-                         {% elif msg.status = 'no_info' %}"label label-info"
-                         {% endif %}>{{ request_status }}</span>
-            </p>
-            {% endif %}
-          </div>
+          <div class="row">
+              {% if forloop.first %}
+              <div>
+                <h2>{{ msg.request.summary }}</h2>
+                  <p class="lead">{% trans 'Request from' %} <a href="msg.request.">{{ msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
+                  <br/><span class=
+                      {% if msg.request.status = 'in_progress' %}"label"
+                      {% elif msg.request.status = 'successful' %}"label label-success"
+                      {% elif msg.request.status = 'part_successful' %}"label label-success"
+                      {% elif msg.request.status = 'refused' %}"label label-important"
+                      {% elif msg.request.status = 'overdue' %}"label label-warning"
+                      {% elif msg.request.status = 'long_overdue' %}"label label-warning"
+                      {% elif msg.request.status = 'no_info' %}"label label-info"
+                      {% elif msg.request.status = 'withdrawn' %}"label label-info"
+                      {% endif %}>{{ msg.request.get_status_display }}</span>
+                  </p>
+              </div>
+              {% endif %}
           
-          <div class="well {% if msg.is_response %} {% else %} {% if forloop.counter0 = 0 %} well-yellow {% else %} well-white {% endif %} {% endif %}">
-            <div class="content">
-              <strong>
-                <p>{% trans 'From: ' %}
-                  {% if msg.is_response %} {{ msg.authority.name }} {% else %} {{ msg.user.get_full_name }} {% endif %}</p>
-                <p>{{ msg.created }}</p>
-              </strong>
-            </div>
-            <div class="content">
-              {{ msg.body|linebreaks|urlize }}
-            </div>
+              <!-- message -->
+              <div class="well {% if msg.is_response %} {% else %} {% if forloop.counter0 = 0 %} well-yellow {% else %} well-white {% endif %} {% endif %}">
+                  <div class="content"><strong>
+                      <p>{% trans 'From' %}: {% if msg.is_response %} {{ msg.request.authority.name }} {% else %} {{ msg.request.user.get_full_name }} {% endif %}
+                      </p>
+                      <p>{{ msg.created }}</p></strong>
+                  </div>
+                  <div class="content">
+                      {{ msg.body|linebreaks|urlize }}
+                  </div>
+              </div>
+
+              <!-- annotations -->
+              {% if msg.annotations.count > 0 %}
+                {% for annotation in msg.annotations.all %}
+              <div class="well well-white well-small well-dotted span6 pull-right">
+                  <div class="content"><small>
+                      <p><strong><a href="/user/{{ msg.user.username }}/">{{ annotation.user.get_full_name }}</a> ({{ annotation.created }})</strong></p>
+                      </small>
+                  </div>
+                  <div class="content">
+                      <small>{{ annotation.body|linebreaks|urlize }}</small>
+                  </div>
+              </div>
+                {% endfor %}
+              {% endif %}
+              
+              {% if forloop.last %}
+              {% if not form %}
+              <div class="row btn-group pull-right">
+                  <a class="btn btn-small" href="/request/{{ msg.request.id }}/annotate/#form_annotate">Add an annotation</a>
+                  {% ifequal user msg.request.user %}
+                  <a class="btn btn-small" href="/request/{{ request_id }}/reply#form_reply">Write a reply</a>
+                  <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">Update status <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                      {% for status in request_status %}
+                      <li><a href="/request/{{ msg.request.id }}/status/{{ status.0 }}">{{ status.1 }}</a></li>
+                      {% endfor %}
+                  </ul>
+
+                  {% endifequal %}
+              </div>
+              {% endif%}
+              {% endif %}
+
           </div>
-        </div>
         {% endfor %}
+        
+        {% if mode = 'reply' %}
+          {% include "includes/pia_thread_reply_form.html" %}
+        {% elif mode = 'annotate' %}
+          {% include "includes/pia_thread_annotate_form.html" %}
+        {% endif %}
       </div>

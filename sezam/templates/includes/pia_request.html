@@ -1,24 +1,5 @@
   {% load i18n %}
 
-     <script>
-     $(function(){
-        $('#id_request_body').on(
-            'keyup',
-            function(event) {
-                $('#request_body_preview').html($(event.target).val().replace(/\n/g, "<br//>"));
-            }
-        );
-
-        $('#id_request_subject').on(
-            'keyup',
-            function(event) {
-                $('#request_subject_preview').html($(event.target).val().replace(/\n/g, "<br//>"));
-            }
-        );
-    });
-    </script>
-
-
     <!-- Request -->
       <div class="container">
         <form class="form-vertical well span7" 

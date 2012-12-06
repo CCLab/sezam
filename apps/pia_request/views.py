@@ -3,14 +3,16 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.http import Http404
 
-from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread
+from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIA_REQUEST_STATUS
 from apps.vocabulary.models import AuthorityProfile
-from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
+from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
 from apps.backend import get_domain_name
-from apps.backend.utils import increment_id
+from apps.backend.utils import increment_id, re_subject
+
+import re
 
 
 def request_list(request, slug=None, **kwargs):
@@ -22,7 +24,7 @@ def request_list(request, slug=None, **kwargs):
     user_message= request.session.pop('user_message', {})
     template= kwargs.get('template', 'requests.html')
     initial= {'keywords': None}
-    pia_requests= PIARequest.objects.all().order_by('latest_thread_post')
+    pia_requests= PIARequest.objects.all().order_by('-created')
     return render_to_response(template, {'pia_requests': pia_requests,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
         'page_title': _(u'View and search requests') \
@@ -121,22 +123,22 @@ def preview_request(request, id=None, **kwargs):
 
 
 def send_request(request, id=None, **kwargs):
-    """
-    Processing the request to authority:
+    """ Processing the request to authority:
 
-    * registers new request in the DB
+        * registers new request in the DB
 
-    * sends the message to the selected Authorities (should always be a list,
-    even if it is a request to only one authority). The field `TO` is being
-    filled out according to the pattern:
-    request-<request-id>@<domain>,
-    where <request_id> is an ID of a newly created request.
+        * sends the message to the selected Authorities (should always be a 
+        list, even if it is a request to only one authority). The field `TO` 
+        is being filled out according to the pattern:
+        request-<request-id>@<domain>,
+        where <request_id> is an ID of a newly created request.
 
-    * successful e-mails are stored in `successful` dict, failed are in `failed`
-    (if message sending failed, newly created request is deleted from the DB).
+        * successful e-mails are stored in `successful` dict, failed are in
+        `failed` (if message sending failed, newly created request is deleted
+        from the DB).
 
-    * cleans the draft out.
-    """
+        * cleans the draft out.
+        """
     if request.method != 'POST':
         raise Http404
 
@@ -230,18 +232,184 @@ def send_request(request, id=None, **kwargs):
             return redirect(reverse('display_authorities'))
 
 
-def view_thread(request, request_id=None, **kwargs):
-    """
-    View request thread by given ID.
-    """
+def view_thread(request, id=None, **kwargs):
+    """ View request thread by given ID.
+        """
     template= kwargs.get('template', 'thread.html')
     if request.method == 'POST':
         raise Http404
-
+    
     thread= PIAThread.objects.filter(request=PIARequest.objects.get(
-                                    id=int(request_id))).order_by('created')
+                                    id=int(id))).order_by('created')
 
-    return render_to_response(template, {'thread': thread,
-        'page_title': '%s - %s' % (
+    return render_to_response(template,
+        {'thread': thread, 'request_status': PIA_REQUEST_STATUS,
+        'request_id': id, 'form': None, 'page_title': '%s - %s' % (
             thread[0].request.summary[:50], get_domain_name())},
         context_instance=RequestContext(request))
+
+
+def reply_to_thread(request, id=None, **kwargs):
+    """ User's reply to the thread of the PIARequest with given ID:
+        POST vs. GET processing.
+        """
+    template= kwargs.get('template', 'thread.html')
+    email_template= kwargs.get('email_template', 'reply_email.txt')
+    user_message= request.session.pop('user_message', {})
+
+    # Get the whole thread of messages.
+    thread= PIAThread.objects.filter(
+        request=PIARequest.objects.get(id=int(id))).order_by('created')
+
+    # The last message in the thread (reference for annotations and replies!).
+    msg= thread.reverse()[0]
+    
+    page_title= _(u'Reply to the request: ') + ' - ' + '%s - %s' % (
+        thread[0].request.summary[:50], get_domain_name())
+
+    if request.method == 'POST': # Process the Reply form data.
+        if request.POST.get('cancel_reply_draft', None):
+            # Cancel reply - simply redirect back.
+            return redirect('/request/%s' % id)
+        else:
+            form= ReplyDraftForm(request.POST)
+            
+            if form.is_valid():
+                initial= {'thread_message': msg,
+                    'body': form.cleaned_data['body'],
+                    'subject': form.cleaned_data['subject'],
+                    'user': request.user.get_full_name(),
+                    'authority_slug': msg.request.authority.slug}
+
+                # Change the keys for proper search for the draft in the db.
+                lookup_fields= initial.copy()
+                del lookup_fields['subject'], lookup_fields['body']
+                lookup_fields['user']= request.user
+
+                if request.POST.get('send_reply', None):
+                    try: # Remove the draft (if any).
+                        PIARequestDraft.objects.get(**lookup_fields).delete()
+                    except: # There was no draft.
+                        pass
+
+                    email_from= msg.email_to if msg.is_response else msg.email_from
+                    email_to= msg.email_from if msg.is_response else msg.email_to
+                    reply= EmailMessage(initial['subject'], initial['body'],
+                                        email_from, [email_to],
+                                        headers = {'Reply-To': email_from})
+
+                    try: # to send the message.
+                        reply.send(fail_silently=False)
+
+                        # Save a new message in the thread.
+                        pia_msg= PIAThread.objects.create(request=msg.request,
+                            email_to=email_to, email_from=email_from,
+                            subject=initial['subject'], body=initial['body'],
+                            is_response=False)
+                        user_message= {'success': _(u'Reply sent successfully')}
+                        
+                        # Redirect to see the updated thread
+                        return redirect('/request/%s' % id)
+                    except Exception as e:
+                        user_message= {'fail': _(u'Error sending reply! See details below.')}
+
+                elif request.POST.get('save_reply_draft', None):
+
+                    # Save the draft in the db and return to the same page.
+                    reply_draft, created= PIARequestDraft.objects.get_or_create(
+                        **lookup_fields)
+                    reply_draft.body= initial['body']
+                    reply_draft.subject= initial['subject']
+                    reply_draft.save()
+
+                    user_message= {'success': _(u'Draft saved')}
+            else:
+                user_message= {'fail': _(u'Draft saving failed! See details below.')}
+
+            return render_to_response(template, {'thread': thread,
+                'request_id': id, 'form': form, 'page_title': page_title,
+                'user_message': user_message, 'mode': 'reply'},
+                context_instance=RequestContext(request))
+
+    elif request.method == 'GET': # Show empty form to fill.
+        if id is None:
+            raise Http404
+        initial= {'subject': re_subject(msg.subject),
+            'body': render_to_string(email_template, {
+                'content': '', 'last_msg_created': msg.created,
+                'last_msg_email_from': msg.email_from,
+                'last_msg_content': msg.body.replace('\n', '\n>> '),
+                'info_email': 'info@%s' % get_domain_name()})}
+
+        return render_to_response(template,
+            {'thread': thread, 'request_id': id, 'user_message': user_message,
+            'form': ReplyDraftForm(initial=initial), 'page_title': page_title,
+            'mode': 'reply', 'request_status': PIA_REQUEST_STATUS},
+            context_instance=RequestContext(request))
+
+
+def set_request_status(request, id=None, status_id=None, **kwargs):
+    """ Set new status to the request.
+        """
+    if id is None:
+        raise Http404
+    if (status_id is None) or status_id not in [k[0] for k in PIA_REQUEST_STATUS]:
+        raise Http404
+
+    try:
+        PIARequest.objects.filter(id=int(id)).update(status=status_id)
+    except Exception as e:
+        user_message= {'fail': _(u'Cannot update status!')}
+
+    return redirect(reverse('view_thread', args=(str(id),)))
+
+
+def annotate_request(request, id=None, **kwargs):
+    """ User's reply to the thread of the PIARequest with given ID.
+        """
+    template= kwargs.get('template', 'thread.html')
+    user_message= request.session.pop('user_message', {})
+
+    # Get the whole thread of messages.
+    thread= PIAThread.objects.filter(
+        request=PIARequest.objects.get(id=int(id))).order_by('created')
+
+    # The last message in the thread (reference for annotations and replies!).
+    msg= thread.reverse()[0]
+    
+    page_title= _(u'Annotate request: ') + ' - ' + '%s - %s' % (
+        thread[0].request.summary[:50], get_domain_name())
+
+    if request.method == 'POST': # Process Comment form data.
+        if request.POST.get('cancel_comment', None):
+            # Cancel annotation - simply redirect back.
+            return redirect(reverse('view_thread', args=(str(id),)))
+        elif request.POST.get('post_comment', None):
+            form= CommentForm(request.POST)
+            if form.is_valid():
+                # Save in the db, redirect to the Thread.
+                try:
+                    PIAAnnotation.objects.create(user=request.user,
+                        thread_message= msg, body=form.cleaned_data['comment'])
+                    return redirect(reverse('view_thread', args=(str(id),)))
+                except:
+                    user_message= {'fail': _(u'Cannot save annotation!')}
+            else:
+                user_message= {'fail': _(u'Draft saving failed! See details below.')}
+
+        return render_to_response(template,
+            {'thread': thread, 'request_id': id, 'user_message': user_message,
+            'form': form, 'page_title': page_title, 'mode': 'annotate',
+            'request_status': PIA_REQUEST_STATUS},
+            context_instance=RequestContext(request))
+
+    elif request.method == 'GET': # Show empty form to fill.
+        if id is None:
+            raise Http404
+
+    return render_to_response(template,
+        {'thread': thread, 'request_id': id, 'user_message': user_message,
+        'form': CommentForm(), 'page_title': page_title, 'mode': 'annotate',
+        'request_status': PIA_REQUEST_STATUS},
+        context_instance=RequestContext(request))
+    

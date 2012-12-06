@@ -29,7 +29,7 @@ class GenericPost(GenericText):
 
 
 class GenericMessage(GenericPost):
-    """ Meta-class for any kind of PIA message such as Request and Thread.
+    """ Meta-class for any kind of a message such as Request and Thread.
         """
     email_to= EmailField(max_length=254, verbose_name=_(u'To e-mail'))
     email_from= EmailField(max_length=254, verbose_name=_(u'From e-mail'))
@@ -42,6 +42,23 @@ class GenericFile(Model):
     """ Attachment to PIAMessage.
         """
     filename= CharField(max_length=1000, verbose_name=_(u'File name'))
+
+    class Meta:
+        abstract= True
+
+
+class GenericEvent(GenericPost):
+    """ Meta-class for any kind of event, such as creation of the Request or
+        changing the structure of Authority.
+        
+        Since any event should be at least shortly described, this class
+        inherits from GenericPost.
+        
+        Events produce effects in time, stored in connected models (such as 
+        Request <-> Thread), but it is crusial for ordering to have information
+        about the last updates - hence the `lastchanged`.
+        """
+    lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Last changed'))
 
     class Meta:
         abstract= True

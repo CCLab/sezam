@@ -13,7 +13,7 @@ class PIARequestAdmin(admin.ModelAdmin):
 
 class PIAThreadAdmin(admin.ModelAdmin):
     list_display= ('id', 'request', 'created', 'is_response',
-        'email_to', 'email_from', 'subject',)
+        'email_from', 'email_to', 'subject',)
     search_fields= ('email_from', 'email_to', 'subject', 'body',)
     list_filter= ('email_to', 'email_from',)
     fields= ('request', 'is_response', 'email_from', 'email_to',
