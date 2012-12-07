@@ -7,6 +7,23 @@ from django.db.models import *
 from django.utils.translation import ugettext_lazy as _
 
 
+class GenericEvent(Model):
+    """ Meta-class for any kind of event, such as creation of the Request or
+        changing the structure of Authority.
+        
+        Events produce effects in time, stored in connected models (such as
+        Request <-> Thread), but it is crusial for ordering to have information
+        about the last updates - hence the `lastchanged`.
+        """
+    created= DateTimeField(auto_now_add=True, verbose_name=_(u'Created'))
+    lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Last changed'))
+    summary= CharField(max_length=255, null=True, blank=True,
+                       verbose_name=_(u'Summary'))
+    class Meta:
+        abstract= True
+        ordering= ('-lastchanged',)
+
+
 class GenericText(Model):
     """ An abstract text for all text based models: Messages, Comments,
         Annotations, etc.
@@ -46,19 +63,3 @@ class GenericFile(Model):
     class Meta:
         abstract= True
 
-
-class GenericEvent(GenericPost):
-    """ Meta-class for any kind of event, such as creation of the Request or
-        changing the structure of Authority.
-        
-        Since any event should be at least shortly described, this class
-        inherits from GenericPost.
-        
-        Events produce effects in time, stored in connected models (such as 
-        Request <-> Thread), but it is crusial for ordering to have information
-        about the last updates - hence the `lastchanged`.
-        """
-    lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Last changed'))
-
-    class Meta:
-        abstract= True

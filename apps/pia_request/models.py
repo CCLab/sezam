@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.vocabulary.models import AuthorityProfile
-from apps.backend.models import GenericText, GenericPost, GenericMessage, GenericFile
+from apps.backend.models import GenericText, GenericPost, GenericMessage, GenericFile, GenericEvent
 from apps.backend.utils import increment_id
 
 PIA_REQUEST_STATUS= (
@@ -41,12 +41,12 @@ class PIAAttachment(GenericFile):
         return filename
 
 
-class PIARequest(Model):
+class PIARequest(GenericEvent):
     """ Public Information Access (PIA) request.
         
         Not a container, but a descriptor for the original request from the
-        User to the Authority. Never changes after the creation, serves as a
-        reference to the info on Request in Threads.
+        User to the Authority, serves as a reference to the info on Request
+        in Threads.
         
         Note: `latest_thread_post` de-normalizes the models' strcture, but
         it is nesessary measure for getting details of the request and its
@@ -57,13 +57,11 @@ class PIARequest(Model):
                           verbose_name=_(u'Authority'))
     status= CharField(max_length=50, choices=PIA_REQUEST_STATUS,
         default=PIA_REQUEST_STATUS[0][0], verbose_name=_(u'Request status'))
-    created= DateTimeField(auto_now_add=True, verbose_name=_(u'Created'))
-    summary= CharField(max_length=255, verbose_name=_(u'Request summary'))
     latest_thread_post= ForeignKey('PIAThread', null=True, blank=True,
         related_name='latest_thread_post', verbose_name=_(u'latest message'))
     
     def __unicode__(self):
-        return "%d: %s" % (self.id, self.summary[:20])
+        return "%d: %s" % (self.id, self.summary[:30])
 
 
 class PIAThread(PIAMessage):

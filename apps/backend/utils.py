@@ -8,6 +8,7 @@
 
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.template.defaultfilters import slugify
+from time import strptime, strftime
 import random
 import string
 import re
@@ -158,3 +159,49 @@ def re_subject(line):
         except:
             pass
     return 'Re: ' + line
+
+
+def process_filter_request(request, statuses):
+    """ Process GET with parameters:
+        - extract params for initial dict
+        - prepare kwargs for db query
+        - define urlparams string.
+        """
+
+    # "Constants".
+    filtered_status= {'all': [k[0] for k in statuses],
+        'successful': ['successful', 'part_successful'],
+        'unsuccessful': ['refused', 'no_info'],
+        'unresolved': ['in_progress', 'overdue', 'long_overdue', 'withdrawn']}
+
+    # Define kwargs for filtering.
+    query, initial= dict(), dict()
+    
+    # Define keywords.
+    initial.update({'keywords': request.GET.get('keywords', '')})
+    if initial['keywords'] != '':
+        query.update({'summary__iregex': initial['keywords'].replace(' ', '|')})
+    
+    # Define status. Warning: status is in the param name, not value!
+    status= 'all'
+    for param in dict(request.GET).keys():
+        if param in filtered_status.keys():
+            status= param
+            break
+    query.update({'status__in': filtered_status[status]})
+
+    # URL params
+    urlparams= {'status': status, 'params': \
+        '?'+'&'.join(['='.join([k, v[0]]) for k, v in dict(request.GET).iteritems()])}
+    
+    # Define `date_after` and `date_before`.
+    initial['date_after']= request.GET.get('date_after', '')
+    initial['date_before']= request.GET.get('date_before', '')
+    if initial['date_after'] != '':
+        query.update({'created__gte': strftime('%Y-%m-%d',
+                                               strptime(initial['date_after'], '%d-%m-%Y'))})
+    if initial['date_before'] != '':
+        query.update({'created__lte': strftime('%Y-%m-%d 23:59:59',
+                                               strptime(initial['date_before'], '%d-%m-%Y'))})
+
+    return initial, query, urlparams

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('apps.pia_request.views',
-    # View/filter requests.
+    # View requests, no filter.
     url(r'^$', 'request_list', {'template': 'requests.html'},
         name='request_list'),
 
@@ -13,6 +13,10 @@ urlpatterns = patterns('apps.pia_request.views',
     # View request message thread.
     url(r'^(?P<id>\d+)/$', 'view_thread',
         {'template': 'thread.html'}, name='view_thread'),
+
+   # View/filter requests.
+   url(r'^(?P<status>[-\w]+)/$', 'request_list', {'template': 'requests.html'},
+       name='request_list_status'),   
 
     # POST request with the list of Authority list (slugs).
     # or GET with no slug (Authority to be selected in the form).

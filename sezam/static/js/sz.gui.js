@@ -24,7 +24,7 @@ $(function() {
         );
 
     // "Date after" filter datepicker.
-    $('#date_after').datepicker({format: 'mm-dd-yyyy'}).on(
+    $('#date_after').datepicker({format: 'dd-mm-yyyy'}).on(
         'changeDate',
         function(event){
             $('#date_after').datepicker('hide');
@@ -32,7 +32,7 @@ $(function() {
         );
     
     // "Date before" filter datepicker.
-    $('#date_before').datepicker({format: 'mm-dd-yyyy'}).on(
+    $('#date_before').datepicker({format: 'dd-mm-yyyy'}).on(
         'changeDate',
         function(ev){
             $('#date_before').datepicker('hide');

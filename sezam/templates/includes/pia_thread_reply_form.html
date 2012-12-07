@@ -2,8 +2,7 @@
 
 {% if form %}
           <div class="row">
-              <div class="well">
-                  <form class="form-vertical" name="formReply" id="reply_preview_send" enctype="multipart/form-data" action="/request/{{ request_id }}/reply/" method="post">
+                  <form class="well form-vertical" name="formReply" id="reply_preview_send" enctype="multipart/form-data" action="/request/{{ request_id }}/reply/" method="post">
                       {% csrf_token %}
                       <span id="form_reply"></span>
                       <div class="control-group">
@@ -22,6 +21,5 @@
                       </div>
                       <div id="request_body_preview" class="well well-yellow">{{ form.body.value|linebreaks|urlize }}</div>
                   </form>
-              </div>
           </div>
 {% endif %}

@@ -10,12 +10,11 @@ from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAA
 from apps.vocabulary.models import AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
 from apps.backend import get_domain_name
-from apps.backend.utils import increment_id, re_subject
+from apps.backend.utils import increment_id, re_subject, process_filter_request
 
 import re
 
-
-def request_list(request, slug=None, **kwargs):
+def request_list(request, status=None, **kwargs):
     """
     Display list of the latest PIA requests.
     """
@@ -23,13 +22,20 @@ def request_list(request, slug=None, **kwargs):
         raise Http404
     user_message= request.session.pop('user_message', {})
     template= kwargs.get('template', 'requests.html')
-    initial= {'keywords': None}
-    pia_requests= PIARequest.objects.all().order_by('-created')
+
+    initial, query, urlparams= process_filter_request(
+        request, PIA_REQUEST_STATUS)
+
+    # Query db.
+    if query:
+        pia_requests= PIARequest.objects.filter(**query)
+    else:
+        pia_requests= PIARequest.objects.all()
+
     return render_to_response(template, {'pia_requests': pia_requests,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': _(u'View and search requests') \
-                    + ' - ' + get_domain_name()},
-        context_instance=RequestContext(request))
+        'page_title': _(u'View and search requests') + ' - ' + get_domain_name(),
+        'urlparams': urlparams}, context_instance=RequestContext(request))
 
 
 def new_request(request, slug=None, **kwargs):
@@ -392,8 +398,9 @@ def annotate_request(request, id=None, **kwargs):
                     PIAAnnotation.objects.create(user=request.user,
                         thread_message= msg, body=form.cleaned_data['comment'])
                     return redirect(reverse('view_thread', args=(str(id),)))
-                except:
+                except Exception as e:
                     user_message= {'fail': _(u'Cannot save annotation!')}
+    
             else:
                 user_message= {'fail': _(u'Draft saving failed! See details below.')}
 

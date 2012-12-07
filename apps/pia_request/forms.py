@@ -104,7 +104,12 @@ class PIAFilterForm(forms.Form):
     date_before= forms.DateField(required=False, label=_(u'and'),
         widget=forms.TextInput(
             attrs={'class': 'span2', 'id': 'date_before'}))
-
+    status= forms.ChoiceField(widget=forms.RadioSelect,
+        choices= (
+            ('all', 'all',),
+            ('successful', 'successful',),
+            ('unsuccessful', 'unsuccessful',),
+            ('unresolved', 'unresolved')))
 
     def __init__(self, *args, **kwargs):
         initial= kwargs.pop('initial', None)

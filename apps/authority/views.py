@@ -10,8 +10,9 @@ from django.db.models import Q
 
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
-from apps.pia_request.models import PIARequest, PIAThread
+from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
 from apps.backend import get_domain_name
+from apps.backend.utils import process_filter_request
 from sezam.settings import PAGINATE_BY
 
 
@@ -141,14 +142,10 @@ def get_authority(slug):
 
 
 def get_authority_info(request, slug, **kwargs):
-    """
-    Display the details on the selected authority:
-
-    * Authority info (contacts, description, etc.)
-
-    * Authority requests.
-
-    Also fill the Breadcrumb by category.
+    """ Display the details on the selected authority:
+        - Authority info (contacts, description, etc.)
+        - Authority requests
+        - Fill the Breadcrumb by category.
     """
     template= kwargs.get('template', 'authority.html')
     user_message= request.session.pop('user_message', {})
@@ -173,20 +170,21 @@ def get_authority_info(request, slug, **kwargs):
         categories.append(category)
 
     # Fill requests list.
-    try:
-        pia_requests= PIARequest.objects.filter(
-            authority=authority).order_by('-created')
+    initial, query, urlparams= process_filter_request(
+        request, PIA_REQUEST_STATUS)
+
+    query.update({'authority': authority})
+
+    try: # Query db.
+        pia_requests= PIARequest.objects.filter(**query)
     except Exception as e:
         pia_requests= list()
 
-    # Filter form initial values.
-    initial={'keywords': ''}
- 
     return render_to_response(template, {'authority': authority,
         'pia_requests': pia_requests, 'categories': categories,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': '%s - %s' % (authority.name, get_domain_name)},
-        context_instance=RequestContext(request))
+        'page_title': '%s - %s' % (authority.name, get_domain_name),
+        'urlparams': urlparams}, context_instance=RequestContext(request))
 
 
 def find_authority(request, **kwargs):

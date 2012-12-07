@@ -6,10 +6,7 @@
             {% endif %}
         </legend>
 
-        {% if pia_requests %}
-
-        <form class="form-inline" name="formPIAFilterForm" id="form_PIAFilterForm" enctype="multipart/form-data" action="#" method="get">
-            {% csrf_token %}
+        <form class="form-inline" name="formPIAFilterForm" id="form_PIAFilterForm" enctype="multipart/form-data" action="" method="get">
             <div class="control-group">
                 {{ form.keywords.label }} {{ form.keywords }}
                 &nbsp;
@@ -17,17 +14,18 @@
                 &nbsp;
                 {{ form.date_before.label }} {{ form.date_before }}
                 &nbsp;
-                <input class="btn" name="filter_list" type="submit" value='{% trans "Filter" %}' />
+                <input class="btn" type="submit" name="{{ urlparams.status }}" value='{% trans "Filter" %}' />
+            </div>
+            {% trans 'Requests' %}
+            <div class="btn-group">
+                <input class="btn btn-small{% if urlparams.status = '' or urlparams.status = 'all' %} active{% endif %}" type="submit" name="all" value='{% trans "all" %}' />
+                <input class="btn btn-small{% if urlparams.status = 'successful' %} active{% endif %}" type="submit" name="successful" value='{% trans "successful" %}' />
+                <input class="btn btn-small{% if urlparams.status = 'unsuccessful' %} active{% endif %}" type="submit" name="unsuccessful" value='{% trans "unsuccessful" %}' />
+                <input class="btn btn-small{% if urlparams.status = 'unresolved' %} active{% endif %}"  type="submit" name="unresolved" value='{% trans "unresolved" %}' />
             </div>
         </form>
-
-        <div class="btn-group">
-            <a class="btn btn-small active" href="#">{% trans 'all requests' %}</a>
-            <a class="btn btn-small" href="#">{% trans 'successful requests' %}</a>
-            <a class="btn btn-small" href="#">{% trans 'unsuccessful requests' %}</a>
-            <a class="btn btn-small" href="#">{% trans 'unresolved requests' %}</a>
-        </div>
-
+        
+        {% if pia_requests %}
         {% for pia_request in pia_requests %}
         <div class="row">
             <div class="span7">
@@ -45,12 +43,18 @@
                 <small>{% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/request/filter/?username={{ pia_request.user.userprofile.slug }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}</small>
             </div>
             <div class="span5">
-                <blockquote>{{ pia_request.latest_thread_post.body|default:""|slice:":150" }}...
+                <blockquote>{{ pia_request.latest_thread_post.body|default:""|slice:":180" }}...
                 </blockquote>
             </div>
         </div>
           {% endfor %}
         {% else %}
-        <p>{% trans 'There are no requests so far. ' %} <a href="/request/{{ authority.slug }}/">{% trans 'Make the first' %}</a>.</p>
+        <p>
+          {% if urlparams.params = '?' %}
+            {% trans 'There are no requests so far. ' %} <a href="/request/{{ authority.slug }}/">{% trans 'Make the first' %}</a>.
+          {% else %}
+            {% trans 'There are no requests matching the query.' %}
+          {% endif %}
         {% endif %}
+        </p>
     </div>
