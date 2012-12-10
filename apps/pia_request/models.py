@@ -43,16 +43,17 @@ class PIAAttachment(GenericFile):
 
 class PIARequest(GenericEvent):
     """ Public Information Access (PIA) request.
-        
+
         Not a container, but a descriptor for the original request from the
         User to the Authority, serves as a reference to the info on Request
         in Threads.
-        
+
         Note: `latest_thread_post` de-normalizes the models' strcture, but
         it is nesessary measure for getting details of the request and its
         last update by one query (as it goes through pagination).
         """
-    user= ForeignKey(User, verbose_name=_(u'User'))
+    user= ForeignKey(User, related_name='requests_made',
+                     verbose_name=_(u'User'))
     authority= ForeignKey(AuthorityProfile, related_name='authority_requests',
                           verbose_name=_(u'Authority'))
     status= CharField(max_length=50, choices=PIA_REQUEST_STATUS,

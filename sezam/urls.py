@@ -10,8 +10,9 @@ urlpatterns= patterns('',
     url(r'^$', 'apps.browser.views.display_index', {'template': 'index.html'}),
     url(r'^authority/', include('apps.authority.urls')),
     url(r'^request/', include('apps.pia_request.urls')),
+    url(r'^user/', include('apps.userprofile.urls')),
 
-    url(r'^accounts/', include('apps.registration.backends.default.urls')),
+    url(r'^accounts/', include('registration.backends.default.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

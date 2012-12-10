@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}
         <div class="span6">
-            <h2>Log in</h2>
+            <h2>{% trans 'Log in' %}</h2>
         </div>
 {% endblock %}
 
@@ -23,7 +24,8 @@
                         </div>
                         {% endif %}
                         <div class="control-group">
-                            <label for="id_username" class="control-label">{{ form.username.label }}</label>
+                            <!-- <label for="id_username" class="control-label">{{ form.username.label }}</label> -->
+                            <label for="id_username" class="control-label">{% trans 'E-mail address' %}</label>
                             <div class="controls">{{ form.username }}
                                 {% if form.username.errors %}
                                 <span class="label label-important">{{ form.username.errors|join:"; "|escape }}</span>

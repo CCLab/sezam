@@ -9,3 +9,4 @@ def get_domain_name(id=1):
     except Site.DoesNotExist:
         # If doesn't exist, return the default one.
         return Site.objects.get(id=1).domain
+

@@ -1,19 +1,20 @@
 """ Models for project-wide vocabularies.
-"""
+    """
 
 import re
-from django.db import models
+from django.db.models import *
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
-from apps.backend.utils import slugify_unique
 
+from apps.backend.utils import CountryField, slugify_unique
+from sezam.settings import MEDIA_URL
 
-class Vocabulary(models.Model):
+class Vocabulary(Model):
     """ Abstract model for all vocabularies.
         """
-    name= models.CharField(max_length=1000, verbose_name=_(u'Name'))
-    order= models.IntegerField(default=100, verbose_name=_(u'Order'))
+    name= CharField(max_length=1000, verbose_name=_(u'Name'))
+    order= IntegerField(default=100, verbose_name=_(u'Order'))
 
     class Meta:
         abstract= True
@@ -23,10 +24,10 @@ class Vocabulary(models.Model):
         return self.name
 
 
-class SlugVocabulary(models.Model):
+class SlugVocabulary(Model):
     """ Abstract model for all vocabularies with slug.
         """
-    slug= models.SlugField(max_length=100, unique=True, verbose_name=_(u'Slug'))
+    slug= SlugField(max_length=100, unique=True, verbose_name=_(u'Slug'))
 
     class Meta:
         abstract= True
@@ -44,10 +45,10 @@ class SlugVocabulary(models.Model):
 class TreeVocabulary(MPTTModel):
     """ Abstract class for tree-like vocabularies.
         """
-    name= models.CharField(max_length=1000, verbose_name=_(u'Name'))
+    name= CharField(max_length=1000, verbose_name=_(u'Name'))
     parent= TreeForeignKey('self', null=True, blank=True,
-        related_name='children')
-    order= models.IntegerField(default=100, null=True, verbose_name=_(u'Order'))
+                           related_name='children')
+    order= IntegerField(default=100, null=True, verbose_name=_(u'Order'))
 
     class MPTTMeta:
         order_insertion_by= ('name',)
@@ -71,8 +72,8 @@ class TerritoryType(Vocabulary):
     """ Type of the territory.
         For Poland: wojewodztwo, gmina, miasto, etc.
         """
-    display_name= models.CharField(max_length=50, blank=True, null=True,
-                                   verbose_name=_(u'Name tp display'))
+    display_name= CharField(max_length=50, blank=True, null=True,
+                            verbose_name=_(u'Name tp display'))
 
 
 class Territory(AuthorityCategory):
@@ -84,10 +85,10 @@ class Territory(AuthorityCategory):
         countries than Poland, but it makes no sense to use it in several 
         counries simulteneously.
         """
-    code= models.CharField(max_length=50, blank=True, null=True,
-                           verbose_name=_(u'Territory Code'))
-    type= models.ForeignKey(TerritoryType,
-                            verbose_name=_(u'Territory Type'))
+    code= CharField(max_length=50, blank=True, null=True,
+                    verbose_name=_(u'Territory Code'))
+    type= ForeignKey(TerritoryType,
+                     verbose_name=_(u'Territory Type'))
 
     class MPTTMeta:
         order_insertion_by= ('parent',)
@@ -101,72 +102,65 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         
         Inherits from TreeVocabulary to support Authority->Department relation.
         """
-    description= models.TextField(null=True, blank=True,
-        verbose_name=_(u'Description'))
-    notes= models.CharField(max_length=1000, null=True, blank=True,
-        verbose_name=_(u'Notes'))
-    category= models.ForeignKey(AuthorityCategory,
-                                verbose_name=_(u'Authority category'))
-
+    description= TextField(null=True, blank=True,
+                           verbose_name=_(u'Description'))
+    notes= CharField(max_length=1000, null=True, blank=True,
+                     verbose_name=_(u'Notes'))
+    category= ForeignKey(AuthorityCategory,
+                         verbose_name=_(u'Authority category'))
     # ADDRESS DETAILS
-    address_street= models.CharField(max_length=200, verbose_name=_(u'Street'))
-    # TO-DO: foreign key to the Vocabulary of the streets
-    address_num= models.CharField(max_length=200, verbose_name=_(u'Office'),
-                                  help_text=_(u'Building and office number'))
-    address_line1= models.CharField(max_length=200, null=True, blank=True,
-        verbose_name=_(u'Address (additional line 1)'))
-    address_line2= models.CharField(max_length=200, null=True, blank=True,
-        verbose_name=_(u'Address (additional line 2)'))
-    address_postalcode= models.CharField(max_length=6,
+    address_street= CharField(max_length=200, verbose_name=_(u'Street'))
+    address_num= CharField(max_length=200, verbose_name=_(u'Office'),
+                           help_text=_(u'Building and office number'))
+    address_line1= CharField(max_length=200, null=True, blank=True,
+                             verbose_name=_(u'Address (additional line 1)'))
+    address_line2= CharField(max_length=200, null=True, blank=True,
+                             verbose_name=_(u'Address (additional line 2)'))
+    address_postalcode= CharField(max_length=6,
         verbose_name=_(u'Postal code'), help_text=_(u'Digits only!'))
-    address_city= models.CharField(max_length=100, verbose_name=_(u'City'))
+    address_city= CharField(max_length=100, verbose_name=_(u'City'))
 
     # TELEPHONES
-    tel_code= models.CharField(max_length=3, verbose_name=_(u'tel code'),
-                               help_text=_(u'Example: 45'))
-    tel_number= models.CharField(max_length=20, verbose_name=_(u'Telephone'), # TO-DO: control format. Make char(9)!!!
-                                 help_text=_(u'Digits only! Example: 4430976'))
-    tel_internal= models.CharField(max_length=50, null=True, blank=True, 
-        verbose_name=_(u'Internal'))
-    tel1_code= models.CharField(max_length=3, null=True, blank=True,
-        verbose_name=_(u'Tel 1 code'))
-    tel1_number= models.CharField(max_length=20, null=True, blank=True,
-        verbose_name=_(u'Telephone 1'))
-    tel2_code= models.CharField(max_length=3, null=True, blank=True,
-        verbose_name=_(u'Tel 2 code'))
-    tel2_number= models.CharField(max_length=20, null=True, blank=True,
-        verbose_name=_(u'Telephone 2'))
-    fax_code= models.CharField(max_length=3, null=True, blank=True,
-                               verbose_name=_(u'Fax code'))
-    fax_number= models.CharField(max_length=20, null=True, blank=True,
-                                 verbose_name=_(u'Fax'))
-
+    tel_code= CharField(max_length=3, verbose_name=_(u'tel code'),
+                        help_text=_(u'Example: 45'))
+    tel_number= CharField(max_length=20, verbose_name=_(u'Telephone'), # TO-DO: control format. Make char(9)!!!
+                          help_text=_(u'Digits only! Example: 4430976'))
+    tel_internal= CharField(max_length=50, null=True, blank=True,
+                            verbose_name=_(u'Internal'))
+    tel1_code= CharField(max_length=3, null=True, blank=True,
+                         verbose_name=_(u'Tel 1 code'))
+    tel1_number= CharField(max_length=20, null=True, blank=True,
+                           verbose_name=_(u'Telephone 1'))
+    tel2_code= CharField(max_length=3, null=True, blank=True,
+                         verbose_name=_(u'Tel 2 code'))
+    tel2_number= CharField(max_length=20, null=True, blank=True,
+                           verbose_name=_(u'Telephone 2'))
+    fax_code= CharField(max_length=3, null=True, blank=True,
+                        verbose_name=_(u'Fax code'))
+    fax_number= CharField(max_length=20, null=True, blank=True,
+                          verbose_name=_(u'Fax'))
     # E-MAILS
-    email= models.EmailField(max_length=254, verbose_name=_(u'E-mail'))
-    email_secretary= models.EmailField(max_length=254, blank=True,
-        verbose_name=_(u'secretary e-mail'))
-    email_info= models.EmailField(max_length=254, blank=True,
-        verbose_name=_(u'info e-mail'))
+    email= EmailField(max_length=254, verbose_name=_(u'E-mail'))
+    email_secretary= EmailField(max_length=254, blank=True,
+                                verbose_name=_(u'secretary e-mail'))
+    email_info= EmailField(max_length=254, blank=True,
+                           verbose_name=_(u'info e-mail'))
 
     # WWW
-    web_site= models.URLField(null=True, blank=True,
-        verbose_name=_(u'Web-site'))
-    web_site1= models.URLField(null=True, blank=True,
-        verbose_name=_(u'Web-site 1'),
-        help_text=_(u'Public Information Bulletin'))
+    web_site= URLField(null=True, blank=True, verbose_name=_(u'Web-site'))
+    web_site1= URLField(null=True, blank=True, verbose_name=_(u'Web-site 1'),
+                        help_text=_(u'Public Information Bulletin'))
 
     # Responsible person.
-    official= models.CharField(max_length=200,
-        help_text=_(u'Title of official position'),
-        verbose_name=_(u'Official'))
-    official_name= models.CharField(max_length=200,
-        help_text=_(u'Official representative name'), verbose_name=_(u'Name'))
-    official_lastname= models.CharField(max_length=200,
-        help_text=_(u'Official representative last name'),
-        verbose_name=_(u'Last name'))
-    
+    official= CharField(max_length=200, verbose_name=_(u'Official'),
+                        help_text=_(u'Title of official position'))
+    official_name= CharField(max_length=200, verbose_name=_(u'Name'),
+                             help_text=_(u'Official representative name'))
+    official_lastname= CharField(max_length=200, verbose_name=_(u'Last name'),
+        help_text=_(u'Official representative last name'))
+
     # When the record was created.
-    created= models.DateField(auto_now_add=True, verbose_name=_(u'Created'))
+    created= DateField(auto_now_add=True, verbose_name=_(u'Created'))
 
 
     def save(self, *args, **kwargs):
@@ -185,48 +179,61 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         super(AuthorityProfile, self).save(*args, **kwargs)
 
 
-class UserProfile(User):
+class UserProfile(Model):
     """ Custom user profile with additional information.
         All the fields are optional, except of slug.
+        
+        UserProfile is not inherited from Vocabulary, since it doesn't need a
+        name (his/her name is in User).
         """
-    slug= models.SlugField(max_length=100, unique=True,
-                           verbose_name=_(u'Slug'))
-    company= models.CharField(max_length=300, null=True, blank=True,
-                              verbose_name=_(u'Company/organizaion'))
+    user= OneToOneField(User, primary_key=True, parent_link=True,
+                        related_name='profile', verbose_name=_(u'User'))
+    description= TextField(null=True, blank=True,
+                           verbose_name=_(u'About'))
+    company= CharField(max_length=300, null=True, blank=True,
+                       verbose_name=_(u'Company/organizaion'))
     # ADDRESS DETAILS
-    address_street= models.CharField(max_length=300, null=True, blank=True,
+    address_street= CharField(max_length=300, null=True, blank=True,
                                      verbose_name=_(u'Street'),
         help_text=_(u'Street name, building and office number'))
-    address_line1= models.CharField(max_length=300, null=True, blank=True,
-        verbose_name=_(u'Address (additional line 1)'))
-    address_line2= models.CharField(max_length=200, null=True, blank=True,
-        verbose_name=_(u'Address (additional line 2)'))
-    address_postalcode= models.CharField(max_length=6, null=True, blank=True,
+    address_line1= CharField(max_length=300, null=True, blank=True,
+                             verbose_name=_(u'Address (additional line 1)'))
+    address_line2= CharField(max_length=200, null=True, blank=True,
+                             verbose_name=_(u'Address (additional line 2)'))
+    address_postalcode= CharField(max_length=6, null=True, blank=True,
         verbose_name=_(u'Postal code'), help_text=_(u'Digits only!'))
-    address_city= models.CharField(max_length=100, null=True, blank=True,
-                                   verbose_name=_(u'City'))
+    address_city= CharField(max_length=100, null=True, blank=True,
+                            verbose_name=_(u'City'))
+    address_country= CountryField(verbose_name=_(u'Country'))
     # TELEPHONES
-    tel_code= models.CharField(max_length=3, null=True, blank=True,
+    tel_code= CharField(max_length=3, null=True, blank=True,
         verbose_name=_(u'tel code'), help_text=_(u'Example: 45'))
-    tel_number= models.CharField(max_length=20, null=True, blank=True,
-                                 verbose_name=_(u'Telephone'),
+    tel_number= CharField(max_length=20, null=True, blank=True,
+        verbose_name=_(u'Telephone'),
         help_text=_(u'Digits only! Example: 504566462'))
-    tel_internal= models.CharField(max_length=50, null=True, blank=True,
-                                   verbose_name=_(u'Internal'))
+    tel_internal= CharField(max_length=50, null=True, blank=True,
+                            verbose_name=_(u'Internal'))
     # WWW
-    web_site= models.URLField(null=True, blank=True,
-                              verbose_name=_(u'Web-site'))
-    
-    userpic= models.URLField(default='/static/img/default_userpic.gif',
-        verbose_name=_(u'Avatar'), help_text=_(u'Choose a picture'))
+    web_site= URLField(null=True, blank=True,
+                       verbose_name=_(u'Web-site'))
+    # USERPIC
+    userpic= CharField(max_length=20, default='default_userpic.gif',
+        verbose_name=_(u'Userpic'), help_text=_(u'Choose a picture'))
+
+    # WHEN THE RECORD WAS CREATED
+    created= DateField(auto_now_add=True, verbose_name=_(u'Created'))
 
     def save(self, *args, **kwargs):
 	""" Override save:
         - get rid of non-digits in postalcode, telephone numbers and codes.
         """
-        self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
-        self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
-        self.tel_number= re.sub('[^0-9]+', '', self.tel_number)
+        try:
+            self.address_postalcode= re.sub('[^0-9]+', '',
+                                            self.address_postalcode)
+            self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
+            self.tel_number= re.sub('[^0-9]+', '', self.tel_number)
+        except: # Ignore errors, none of those fields are actually required.
+            pass
         super(UserProfile, self).save(*args, **kwargs)
 
     def __unicode__(self):

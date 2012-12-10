@@ -40,7 +40,7 @@
                     {% elif pia_request.status = 'no_info' %}"label label-info"
                     {% endif %}
                     >{% trans pia_request.get_status_display %}</span>
-                <small>{% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/request/filter/?username={{ pia_request.user.userprofile.slug }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}</small>
+                <small>{% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/user/{{ pia_request.user.pk }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}</small>
             </div>
             <div class="span5">
                 <blockquote>{{ pia_request.latest_thread_post.body|default:""|slice:":180" }}...

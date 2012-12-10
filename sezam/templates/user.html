@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container container-fluid">
+    
+    <div class="row">
+        <div class="content">
+            {% include "includes/user_message.html" %}
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if urlparams %}
+        <div class="content span7">
+            {% include "includes/user_info.html" %}
+        </div>
+        <div class="content span12">
+            {% include "includes/pia_request_list.html" %}
+        </div>
+        {% else %}
+            {% if user_profile%}
+        <div class="content span7">
+            {% include "includes/user_info_form.html" %}
+        </div>
+            {% else %}
+        <div class="content span7">
+            {% include "includes/user_pic.html" %}
+        </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

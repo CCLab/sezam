@@ -141,8 +141,9 @@ INSTALLED_APPS = (
     'apps.browser',
     'apps.backend',
     'apps.vocabulary',
+    'apps.userprofile',
     # 3rd party modules
-    'apps.registration',
+    'registration',
     'xpaginate',
     'mptt',
 )
@@ -184,10 +185,17 @@ EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'testing@example.com'
+DEFAULT_FROM_EMAIL = 'info@sezam.pl'
 
 # MPTT settings
 MPTT_ADMIN_LEVEL_INDENT = 20
 
 # Pagination settings
 PAGINATE_BY = 50
+
+# Upload filename length
+# 16 is filename + 4 symbols extention
+FILENAME_LEN = 16
+
+# Thumbnail size
+THUMBNAIL_SIZE = (70, 70)

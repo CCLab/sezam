@@ -1,0 +1,29 @@
+{% load i18n %}
+<div class="row well">
+    <legend>{{ user.get_full_name }}</legend>
+    <div class="span1">
+        <img src="{{ MEDIA_URL }}{{ user.profile.userpic }}" />
+    </div>
+    <div class="span5">
+        <p>{% trans 'Choose your profile photo.' %}</p>
+        <p><small>{% trans 'Note that we do not save your photo in the original size, but only its thumbnail.' %}</small></p>
+        <div>&nbsp;</div>
+        <form class="form-inline" name="formUserpic" id="form_Userpic" enctype="multipart/form-data" action="/user/{{ user.id }}/userpic/" method="post">
+            {% csrf_token %}
+            <div class="control-group">
+                {{ form.file_path.label }}
+                {% for error in form.file_path.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                {{ form.file_path }}
+            </div>
+            <div>&nbsp;</div>
+            <div>
+                <p>{% trans 'Your photo will be shown <strong>in public</strong> on the Internet.' %}
+                <p>{% trans 'Please do not upload offensive pictures. We will take down images that we consider inappropriate.' %}</p>
+            </div>
+            <div class="form-actions">
+                <input class="btn btn-primary" name="submit_userpic" type="submit" value='{% trans "Submit" %}' />
+                <input class="btn" name="cancel_userpic" type="submit" value='{% trans "Cancel" %}' />
+            </div>
+        </form>
+    </div>
+</div>

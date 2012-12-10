@@ -1,0 +1,56 @@
+{% load i18n %}
+<div class="row well">
+    <legend>{{ user_profile.user.get_full_name }}</legend>
+        <div class="span1">
+            <img src="{{ MEDIA_URL }}{{ user_profile.userpic }}" />
+            <br/><small><a href="/user/{{ user_profile.user.pk }}/userpic/">{% trans 'Change pic' %}</a></small>
+        </div>
+        <div class="span4">
+            <p>{% trans 'All the fields are optional.' %}</p>
+            <form class="form-inline" name="formUserProfile" id="form_UserProfile" enctype="multipart/form-data" action="/user/{{ user_profile.user.pk }}/profile/update/" method="post">
+                {% csrf_token %}
+                {{ form.userpic }} <!-- hidden field -->
+                <div class="control-group">
+                    {{ form.description.label }}
+                    {% for error in form.description.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                    {{ form.description }}
+                </div>
+                <div class="control-group">
+                    {{ form.web_site.label }}
+                    {% for error in form.web_site.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                    {{ form.web_site }}
+                </div>
+                <div class="span4">&nbsp;</div>
+                <p>{% trans 'None of the following data will appear publicly. We do not sell or give away personal information.' %}</p>
+                <div class="control-group">
+                    {{ form.company.label }}
+                    {% for error in form.company.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                    {{ form.company }}
+                </div>
+                <div class="control-group">
+                    {{ form.address_street.label }}
+                    {% for error in form.address_street.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                    <p>{{ form.address_street }}</p>
+                    <p>{{ form.address_line1 }}</p>
+                    <p>{{ form.address_line2 }}</p>
+                </div>
+                <div class="control-group">
+                    {{ form.address_postalcode.label }} {{ form.address_postalcode }} {{ form.address_city.label }} {{ form.address_city }}
+                    {% for error in form.address_postalcode.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                    {% for error in form.address_city.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+                </div>
+                <div class="control-group">
+                    {{ form.address_country.label }}
+                    {{ form.address_country }}
+                </div>
+                <div class="control-group">
+                    {{ form.tel_number.label }}
+                    {{ form.tel_code }} - {{ form.tel_number }} {{ form.tel_internal }}
+                </div>
+                <div class="form-actions">
+                    <input class="btn btn-primary" name="save_changes" type="submit" value='{% trans "Submit" %}' />
+                    <input class="btn" name="cancel_changes" type="submit" value='{% trans "Cancel" %}' />
+                </div>
+            </form>
+        </div>
+</div>
