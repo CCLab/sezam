@@ -36,7 +36,6 @@ def user_profile(request, id=None, **kwargs):
         try:
             user_profile, created= UserProfile.objects.get_or_create(user=user)
         except Exception as e:
-            print e
             pass # TO-DO: Log it!
     else:
         user_profile= {}
@@ -70,7 +69,6 @@ def user_profile_update(request, id=None, **kwargs):
     try:
         user_profile, created= UserProfile.objects.get_or_create(user=user)
     except Exception as e:
-        print e
         pass # TO-DO: Log it!
             
     if request.method == 'POST':
@@ -118,6 +116,8 @@ def user_set_userpic(request, id=None, **kwargs):
                     user_message= {'fail': _('Failed to update userpic.')}
             else:
                 user_message= {'fail': _('Correct the errors: ')}
+        else:
+            return redirect(reverse('user_profile', args=(str(id),)))
     elif request.method == 'GET':
         form= UserpicForm()
 
