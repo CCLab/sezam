@@ -36,6 +36,7 @@ def user_profile(request, id=None, **kwargs):
         try:
             user_profile, created= UserProfile.objects.get_or_create(user=user)
         except Exception as e:
+            print e
             pass # TO-DO: Log it!
     else:
         user_profile= {}
