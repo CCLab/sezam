@@ -1,16 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
-# (c) 2008 Harry Kalogirou <harkal@gmail.com>
-# 
-# * Language maps taken from django's javascript urlify
-#
-
+"""
+Functions used in other modules.
+"""
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext as _
-from django.db import models
-
+from django.contrib.sites.models import Site
 from time import strptime, strftime
 from PIL import Image
 import random
@@ -18,267 +13,10 @@ import string
 import re
 import os
 
-from sezam import settings
-
-
-""" ----------------------------------------------------------------------------
-    CountryField
----------------------------------------------------------------------------- """
-COUNTRIES = (
-    ('000', '-'),
-    ('AFG', _('Afghanistan')),
-    ('ALA', _('Aland Islands')),
-    ('ALB', _('Albania')),
-    ('DZA', _('Algeria')),
-    ('ASM', _('American Samoa')),
-    ('AND', _('Andorra')),
-    ('AGO', _('Angola')),
-    ('AIA', _('Anguilla')),
-    ('ATG', _('Antigua and Barbuda')),
-    ('ARG', _('Argentina')),
-    ('ARM', _('Armenia')),
-    ('ABW', _('Aruba')),
-    ('AUS', _('Australia')),
-    ('AUT', _('Austria')),
-    ('AZE', _('Azerbaijan')),
-    ('BHS', _('Bahamas')),
-    ('BHR', _('Bahrain')),
-    ('BGD', _('Bangladesh')),
-    ('BRB', _('Barbados')),
-    ('BLR', _('Belarus')),
-    ('BEL', _('Belgium')),
-    ('BLZ', _('Belize')),
-    ('BEN', _('Benin')),
-    ('BMU', _('Bermuda')),
-    ('BTN', _('Bhutan')),
-    ('BOL', _('Bolivia')),
-    ('BIH', _('Bosnia and Herzegovina')),
-    ('BWA', _('Botswana')),
-    ('BRA', _('Brazil')),
-    ('VGB', _('British Virgin Islands')),
-    ('BRN', _('Brunei Darussalam')),
-    ('BGR', _('Bulgaria')),
-    ('BFA', _('Burkina Faso')),
-    ('BDI', _('Burundi')),
-    ('KHM', _('Cambodia')),
-    ('CMR', _('Cameroon')),
-    ('CAN', _('Canada')),
-    ('CPV', _('Cape Verde')),
-    ('CYM', _('Cayman Islands')),
-    ('CAF', _('Central African Republic')),
-    ('TCD', _('Chad')),
-    ('CIL', _('Channel Islands')),
-    ('CHL', _('Chile')),
-    ('CHN', _('China')),
-    ('HKG', _('China - Hong Kong')),
-    ('MAC', _('China - Macao')),
-    ('COL', _('Colombia')),
-    ('COM', _('Comoros')),
-    ('COG', _('Congo')),
-    ('COK', _('Cook Islands')),
-    ('CRI', _('Costa Rica')),
-    ('CIV', _('Cote d\'Ivoire')),
-    ('HRV', _('Croatia')),
-    ('CUB', _('Cuba')),
-    ('CYP', _('Cyprus')),
-    ('CZE', _('Czech Republic')),
-    ('PRK', _('Democratic People\'s Republic of Korea')),
-    ('COD', _('Democratic Republic of the Congo')),
-    ('DNK', _('Denmark')),
-    ('DJI', _('Djibouti')),
-    ('DMA', _('Dominica')),
-    ('DOM', _('Dominican Republic')),
-    ('ECU', _('Ecuador')),
-    ('EGY', _('Egypt')),
-    ('SLV', _('El Salvador')),
-    ('GNQ', _('Equatorial Guinea')),
-    ('ERI', _('Eritrea')),
-    ('EST', _('Estonia')),
-    ('ETH', _('Ethiopia')),
-    ('FRO', _('Faeroe Islands')),
-    ('FLK', _('Falkland Islands (Malvinas)')),
-    ('FJI', _('Fiji')),
-    ('FIN', _('Finland')),
-    ('FRA', _('France')),
-    ('GUF', _('French Guiana')),
-    ('PYF', _('French Polynesia')),
-    ('GAB', _('Gabon')),
-    ('GMB', _('Gambia')),
-    ('GEO', _('Georgia')),
-    ('DEU', _('Germany')),
-    ('GHA', _('Ghana')),
-    ('GIB', _('Gibraltar')),
-    ('GRC', _('Greece')),
-    ('GRL', _('Greenland')),
-    ('GRD', _('Grenada')),
-    ('GLP', _('Guadeloupe')),
-    ('GUM', _('Guam')),
-    ('GTM', _('Guatemala')),
-    ('GGY', _('Guernsey')),
-    ('GIN', _('Guinea')),
-    ('GNB', _('Guinea-Bissau')),
-    ('GUY', _('Guyana')),
-    ('HTI', _('Haiti')),
-    ('VAT', _('Holy See (Vatican City)')),
-    ('HND', _('Honduras')),
-    ('HUN', _('Hungary')),
-    ('ISL', _('Iceland')),
-    ('IND', _('India')),
-    ('IDN', _('Indonesia')),
-    ('IRN', _('Iran')),
-    ('IRQ', _('Iraq')),
-    ('IRL', _('Ireland')),
-    ('IMN', _('Isle of Man')),
-    ('ISR', _('Israel')),
-    ('ITA', _('Italy')),
-    ('JAM', _('Jamaica')),
-    ('JPN', _('Japan')),
-    ('JEY', _('Jersey')),
-    ('JOR', _('Jordan')),
-    ('KAZ', _('Kazakhstan')),
-    ('KEN', _('Kenya')),
-    ('KIR', _('Kiribati')),
-    ('KWT', _('Kuwait')),
-    ('KGZ', _('Kyrgyzstan')),
-    ('LAO', _('Lao People\'s Democratic Republic')),
-    ('LVA', _('Latvia')),
-    ('LBN', _('Lebanon')),
-    ('LSO', _('Lesotho')),
-    ('LBR', _('Liberia')),
-    ('LBY', _('Libyan Arab Jamahiriya')),
-    ('LIE', _('Liechtenstein')),
-    ('LTU', _('Lithuania')),
-    ('LUX', _('Luxembourg')),
-    ('MKD', _('Macedonia')),
-    ('MDG', _('Madagascar')),
-    ('MWI', _('Malawi')),
-    ('MYS', _('Malaysia')),
-    ('MDV', _('Maldives')),
-    ('MLI', _('Mali')),
-    ('MLT', _('Malta')),
-    ('MHL', _('Marshall Islands')),
-    ('MTQ', _('Martinique')),
-    ('MRT', _('Mauritania')),
-    ('MUS', _('Mauritius')),
-    ('MYT', _('Mayotte')),
-    ('MEX', _('Mexico')),
-    ('FSM', _('Micronesia, Federated States of')),
-    ('MCO', _('Monaco')),
-    ('MNG', _('Mongolia')),
-    ('MNE', _('Montenegro')),
-    ('MSR', _('Montserrat')),
-    ('MAR', _('Morocco')),
-    ('MOZ', _('Mozambique')),
-    ('MMR', _('Myanmar')),
-    ('NAM', _('Namibia')),
-    ('NRU', _('Nauru')),
-    ('NPL', _('Nepal')),
-    ('NLD', _('Netherlands')),
-    ('ANT', _('Netherlands Antilles')),
-    ('NCL', _('New Caledonia')),
-    ('NZL', _('New Zealand')),
-    ('NIC', _('Nicaragua')),
-    ('NER', _('Niger')),
-    ('NGA', _('Nigeria')),
-    ('NIU', _('Niue')),
-    ('NFK', _('Norfolk Island')),
-    ('MNP', _('Northern Mariana Islands')),
-    ('NOR', _('Norway')),
-    ('PSE', _('Occupied Palestinian Territory')),
-    ('OMN', _('Oman')),
-    ('PAK', _('Pakistan')),
-    ('PLW', _('Palau')),
-    ('PAN', _('Panama')),
-    ('PNG', _('Papua New Guinea')),
-    ('PRY', _('Paraguay')),
-    ('PER', _('Peru')),
-    ('PHL', _('Philippines')),
-    ('PCN', _('Pitcairn')),
-    ('POL', _('Poland')),
-    ('PRT', _('Portugal')),
-    ('PRI', _('Puerto Rico')),
-    ('QAT', _('Qatar')),
-    ('KOR', _('Republic of Korea')),
-    ('MDA', _('Republic of Moldova')),
-    ('REU', _('Reunion')),
-    ('ROU', _('Romania')),
-    ('RUS', _('Russian Federation')),
-    ('RWA', _('Rwanda')),
-    ('BLM', _('Saint-Barthelemy')),
-    ('SHN', _('Saint Helena')),
-    ('KNA', _('Saint Kitts and Nevis')),
-    ('LCA', _('Saint Lucia')),
-    ('MAF', _('Saint-Martin (French part)')),
-    ('SPM', _('Saint Pierre and Miquelon')),
-    ('VCT', _('Saint Vincent and the Grenadines')),
-    ('WSM', _('Samoa')),
-    ('SMR', _('San Marino')),
-    ('STP', _('Sao Tome and Principe')),
-    ('SAU', _('Saudi Arabia')),
-    ('SEN', _('Senegal')),
-    ('SRB', _('Serbia')),
-    ('SYC', _('Seychelles')),
-    ('SLE', _('Sierra Leone')),
-    ('SGP', _('Singapore')),
-    ('SVK', _('Slovakia')),
-    ('SVN', _('Slovenia')),
-    ('SLB', _('Solomon Islands')),
-    ('SOM', _('Somalia')),
-    ('ZAF', _('South Africa')),
-    ('ESP', _('Spain')),
-    ('LKA', _('Sri Lanka')),
-    ('SDN', _('Sudan')),
-    ('SUR', _('Suriname')),
-    ('SJM', _('Svalbard and Jan Mayen Islands')),
-    ('SWZ', _('Swaziland')),
-    ('SWE', _('Sweden')),
-    ('CHE', _('Switzerland')),
-    ('SYR', _('Syrian Arab Republic')),
-    ('TJK', _('Tajikistan')),
-    ('THA', _('Thailand')),
-    ('TLS', _('Timor-Leste')),
-    ('TGO', _('Togo')),
-    ('TKL', _('Tokelau')),
-    ('TON', _('Tonga')),
-    ('TTO', _('Trinidad and Tobago')),
-    ('TUN', _('Tunisia')),
-    ('TUR', _('Turkey')),
-    ('TKM', _('Turkmenistan')),
-    ('TCA', _('Turks and Caicos Islands')),
-    ('TUV', _('Tuvalu')),
-    ('UGA', _('Uganda')),
-    ('UKR', _('Ukraine')),
-    ('ARE', _('United Arab Emirates')),
-    ('GBR', _('United Kingdom')),
-    ('TZA', _('United Republic of Tanzania')),
-    ('USA', _('United States of America')),
-    ('VIR', _('United States Virgin Islands')),
-    ('URY', _('Uruguay')),
-    ('UZB', _('Uzbekistan')),
-    ('VUT', _('Vanuatu')),
-    ('VEN', _('Venezuela (Bolivarian Republic of)')),
-    ('VNM', _('Viet Nam')),
-    ('WLF', _('Wallis and Futuna Islands')),
-    ('ESH', _('Western Sahara')),
-    ('YEM', _('Yemen')),
-    ('ZMB', _('Zambia')),
-    ('ZWE', _('Zimbabwe')),
-    )
-
-class CountryField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('max_length', 3)
-        kwargs.setdefault('choices', COUNTRIES)
-        
-        super(CountryField, self).__init__(*args, **kwargs)
-    
-    def get_internal_type(self):
-        return "CharField"
-
-
-""" ----------------------------------------------------------------------------
-    slugify_unique
-    ---------------------------------------------------------------------------- """
+"""
+Creating a unique slug depending on the model.
+slugify_unique
+"""
 
 LATIN_MAP = {
     u'À': 'A', u'Á': 'A', u'Â': 'A', u'Ã': 'A', u'Ä': 'A', u'Å': 'A', u'Æ': 'AE', u'Ç':'C', 
@@ -382,10 +120,8 @@ def downcode(s):
     return downcoded
 
 
-
 def slugify_unique(value, model, slugfield="slug"):
     suffix = 0
-
     potential = base = slugify(downcode(value))
     while True:
         if suffix:
@@ -393,6 +129,22 @@ def slugify_unique(value, model, slugfield="slug"):
         if not model.objects.filter(**{slugfield: potential}).count():
             return potential
         suffix += 1
+
+"""
+slugify_unique - end
+"""
+
+
+
+def get_domain_name(id=1):
+    """
+    Get the project's domain name by its ID.
+    Default is the 1st project.
+    """
+    try:
+        return Site.objects.get(id=id).domain
+    except Site.DoesNotExist: # Return the default one.
+        return Site.objects.get(id=1).domain
 
 
 def increment_id(model, field):
@@ -409,12 +161,13 @@ def increment_id(model, field):
 
 
 def re_subject(line):
-    """ Constructing a subject in a manner 'Re[N]: subject line' or 
-        'Re(N): subject line', based on the given line.
-        
-        If there's already such a pattern, increment N, otherwise simply add
-        'Re: ' to the beginning.
-        """
+    """
+    Constructing a subject in a manner 'Re[N]: subject line' or 
+    'Re(N): subject line', based on the given line.
+
+    If there's already such a pattern, increment N, otherwise simply add
+    'Re: ' to the beginning.
+    """
     caseRe= re.match(r'(?P<num>Re\:)', line)
     caseReN= re.match(r'Re(\[|\()(?P<num>\d+)(\]|\))', line)
     try:
@@ -429,12 +182,12 @@ def re_subject(line):
 
 
 def process_filter_request(request, statuses):
-    """ Process GET with parameters:
-        - extract params for initial dict
-        - prepare kwargs for db query
-        - define urlparams string.
-        """
-
+    """
+    Process GET with parameters:
+    - extract params for initial dict
+    - prepare kwargs for db query
+    - define urlparams string.
+    """
     # "Constants".
     filtered_status= {'all': [k[0] for k in statuses],
         'successful': ['successful', 'part_successful'],
@@ -466,35 +219,42 @@ def process_filter_request(request, statuses):
     initial['date_before']= request.GET.get('date_before', '')
     if initial['date_after'] != '':
         query.update({'created__gte': strftime('%Y-%m-%d',
-                                               strptime(initial['date_after'], '%d-%m-%Y'))})
+            strptime(initial['date_after'], '%d-%m-%Y'))})
     if initial['date_before'] != '':
         query.update({'created__lte': strftime('%Y-%m-%d 23:59:59',
-                                               strptime(initial['date_before'], '%d-%m-%Y'))})
-
+            strptime(initial['date_before'], '%d-%m-%Y'))})
     return initial, query, urlparams
 
 
 def id_generator(size=6, chars=string.ascii_lowercase+string.digits):
-    """Generate unique filename to store in FS.
-        """
+    """
+    Generate unique filename to store in FS.
+    """
     return ''.join(random.choice(chars) for x in range(size))
 
 
-def handle_image(f):
-    """ Upload file, create a 70x70px thumbnail from it, name it randomly,
-        save to site_media, return it's name.
-        """
+def handle_image(f, store_path, delete_original=True, **kwargs):
+    """
+    Upload file, create a thumbnail from it, name it randomly,
+    save to site_media, return it's name.
+    """
+    filename_len= kwargs.get(filename_len, 16)
+    thumbnail_size= kwargs.get(filename_len, (70, 70))
+
     ext= f.name.split('.')[-1]
     ext= '.'+ext if ext != f.name else '' # no extension
-    filename= id_generator(settings.FILENAME_LEN)
-    path= settings.MEDIA_ROOT + filename + ext
+    filename= id_generator(filename_len)
+    path= store_path + filename + ext
     with open(path, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
     im= Image.open(path) # Create thumbnail
     if im.mode != "RGB":
         im = im.convert("RGB")
-    im.thumbnail(settings.THUMBNAIL_SIZE, Image.ANTIALIAS)
-    os.remove(path)
+    im.thumbnail(thumbnail_size, Image.ANTIALIAS)
     im.save(path, "JPEG")
+
+    if delete_original:
+        os.remove(path)
+
     return filename + ext

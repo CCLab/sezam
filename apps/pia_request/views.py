@@ -1,18 +1,20 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.core.mail import send_mail, EmailMessage
 from django.http import Http404
 
-from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIA_REQUEST_STATUS
-from apps.vocabulary.models import AuthorityProfile
-from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
-from apps.backend import get_domain_name
-from apps.backend.utils import increment_id, re_subject, process_filter_request
-
 import re
+
+from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIA_REQUEST_STATUS
+from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
+from apps.backend.utils import re_subject, process_filter_request, downcode, get_domain_name
+from apps.vocabulary.models import AuthorityProfile
+
 
 def request_list(request, status=None, **kwargs):
     """
@@ -38,6 +40,7 @@ def request_list(request, status=None, **kwargs):
         'urlparams': urlparams}, context_instance=RequestContext(request))
 
 
+@login_required
 def new_request(request, slug=None, **kwargs):
     """
     Display the form for making a request to the Authority (slug).
@@ -69,6 +72,7 @@ def new_request(request, slug=None, **kwargs):
         context_instance=RequestContext(request))
 
 
+@login_required
 def save_request_draft(request, id=None, **kwargs):
     """
     Saving a draft whether it is a new request or an updated one.
@@ -115,6 +119,7 @@ def save_request_draft(request, id=None, **kwargs):
             'request_id': request_id, 'user_message': user_message}
 
 
+@login_required
 def preview_request(request, id=None, **kwargs):
     """
     Preview request.
@@ -128,6 +133,7 @@ def preview_request(request, id=None, **kwargs):
         context_instance=RequestContext(request))
 
 
+@login_required
 def send_request(request, id=None, **kwargs):
     """ Processing the request to authority:
 
@@ -172,11 +178,12 @@ def send_request(request, id=None, **kwargs):
                 authority.slug, authority.name))
             continue
 
-        # Generate unique ``From`` field.
+        # Generate unique ``From`` field (`name.surname.request_id@domain.name`).
         pia_request= PIARequest.objects.create(summary= message_subject,
             authority=authority, user=request.user)
-        message_from= 'request-%s@%s' % (pia_request.id, get_domain_name())
-
+        message_from= '%s.%s@%s' % (
+            slugify(downcode(request.user.get_full_name())).replace('-','.'),
+            pia_request.id, get_domain_name())
         # Render the message body.
         message_content= render_to_string(template, {'content': message_body,
             'info_email': 'info@%s' % get_domain_name()})
@@ -255,10 +262,12 @@ def view_thread(request, id=None, **kwargs):
         context_instance=RequestContext(request))
 
 
+@login_required
 def reply_to_thread(request, id=None, **kwargs):
-    """ User's reply to the thread of the PIARequest with given ID:
-        POST vs. GET processing.
-        """
+    """
+    User's reply to the thread of the PIARequest with given ID:
+    POST vs. GET processing.
+    """
     template= kwargs.get('template', 'thread.html')
     email_template= kwargs.get('email_template', 'reply_email.txt')
     user_message= request.session.pop('user_message', {})
@@ -354,9 +363,11 @@ def reply_to_thread(request, id=None, **kwargs):
             context_instance=RequestContext(request))
 
 
+@login_required
 def set_request_status(request, id=None, status_id=None, **kwargs):
-    """ Set new status to the request.
-        """
+    """
+    Set new status to the request.
+    """
     if id is None:
         raise Http404
     if (status_id is None) or status_id not in [k[0] for k in PIA_REQUEST_STATUS]:
@@ -370,9 +381,11 @@ def set_request_status(request, id=None, status_id=None, **kwargs):
     return redirect(reverse('view_thread', args=(str(id),)))
 
 
+@login_required
 def annotate_request(request, id=None, **kwargs):
-    """ User's reply to the thread of the PIARequest with given ID.
-        """
+    """
+    User's reply to the thread of the PIARequest with given ID.
+    """
     template= kwargs.get('template', 'thread.html')
     user_message= request.session.pop('user_message', {})
 
@@ -418,5 +431,4 @@ def annotate_request(request, id=None, **kwargs):
         {'thread': thread, 'request_id': id, 'user_message': user_message,
         'form': CommentForm(), 'page_title': page_title, 'mode': 'annotate',
         'request_status': PIA_REQUEST_STATUS},
-        context_instance=RequestContext(request))
-    
+        context_instance=RequestContext(request))    

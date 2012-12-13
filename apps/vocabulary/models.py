@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
-from apps.backend.utils import CountryField, slugify_unique
+from apps.backend.utils import slugify_unique
+from apps.backend import CountryField
 from sezam.settings import MEDIA_URL
 
 class Vocabulary(Model):

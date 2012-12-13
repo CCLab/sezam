@@ -11,8 +11,7 @@ from django.db.models import Q
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
-from apps.backend import get_domain_name
-from apps.backend.utils import process_filter_request
+from apps.backend.utils import get_domain_name, process_filter_request
 from sezam.settings import PAGINATE_BY
 
 
@@ -194,5 +193,3 @@ def find_authority(request, **kwargs):
     return render_to_response(template, {
         'page_title': _(u'Look for the authority') + ' - ' + get_domain_name()},
         context_instance=RequestContext(request))
-
-

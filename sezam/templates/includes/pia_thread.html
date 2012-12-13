@@ -9,7 +9,7 @@
               {% if forloop.first %}
               <div>
                 <h2>{{ msg.request.summary }}</h2>
-                  <p class="lead">{% trans 'Request from' %} <a href="msg.request.">{{ msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
+                  <p class="lead">{% trans 'Request from' %} <a href="/user/{{ msg.request.user.id }}">{{ msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
                   <br/><span class=
                       {% if msg.request.status = 'in_progress' %}"label"
                       {% elif msg.request.status = 'successful' %}"label label-success"

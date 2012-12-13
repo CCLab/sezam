@@ -4,18 +4,21 @@
 
 
 <div class="container">
-  <div class="hero-unit">
+  <div class="hero-unit well-white">
       <div class="row">
-          <div class="span6">
+          <div class="span5">
               <h1>{% trans 'Public Information for everyone!' %}</h1>
               <span>&nbsp;</span>
               <p>{% trans 'The Law on Access to Public Information allows anyone to demand access to public information, public data and public assets held by public bodies, private bodies that exercise public tasks, trade unions and political parties. The requests can be oral or written. The bodies must respond within 14 days.' %}</p>
               <a class="btn btn-primary btn-large">Make request now! »</a>
           </div>
-          <div class="span4 pull-right">
+          <div class="span5 pull-right">
               <img src="{{ STATIC_URL }}img/free_info_logo.jpg">
-              <h2>{% trans 'Search over' %}</h2>
-              <h3>{{ data.requests_count }} {% trans 'requests' %} {% trans 'and' %} {{ data.authorities_count }} {% trans 'authorities' %}</h2>
+              <div>&nbsp;</div>
+              <form class="navbar-search pull-left">
+                <input class="search-query" type="text" placeholder="{% trans 'Search' %}"> <input class="btn btn-inverse" type="submit" value="{% trans 'search over' %} »" name="all">
+                <h3>{{ data.requests_count }} {% trans 'requests' %} {% trans 'and' %} {{ data.authorities_count }} {% trans 'authorities' %}</h3>
+              </form>
           </div>
       </div>
   </div>

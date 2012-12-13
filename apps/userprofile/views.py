@@ -8,9 +8,10 @@ from django.http import Http404
 from apps.vocabulary.models import UserProfile
 from apps.pia_request.models import PIARequest, PIA_REQUEST_STATUS
 from apps.pia_request.forms import PIAFilterForm
-from apps.backend.utils import process_filter_request, handle_image
-from apps.backend import get_domain_name
+from apps.backend.utils import process_filter_request, handle_image, get_domain_name
 from forms import UserProfileForm, UserpicForm
+
+from sezam.settings import MEDIA_ROOT, THUMBNAIL_SIZE
 
 
 def user_profile(request, id=None, **kwargs):
@@ -108,7 +109,8 @@ def user_set_userpic(request, id=None, **kwargs):
             file_path= request.FILES.get('file_path', None)
             if file_path:
                 try:
-                    user.profile.userpic=handle_image(file_path)
+                    user.profile.userpic= handle_image(file_path, MEDIA_ROOT,
+                        thumbnail_size=THUMBNAIL_SIZE)
                     user.profile.save()
                     return redirect(reverse('user_profile', args=(str(id),)))
                 except Exception as e:

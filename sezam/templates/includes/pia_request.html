@@ -6,7 +6,7 @@
               name="formRequest" id="request_preview_send" enctype="multipart/form-data"
               action="/request/{% if request_id %}{{ request_id }}/send{% else %}preview{% endif%}/" method="post">
           {% csrf_token %}
-          {{ form.authority_name.label }} {% for auth in authority %}<span class="label label-info">{{ auth.name }}</span> {% if not forloop.last %}&nbsp; {% endif %} {% endfor %}
+          {{ form.authority_name.label }} {% for auth in authority %}<strong><a href="/authority/{{ auth.slug }}">{{ auth.name }}</a></strong> {% if not forloop.last %}&nbsp; {% endif %} {% endfor %}
           {{ form.authority_name }} {{ form.authority_slug }}
           <div class="control-group"><p class="small"></p></div>
           <div class="control-group">

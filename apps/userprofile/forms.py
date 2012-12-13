@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms import *
 
 from apps.vocabulary.models import UserProfile
-from apps.backend.utils import COUNTRIES
+from apps.backend import COUNTRIES
 
 class UserProfileForm(ModelForm):
     """ UserProfile form.

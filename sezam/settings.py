@@ -177,7 +177,6 @@ LOGGING = {
     }
 }
 
-
 # Registration settings
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
 EMAIL_HOST = 'localhost'
@@ -187,15 +186,23 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'info@sezam.pl'
 
+# User management
+LOGIN_URL= '/accounts/login/'
+
 # MPTT settings
 MPTT_ADMIN_LEVEL_INDENT = 20
 
 # Pagination settings
 PAGINATE_BY = 50
 
-# Upload filename length
-# 16 is filename + 4 symbols extention
-FILENAME_LEN = 16
-
 # Thumbnail size
 THUMBNAIL_SIZE = (70, 70)
+
+# Email - mailbox backend settings.
+# Test mailbox on onet.pl: wniosek.dip@op.pl
+MAILBOX_HOST = 'imap.poczta.onet.pl'
+MAILBOX_PORT = 993
+MAILBOX_LOGIN = 'wniosek.dip'
+MAILBOX_DOMAIN = 'op.pl'
+MAILBOX_PASSWORD = 'sans640tirepita'
+MAILBOX_USE_SSL = True

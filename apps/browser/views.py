@@ -4,7 +4,7 @@ from django.template import RequestContext
 
 from apps.pia_request.models import PIARequest
 from apps.vocabulary.models import AuthorityProfile
-from apps.backend import get_domain_name
+from apps.backend.utils import get_domain_name
 
 def display_index(request, **kwargs):
     """ Display index page.
