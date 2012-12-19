@@ -179,9 +179,11 @@ LOGGING = {
     }
 }
 
-# SMTP settings (Registration settings
+# Registration settings
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
+
+# SMTP settings
 if 'Darwin' in platform():  # local
-    ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
     EMAIL_HOST = 'smtp.poczta.onet.pl'
     EMAIL_PORT = 587
     EMAIL_HOST_USER = 'wniosek.dip@op.pl'
@@ -189,9 +191,8 @@ if 'Darwin' in platform():  # local
     EMAIL_USE_TLS = False
     DEFAULT_FROM_EMAIL = 'wniosek.dip@op.pl'
 elif 'Linux' in platform():  # server
-    ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
     EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 1025
+    EMAIL_PORT = 25
     EMAIL_HOST_USER = ''
     EMAIL_HOST_PASSWORD = ''
     EMAIL_USE_TLS = False

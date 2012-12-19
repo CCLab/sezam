@@ -42,3 +42,4 @@ celery*
 
 #Site media
 sezam/site_media/*.jpg
+sezam/site_media/attachments/*

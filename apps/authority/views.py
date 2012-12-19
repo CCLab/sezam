@@ -54,7 +54,7 @@ def get_authority_tree(request, **kwargs):
                     'load_on_demand': False if child.is_leaf_node() else True})
     else:
         # The first 2 levels by default.
-        for root in AuthorityCategory.objects.root_nodes().order_by('order'):
+        for root in AuthorityCategory.objects.root_nodes().order_by('order', 'name'):
             root_dict= {'label': '<h4>%s</h4>' % root.name, 'id': root.id,
                         'children': []}
             for child in root.get_children():
