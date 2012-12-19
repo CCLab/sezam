@@ -231,4 +231,4 @@ djcelery.setup_loader()
 BROKER_URL = 'django://'
 
 # Days before unanswered request become overdue.
-OVERDUE_DAYS = 6
+OVERDUE_DAYS = 16
