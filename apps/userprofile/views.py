@@ -94,8 +94,9 @@ def user_profile_update(request, id=None, **kwargs):
 
 
 def user_set_userpic(request, id=None, **kwargs):
-    """ Update userpic.
-        """
+    """
+    Update userpic.
+    """
     template= kwargs.get('template', 'user.html')
     user_message= request.session.pop('user_message', {})
 

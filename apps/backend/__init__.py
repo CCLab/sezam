@@ -3,11 +3,23 @@
 """
 Classes used all accross the modules in the project.
 """
+import re
+import os
+import sys
 import email
+import base64
 import imaplib
+import mimetypes
+from datetime import datetime
 
 from django.db import models
+from django.utils.timezone import utc
+from django.core.mail import mail_managers
+from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext as _
+
+from apps.backend.html2text import html2text
+
 
 """
 CountryField
@@ -269,15 +281,18 @@ CountryField - end
 
 
 
-
-
 """
-MailImporter - end
+MailImporter
 """
 class MailImporter():
-    def __init__(self, connection_opts, import_opts):
+    """
+    `attachment_dir` is the main directory where to save attachments. 
+    `addr_template` is to create subdirectories in the `attachment_dir`.
+    """
+    def __init__(self, connection_opts, **kwargs):
         self.connection_opts= connection_opts
-        self.import_opts= import_opts
+        self.attachment_dir= kwargs.get('attachment_dir', '.')
+        self.addr_template= kwargs.get('addr_template', None)
         self.content_related= ['content-type', 'content-transfer-encoding', 'content-id', 'content-disposition']
         self.messages= []
 
@@ -303,18 +318,24 @@ class MailImporter():
         Loop over unread emails, if callback call succeed,
         mark email as read.
         """
+        def _get_message_dirname(to):
+            """
+            Extract from `to` field what is defined by `addr_template`
+            """
+            try:
+                field_to= [t.strip() for t in to.split(',') if re.search(self.addr_template, t)][0]
+            except:
+                return ''
+            return field_to.split('@')[0].replace('.', '_')
+        
         connection.select()
-        _, data= connection.search(None, 'UNSEEN')
+        _u, data= connection.search(None, 'UNSEEN')
 
         for msg_num in data[0].split():
+            header= None
             try:
-                _, msg_data= connection.fetch(msg_num, '(RFC822)')
-                msg_header= self.extract_mail_header(msg_data)
-                msg_content= None
-                if not header_only:
-                    msg_content= self.extract_mail_text(msg_data)
-                self.messages.append(
-                    {'header': msg_header, 'content': msg_content})
+                _u, msg_data= connection.fetch(msg_num, '(RFC822)')
+                header= self.extract_mail_header(msg_data)
             except Exception as e:
                 exception= sys.exc_info()[1]
                 connection.store(msg_num, '-FLAGS', '\SEEN')
@@ -323,6 +344,22 @@ class MailImporter():
                     str(self.__class__),
                     '[%s] %s' % (datetime.now().isoformat(), exception),
                     fail_silently=True)
+            if header:
+                content, attachments, dir_name= None, None, ''
+                if self.addr_template:
+                    if not re.search(self.addr_template, header['to']):
+                        # Very important! If `addr_template` is given,
+                        # then at this stage (reading mails), mail filtering
+                        # happens: only those e-mails are being processed,
+                        # whose `to` field satisfy the template's pattern.
+                        # Otherwise - ignore the message.
+                        continue
+                if not header_only:
+                    dir_name= _get_message_dirname(header['to']) + '/'
+                    content, attachments= self.extract_mail_content(
+                        msg_data, dir_name=dir_name)
+                self.messages.append({'header': header, 'content': content,
+                                      'attachments': attachments})
         return self.messages
 
     def extract_mail_header(self, message_data):
@@ -339,24 +376,158 @@ class MailImporter():
                             messageHeader.update({k.lower().strip(): v.strip()})
         return messageHeader
 
-        
-    def extract_mail_text(self, message_data):
+    def extract_mail_content(self, message_data, **kwargs):
         """
         Returns text message content.
         """
-        messagePlainText= ''
+        msg_plain_text, msg_attachments= '', []
+        _f= lambda t: force_unicode(t, errors='ignore')
         for response_part in message_data:
             if isinstance(response_part, tuple):
                 msg= email.message_from_string(response_part[1])
                 for part in msg.walk():
-                    if str(part.get_content_type()) == 'text/plain':
-                        messagePlainText += str(part.get_payload(decode=True))
-                    elif str(part.get_content_type()) == 'text/html':
-                        content= str(part.get_payload(decode=True))
-                        content= content.replace('=0A', '')
-                        content= content.replace('=\r\n', '')
-                        content= re.sub('<\w+>', '', content)
-                        content= re.sub('</\w+>', '\n', content)
-                        messagePlainText += content
-        messagePlainText= messagePlainText.replace('\x96', '')
-        return messagePlainText
+                    if part.is_multipart():
+                        continue
+                    attachment_part= part.get_params(None, 'Content-Disposition')
+                    if attachment_part:
+                        attachment= self._process_attachment(part, **kwargs)
+                        if attachment:
+                            msg_attachments.append(attachment)
+                    else:
+                        # Process message text.
+                        # Update `msg_plain_text` only if it has not been updated yet.
+                        if str(part.get_content_type()) == 'text/plain':
+                            if len(msg_plain_text) == 0:
+                                content= _f(part.get_payload(decode=True))
+                                msg_plain_text += content
+                        elif str(part.get_content_type()) == 'text/html':
+                            if len(msg_plain_text) == 0:
+                                content= html2text(_f(part.get_payload(decode=True)))
+                                msg_plain_text += content
+        return msg_plain_text, msg_attachments
+
+
+    def _process_attachment(self, part, **kwargs):
+        """
+        Processes the Content-Disposition part of the current message.
+        """
+        dir_name= kwargs.get('dir_name', '')
+        now= datetime.strftime(datetime.utcnow().replace(
+            tzinfo=utc), '%d-%m-%Y_%H-%M')
+        ext= mimetypes.guess_extension(part.get_content_type())
+        filename= part.get_filename()
+        filename= self._clean_filename(filename)
+        if not filename:
+            if not ext: # Use a generic bag-of-bits extension.
+                ext= '.bin'
+            filename= 'part_%s%s' % (now, ext)
+        else:
+            if ext not in filename:
+                filename= '.'.join([filename, ext])
+        message_dir= self.ensure_directory(self.attachment_dir + dir_name + now)
+        fp= open(os.path.join(message_dir, filename), 'wb')
+        try:
+            fp.write(part.get_payload(decode=True))
+            fp.close()
+
+            # Returns not the full path, but only what was created.
+            # The full path is not necessary, the access URL will be
+            # constructed with use of MEDIA_ROOT
+            return dir_name + now + '/' + filename
+        except Exception as e:
+            print AppMessage('CantSaveAttachmnt', value=(filename, e,)).message
+            return None
+
+
+    def _clean_filename(self, filename):
+        """
+        Cleaning and decoding filename from the attachement.
+        """
+        if re.search(r'=\?UTF-8\?\w{1}\?', filename, re.IGNORECASE):
+            filename= re.sub(r'=\?UTF-8\?\w{1}\?', '', filename, re.IGNORECASE)
+            filename= re.sub(r'\?', '', filename)
+            try:
+                filename= base64.decodestring(filename).decode('utf8')
+            except Exception as e:
+                filename= None
+        return filename
+
+
+    def ensure_directory(self, dir_name):
+        """
+        Create a subdirectory related to the specific message
+        in the directory designated for attachments.
+        """
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+        return dir_name
+"""
+MailImporter - end
+"""
+
+
+
+"""
+APP_MESSAGES is a dictionary of all possible messages, with which
+any project module send a message to any other module or to front-end:
+
+message_code: {
+    message: <message verbose text>,
+    response: <response_code>, (optional)
+    <any additional key, value pair if necessary>
+    }
+"""
+APP_MESSAGES = {
+    'MailboxNotFound': {
+        'message': _('Mailbox with the specified name not found! Check MAILBOXES dict in the main project settings!')
+        },
+    'ResponseNotFound': {
+        'message': _('Message with no proper recipient e-mail address! Possible spam? Please, check the inbox.')
+        },
+    'RequestNotFound': {
+        'message': _('Cannot find in the database the Request with given ID!')
+        },
+    'NewMsgFailed': {
+        'message': _('Cannot create new Message in the Thread for the Request with given ID!')
+        },
+    'AuthEmailNotFound': {
+        'message': _('We do not have an e-mail of this authority in our database')
+        },
+    'UserEmailNotFound': {
+        'message': _('Cannot find e-mail address of this user in our database')
+        },
+    'MailSendFailed': {
+        'message': _('Sending e-mail message failed')
+        },
+    'CantSaveAttachmnt': {
+        'message': _('Cannot save attachment')
+        },
+    'CheckMailComplete': {
+        'message': _('Complete checking e-mail. Total number of messages: ')
+        },
+    'CheckOverdueComplete': {
+        'message': _('Complete checking overdue requests. Total number of overdue requests: ')
+        }
+    }
+
+class AppMessage():
+    """
+    Returns messages. Used for alerts, errors and log items.
+    """
+    def __init__(self, message_code=None, **kwargs):
+        self.message_code= message_code
+        self.kwargs= kwargs
+        if message_code is None:
+            self.message= ''
+        try:
+            self.message= APP_MESSAGES[message_code]
+        except KeyError:
+            self.message= 'ERROR: Message with code `%s` not found!' % message_code
+
+    def __unicode__(self):
+        if self.kwargs:
+            return '%s\n%s' % (self.message, self.kwargs)
+        return self.message
+"""
+AppMessage - end
+"""

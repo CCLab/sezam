@@ -36,3 +36,9 @@ pip-log.txt
 
 #XCode
 *xcodeproj
+
+#Celery
+celery*
+
+#Site media
+sezam/site_media/*.jpg

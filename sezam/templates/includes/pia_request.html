@@ -39,7 +39,7 @@
             <div class="span2"><p class="lead"><strong>{% trans 'Preview request' %}:</strong></p></div>
             <div class="span5 pull-right"><p id="request_subject_preview" class="lead">{{ form.request_subject.value }}</p></div>
           </div>
-          <div id="request_body_preview" class="well well-yellow">{{ form.request_body.value|linebreaks|urlize }}</div>
+          <div id="request_body_preview" class="well well-yellow">{{ form.request_body.value|urlize|linebreaks }}</div>
           <div class="form-actions">
             <div class="span4 pull-right">
               <p>{% trans "Check you haven't included any personal information." %}</p>

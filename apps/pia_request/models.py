@@ -38,20 +38,21 @@ class PIAAttachment(GenericFile):
     message= ForeignKey(PIAMessage, related_name='attachments')
 
     def __unicode__(self):
-        return filename
+        return self.filename
 
 
 class PIARequest(GenericEvent):
-    """ Public Information Access (PIA) request.
+    """
+    Public Information Access (PIA) request.
 
-        Not a container, but a descriptor for the original request from the
-        User to the Authority, serves as a reference to the info on Request
-        in Threads.
+    Not a container, but a descriptor for the original request from the
+    User to the Authority, serves as a reference to the info on Request
+    in Threads.
 
-        Note: `latest_thread_post` de-normalizes the models' strcture, but
-        it is nesessary measure for getting details of the request and its
-        last update by one query (as it goes through pagination).
-        """
+    Note: `latest_thread_post` de-normalizes the models' strcture, but
+    it is nesessary measure for getting details of the request and its
+    last update by one query (as it goes through pagination).
+    """
     user= ForeignKey(User, related_name='requests_made',
                      verbose_name=_(u'User'))
     authority= ForeignKey(AuthorityProfile, related_name='authority_requests',
@@ -66,9 +67,10 @@ class PIARequest(GenericEvent):
 
 
 class PIAThread(PIAMessage):
-    """ Any message (incoming or outgoing) in the thread following a particular
-        Request.
-        """
+    """
+    Any message (incoming or outgoing) in the thread following
+    a particular Request.
+    """
     request= ForeignKey(PIARequest, related_name='thread',
                         verbose_name=_(u'request'))
     is_response= BooleanField(default=True,
@@ -76,8 +78,9 @@ class PIAThread(PIAMessage):
 
 
 class PIAAnnotation(GenericText):
-    """ Annotation to a message in the Thread.
-        """
+    """
+    Annotation to a message in the Thread.
+    """
     thread_message= ForeignKey(PIAThread, related_name='annotations',
                                verbose_name=_(u'Message'))
     user= ForeignKey(User, verbose_name=_(u'User'))
@@ -104,9 +107,10 @@ class PIARequestDraft(GenericPost):
 
 @receiver(post_save)
 def clear_latest_flag(sender, **kwargs):
-    """ Filling the latest message in the Thread (see the note on 
-        de-normalization in the PIARequest description).
-        """
+    """
+    Filling the latest message in the Thread (see the note on 
+    de-normalization in the PIARequest description).
+    """
     if sender == PIAThread:
         if kwargs.get('created', False):
             instance= kwargs.get('instance')

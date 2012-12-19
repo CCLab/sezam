@@ -143,8 +143,10 @@ INSTALLED_APPS = (
     'apps.vocabulary',
     'apps.userprofile',
     # 3rd party modules
+    'kombu.transport.django',
     'registration',
     'xpaginate',
+    'djcelery',
     'mptt',
 )
 
@@ -177,14 +179,23 @@ LOGGING = {
     }
 }
 
-# Registration settings
-ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'info@sezam.pl'
+# SMTP settings (Registration settings
+if 'Darwin' in platform():  # local
+    ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
+    EMAIL_HOST = 'smtp.poczta.onet.pl'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = 'wniosek.dip@op.pl'
+    EMAIL_HOST_PASSWORD = 'sans640tirepita'
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'wniosek.dip@op.pl'
+elif 'Linux' in platform():  # server
+    ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = False
+    DEFAULT_FROM_EMAIL = 'info@sezam.pl'
 
 # User management
 LOGIN_URL= '/accounts/login/'
@@ -199,10 +210,25 @@ PAGINATE_BY = 50
 THUMBNAIL_SIZE = (70, 70)
 
 # Email - mailbox backend settings.
-# Test mailbox on onet.pl: wniosek.dip@op.pl
-MAILBOX_HOST = 'imap.poczta.onet.pl'
-MAILBOX_PORT = 993
-MAILBOX_LOGIN = 'wniosek.dip'
-MAILBOX_DOMAIN = 'op.pl'
-MAILBOX_PASSWORD = 'sans640tirepita'
-MAILBOX_USE_SSL = True
+MAILBOXES = {
+    'default': { # Test mailbox: go to http://poczta.onet.pl/ to check mail.
+        'host': 'imap.poczta.onet.pl',
+        'port': 993,
+        'login': 'wniosek.dip@op.pl',
+        'domain': 'op.pl',
+        'password': 'sans640tirepita',
+        'use_ssl': True,
+    }
+}
+# Directory for saving attachments from incoming e-mails.
+ATTACHMENT_DIR= os.path.join(MEDIA_ROOT, 'attachments/')
+
+# Django-celery
+import djcelery
+djcelery.setup_loader()
+
+# Use django database as a broker
+BROKER_URL = 'django://'
+
+# Days before unanswered request become overdue.
+OVERDUE_DAYS = 6

@@ -6,8 +6,10 @@ Functions used in other modules.
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.template.defaultfilters import slugify
 from django.contrib.sites.models import Site
+
 from time import strptime, strftime
 from PIL import Image
+
 import random
 import string
 import re
@@ -233,14 +235,13 @@ def id_generator(size=6, chars=string.ascii_lowercase+string.digits):
     return ''.join(random.choice(chars) for x in range(size))
 
 
-def handle_image(f, store_path, delete_original=True, **kwargs):
+def handle_image(f, store_path, **kwargs):
     """
     Upload file, create a thumbnail from it, name it randomly,
     save to site_media, return it's name.
     """
-    filename_len= kwargs.get(filename_len, 16)
-    thumbnail_size= kwargs.get(filename_len, (70, 70))
-
+    filename_len= kwargs.get('filename_len', 16)
+    thumbnail_size= kwargs.get('thumbnail_size', (70, 70))
     ext= f.name.split('.')[-1]
     ext= '.'+ext if ext != f.name else '' # no extension
     filename= id_generator(filename_len)
@@ -253,8 +254,21 @@ def handle_image(f, store_path, delete_original=True, **kwargs):
         im = im.convert("RGB")
     im.thumbnail(thumbnail_size, Image.ANTIALIAS)
     im.save(path, "JPEG")
-
-    if delete_original:
-        os.remove(path)
-
     return filename + ext
+
+
+def email_from_name(name, **kwargs):
+    """
+    Build e-mail address from given name.
+    """
+    id= kwargs.get('id', None)
+    delimiter=kwargs.get('delimiter', None)
+    domain= kwargs.get('domain', get_domain_name())
+    name= slugify(downcode(name))
+    if id:
+        template= '%s-%s@%s' % (name, id, domain)
+    else:
+        template= '%s@%s' % (name, domain)
+    if delimiter:
+        template= template.replace('-', delimiter)
+    return template

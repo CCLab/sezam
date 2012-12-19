@@ -29,11 +29,11 @@ urlpatterns = patterns('apps.pia_request.views',
 
     # Send the request.
     url(r'^(?P<id>\d+)/send/$', 'send_request',
-        {'template': 'request.html', 'email_template': 'request_email.txt'},
+        {'template': 'request.html', 'email_template': 'emails/request_to_authority.txt'},
         name='send_request_id'),
 
     url(r'^(?P<id>\d+)/reply/$', 'reply_to_thread',
-        {'template': 'thread.html', 'email_template': 'reply_email.txt'},
+        {'template': 'thread.html', 'email_template': 'emails/user_reply.txt'},
         name='reply_to_thread'),
 
    url(r'^(?P<id>\d+)/status/(?P<status_id>[-\w]+)/$', 'set_request_status',

@@ -31,8 +31,17 @@
                       </p>
                       <p>{{ msg.created }}</p></strong>
                   </div>
+                  {% if msg.attachments.count > 0 %}
                   <div class="content">
-                      {{ msg.body|linebreaks|urlize }}
+                    <hr/>
+                    {% for attach in msg.attachments.all %}
+                    <a href="{{ MEDIA_URL }}attachments/{{ attach.path }}"><img src="{{ STATIC_URL }}img/filetypes/{{ attach.filetype }}.gif"/> {{ attach.filename }}</a><br/>
+                    {% endfor %}
+                    <hr/>
+                  </div>                  
+                  {% endif %}
+                  <div class="content">
+                      {{ msg.body|urlize|linebreaks }}
                   </div>
               </div>
 
@@ -40,12 +49,15 @@
               {% if msg.annotations.count > 0 %}
                 {% for annotation in msg.annotations.all %}
               <div class="well well-white well-small well-dotted span6 pull-right">
-                  <div class="content"><small>
-                      <p><strong><a href="/user/{{ msg.user.username }}/">{{ annotation.user.get_full_name }}</a> ({{ annotation.created }})</strong></p>
-                      </small>
-                  </div>
                   <div class="content">
-                      <small>{{ annotation.body|linebreaks|urlize }}</small>
+                  {% if msg.user.userpic != 'default_userpic.gif' %}
+                    <div class="span1 pull-right">
+                      <img src="{{ MEDIA_URL }}{{ annotation.user.profile.userpic }}" align="right" width="30" border="0" />
+                    </div>
+                  {% endif %}
+                    <small>
+                      <p><strong><a href="/user/{{ annotation.user.id }}/">{{ annotation.user.get_full_name }}</a> ({{ annotation.created }})</strong></p>
+                      <p>{{ annotation.body|urlize|linebreaks }}</small></p>
                   </div>
               </div>
                 {% endfor %}

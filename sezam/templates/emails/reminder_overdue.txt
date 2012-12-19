@@ -1,0 +1,9 @@
+{% load humanize %}
+{% load i18n %}
+{% trans 'Dear Sir/Madam' %},
+{% trans 'this is a reminder about a Public Information Request number' %} {{ request_id }}, {% trans 'that was sent to you on' %} {{ request_date }}.
+
+{% trans 'We have not heard from you since then. This gives a person, who requires the information, the right to apply to the court!' %}
+
+{% trans 'This reminder sent to' %} {{ email_to }}, {% trans 'which belongs to' %} {{ authority.name }} {% trans 'about the Public Information Request.' %}
+{% trans 'Please, send all your questions to' %} {{ info_email }}

@@ -58,7 +58,10 @@ class GenericMessage(GenericPost):
 class GenericFile(Model):
     """ Attachment to PIAMessage.
         """
+    filetype= CharField(max_length=10, verbose_name=_(u'File type'))
     filename= CharField(max_length=1000, verbose_name=_(u'File name'))
+    path= CharField(max_length=1000,
+                    verbose_name=_(u'Path to file (relative to site_media)'))
 
     class Meta:
         abstract= True

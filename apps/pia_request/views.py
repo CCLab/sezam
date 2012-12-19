@@ -5,15 +5,17 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import EmailMessage
 from django.http import Http404
 
 import re
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
-from apps.backend.utils import re_subject, process_filter_request, downcode, get_domain_name
+from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name
+from apps.backend import AppMessage
 from apps.vocabulary.models import AuthorityProfile
+from sezam.settings import DEFAULT_FROM_EMAIL
 
 
 def request_list(request, status=None, **kwargs):
@@ -159,49 +161,60 @@ def send_request(request, id=None, **kwargs):
         response_data= save_request_draft(request, id, **kwargs)
         return render_to_response(response_data.pop('template'), response_data,
                                   context_instance=RequestContext(request))
-
-    template= kwargs.get('email_template', 'request_email.txt')
+    template= kwargs.get('email_template', 'emails/request_to_authority.txt')
 
     # No newlines in Email subject!
     message_subject = ''.join(request.POST.get('request_subject').splitlines())
-    message_body= request.POST.get('request_body')
-    authority_slug= eval(request.POST.get('authority_slug')) # Convert to a list.
+    message_content= render_to_string(template, {
+        'content': request.POST.get('request_body', ''),
+        'info_email': 'info@%s' % get_domain_name()})
+
+    # Convert to a list.
+    authority_slug= eval(request.POST.get('authority_slug'))
 
     successful, successful_slugs, failed= list(), set(), list()
     for slug in authority_slug:
-        # Get the To field.
+        # Collect the information for the e-mail message and the message in
+        # PIAThread, specific for the current authority.
+        # PIARequest is being created first to get its id, which is a part of
+        # the `reply-to` field in the message header (however it is becoming
+        # `from` in the PIAThread message).
+        # `from` field looks like this: name.surname.request_id@domain.name
+        # If for some reason sending the request fails, it is being removed from
+        # the db.
         authority= AuthorityProfile.objects.get(slug=slug)
         try:
-            message_to= authority.email
+            email_to= authority.email
         except:
-            failed.append('<a href="/authority/%s">%s</a>' % (
+            failed.append('%s: <a href="/authority/%s">%s</a>' % (
+                AppMessage('AuthEmailNotFound').message,
                 authority.slug, authority.name))
             continue
-
-        # Generate unique ``From`` field (`name.surname.request_id@domain.name`).
         pia_request= PIARequest.objects.create(summary= message_subject,
             authority=authority, user=request.user)
-        message_from= '%s.%s@%s' % (
-            slugify(downcode(request.user.get_full_name())).replace('-','.'),
-            pia_request.id, get_domain_name())
-        # Render the message body.
-        message_content= render_to_string(template, {'content': message_body,
-            'info_email': 'info@%s' % get_domain_name()})
-
+        email_from= email_from_name(request.user.get_full_name(),
+                                    id=pia_request.id, delimiter='.')
+        message_data= {'request': pia_request, 'is_response': False,
+                       'email_to': email_to, 'email_from': email_from,
+                       'subject': message_subject, 'body': message_content}
+        message_request= EmailMessage(message_subject, message_content,
+            DEFAULT_FROM_EMAIL, [email_to], headers = {'Reply-To': email_from})
         try: # sending the message to the Authority, check if it doesn't fail.
-            send_mail(message_subject, message_content, message_from,
-                      [message_to], fail_silently=False)
-            # Creating the 1st message in the thread.
-            pia_msg= PIAThread.objects.create(request=pia_request,
-                email_to=message_to, email_from=message_from,
-                subject= message_subject, body=message_body, is_response=False)
-            successful.append('<a href="/authority/%s">%s</a>' % (
-                authority.slug, authority.name))
-            successful_slugs.add(authority.slug)
+            message_request.send(fail_silently=False)
         except Exception as e:
-            pia_request.delete() # Wipe from the db, if it cannot be send.
-            failed.append('<a href="/authority/%s">%s</a>' % (
-                authority.slug, authority.name))
+            try: # Wipe from the db, if it cannot be send.
+                pia_request.delete()
+            except:
+                pass
+            failed.append('<a href="/authority/%s">%s</a> (%s)' % (
+                authority.slug, authority.name, e))
+            continue
+
+        # Creating the 1st message in the thread.
+        pia_msg= PIAThread.objects.create(**message_data)
+        successful.append('<a href="/authority/%s">%s</a>' % (
+            authority.slug, authority.name))
+        successful_slugs.add(authority.slug)
 
     message_draft= PIARequestDraft.objects.get(id=int(id))
     if len(authority_slug) == len(successful):
@@ -240,21 +253,25 @@ def send_request(request, id=None, **kwargs):
                                   context_instance=RequestContext(request))
     else: # Otherwise:
         if len(authority_slug) == 1: # Authority profile.
-            return redirect('/authority/%s' % authority_slug[0])
+            return redirect(reverse('get_authority_info', args=(authority_slug[0],)))
         else: # Or list of Authorities in case of a mass message.
             return redirect(reverse('display_authorities'))
 
 
 def view_thread(request, id=None, **kwargs):
-    """ View request thread by given ID.
-        """
+    """
+    View request thread by given ID.
+    """
     template= kwargs.get('template', 'thread.html')
     if request.method == 'POST':
         raise Http404
-    
-    thread= PIAThread.objects.filter(request=PIARequest.objects.get(
-                                    id=int(id))).order_by('created')
 
+    try:
+        thread= PIAThread.objects.filter(request=PIARequest.objects.get(
+            id=int(id))).order_by('created')
+    except (PIAThread.DoesNotExist, PIARequest.DoesNotExist):
+        raise Http404
+    
     return render_to_response(template,
         {'thread': thread, 'request_status': PIA_REQUEST_STATUS,
         'request_id': id, 'form': None, 'page_title': '%s - %s' % (
@@ -269,7 +286,7 @@ def reply_to_thread(request, id=None, **kwargs):
     POST vs. GET processing.
     """
     template= kwargs.get('template', 'thread.html')
-    email_template= kwargs.get('email_template', 'reply_email.txt')
+    email_template= kwargs.get('email_template', 'emails/user_reply.txt')
     user_message= request.session.pop('user_message', {})
 
     # Get the whole thread of messages.
@@ -285,7 +302,7 @@ def reply_to_thread(request, id=None, **kwargs):
     if request.method == 'POST': # Process the Reply form data.
         if request.POST.get('cancel_reply_draft', None):
             # Cancel reply - simply redirect back.
-            return redirect('/request/%s' % id)
+            return redirect(reverse('view_thread', args=(str(id),)))
         else:
             form= ReplyDraftForm(request.POST)
             
@@ -309,24 +326,21 @@ def reply_to_thread(request, id=None, **kwargs):
 
                     email_from= msg.email_to if msg.is_response else msg.email_from
                     email_to= msg.email_from if msg.is_response else msg.email_to
+                    message_data= {'request': msg.request, 'is_response': False,
+                        'email_to': email_to, 'email_from': email_from,
+                        'subject': initial['subject'], 'body': initial['body']}
                     reply= EmailMessage(initial['subject'], initial['body'],
-                                        email_from, [email_to],
+                                        DEFAULT_FROM_EMAIL, [email_to],
                                         headers = {'Reply-To': email_from})
-
                     try: # to send the message.
                         reply.send(fail_silently=False)
-
                         # Save a new message in the thread.
-                        pia_msg= PIAThread.objects.create(request=msg.request,
-                            email_to=email_to, email_from=email_from,
-                            subject=initial['subject'], body=initial['body'],
-                            is_response=False)
+                        pia_msg= PIAThread.objects.create(**message_data)
                         user_message= {'success': _(u'Reply sent successfully')}
-                        
                         # Redirect to see the updated thread
-                        return redirect('/request/%s' % id)
+                        return redirect(reverse('view_thread', args=(str(id),)))
                     except Exception as e:
-                        user_message= {'fail': _(u'Error sending reply! See details below.')}
+                        user_message= {'fail': _(u'Error sending reply!')}
 
                 elif request.POST.get('save_reply_draft', None):
 
@@ -413,7 +427,6 @@ def annotate_request(request, id=None, **kwargs):
                     return redirect(reverse('view_thread', args=(str(id),)))
                 except Exception as e:
                     user_message= {'fail': _(u'Cannot save annotation!')}
-    
             else:
                 user_message= {'fail': _(u'Draft saving failed! See details below.')}
 
