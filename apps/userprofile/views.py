@@ -85,6 +85,8 @@ def user_profile_update(request, id=None, **kwargs):
                     user_message= {'fail': _('Failed to update user profile.')}
             else:
                 user_message= {'fail': _('Correct the errors: ')}
+        elif request.POST.get('cancel_changes', None):
+            return redirect(reverse('user_profile', args=(str(id),)))
     elif request.method == 'GET':
         form= UserProfileForm(instance=user_profile)
 
