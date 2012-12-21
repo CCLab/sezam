@@ -28,7 +28,7 @@
                   <div class="content">
                     <hr/>
                     {% for attach in msg.attachments.all %}
-                    <a href="{{ MEDIA_URL }}attachments/{{ attach.path }}"><img src="{{ STATIC_URL }}img/filetypes/{{ attach.filetype }}.gif"/> {{ attach.filename }}</a><br/>
+                    <a href="{{ MEDIA_URL }}attachments/{{ attach.path }}"><img src="{{ STATIC_URL }}img/filetypes/{{ attach.filetype }}.gif"/> {{ attach.filename }}</a> ({{ attach.filesize|filesizeformat }})<br/>
                     {% endfor %}
                     <hr/>
                   </div>                  

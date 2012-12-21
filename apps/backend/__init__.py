@@ -390,9 +390,11 @@ class MailImporter():
                         continue
                     attachment_part= part.get_params(None, 'Content-Disposition')
                     if attachment_part:
-                        attachment= self._process_attachment(part, **kwargs)
-                        if attachment:
-                            msg_attachments.append(attachment)
+                        attachment_size= len(part.get_payload(decode=True))
+                        attachment_name= self._process_attachment(part, **kwargs)
+                        if attachment_name:
+                            msg_attachments.append({'filename': attachment_name,
+                                                    'filesize': attachment_size})
                     else:
                         # Process message text.
                         # Update `msg_plain_text` only if it has not been updated yet.
@@ -415,8 +417,7 @@ class MailImporter():
         now= datetime.strftime(datetime.utcnow().replace(
             tzinfo=utc), '%d-%m-%Y_%H-%M')
         ext= mimetypes.guess_extension(part.get_content_type())
-        filename= part.get_filename()
-        filename= self._clean_filename(filename)
+        filename= self._clean_filename(part.get_filename())
         if not filename:
             if not ext: # Use a generic bag-of-bits extension.
                 ext= '.bin'
@@ -443,13 +444,24 @@ class MailImporter():
         """
         Cleaning and decoding filename from the attachement.
         """
-        if re.search(r'=\?UTF-8\?\w{1}\?', filename, re.IGNORECASE):
-            filename= re.sub(r'=\?UTF-8\?\w{1}\?', '', filename, re.IGNORECASE)
-            filename= re.sub(r'\?', '', filename)
+        # if re.search(r'=\?UTF-8\?\w{1}\?', filename, re.IGNORECASE):
+        #     filename= re.sub(r'=\?UTF-8\?\w{1}\?', '', filename, re.IGNORECASE)
+        #     filename= re.sub(r'\?', '', filename)
+        #     try:
+        #         filename= base64.decodestring(filename).decode('utf8')
+        #     except Exception as e:
+        #         filename= None
+        if re.search(r'=\?', filename):
+            encoding= None
             try:
-                filename= base64.decodestring(filename).decode('utf8')
+                filename, encoding= email.Header.decode_header(filename)[0]
             except Exception as e:
                 filename= None
+            if encoding:
+                try:
+                    filename= filename.decode(encoding)
+                except:
+                    filename= None
         return filename
 
 
@@ -503,7 +515,7 @@ APP_MESSAGES = {
         'message': _('Cannot save attachment')
         },
     'CheckMailComplete': {
-        'message': _('Complete checking e-mail. Total number of messages: ')
+        'message': _('Complete checking e-mail. Total number of messages: %s')
         },
     'CheckOverdueComplete': {
         'message': _('Complete checking overdue requests. Total number of overdue requests: ')

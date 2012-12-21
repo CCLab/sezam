@@ -62,10 +62,11 @@ def check_mail(mailbox_settings=None):
                 report_to_user_sent= send_report(new_message.request,
                     status='response_received',
                     template='emails/response_received_email.txt')
-    return AppMessage('CheckMailComplete', value=messages_total).message
+    return AppMessage('CheckMailComplete', value=messages_total).message \
+        % messages_total
 
 
-@periodic_task(run_every=crontab(day_of_week="*", hour="*", minute="*"))
+@periodic_task(run_every=crontab(day_of_week="*", day_of_month="*", month_of_year="*"))
 def check_overdue():
     """
     Check in the db for overdue requests.
@@ -128,12 +129,14 @@ def new_message_in_thread(request_id, msg):
             pass
         # Process attachments.
         if msg['attachments']:
-            for path in msg['attachments']:
+            for attachment in msg['attachments']:
+                filesize= attachment['filesize']
+                path= attachment['filename']
                 filename= path.rsplit('/')[-1]
                 filetype= path.rsplit('.')[-1]
                 try:
-                    PIAAttachment.objects.create(message=new_message,
-                        filename=filename, filetype=filetype, path=path)
+                    PIAAttachment.objects.create(message=new_message, path=path,
+                        filename=filename, filetype=filetype, filesize=filesize)
                 except Exception as e:
                     print AppMessage('AttachFailed', value=(
                         filename, request_id, e,)).message

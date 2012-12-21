@@ -224,15 +224,15 @@ MAILBOXES = {
 # Directory for saving attachments from incoming e-mails.
 ATTACHMENT_DIR= os.path.join(MEDIA_ROOT, 'attachments/')
 
-# Django-celery
-import djcelery
-djcelery.setup_loader()
-
-# Use django database as a broker
-BROKER_URL = 'django://'
-
 # Days before unanswered request become overdue.
 OVERDUE_DAYS = 16
 
 # Is session expires when a user exits the browser.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Use django database as a broker
+BROKER_URL = 'django://'
+
+# Django-celery
+import djcelery
+djcelery.setup_loader()
