@@ -7,8 +7,10 @@ from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
 import re
 
-from sezam.settings import MAILBOXES, ATTACHMENT_DIR, OVERDUE_DAYS, DEFAULT_FROM_EMAIL
-from apps.pia_request.models import PIARequest, PIAThread, PIAAttachment, PIA_REQUEST_STATUS
+from sezam.settings import MAILBOXES, ATTACHMENT_DIR, OVERDUE_DAYS,\
+    DEFAULT_FROM_EMAIL
+from apps.pia_request.models import PIARequest, PIAThread, PIAAttachment,\
+    PIA_REQUEST_STATUS, get_request_status
 from apps.backend import MailImporter, AppMessage
 from apps.backend.html2text import html2text
 from apps.backend.utils import get_domain_name, email_from_name
@@ -41,7 +43,8 @@ def check_mail(mailbox_settings=None):
                 field_to= [t.strip() for t in msg['header']['to'].split(',') if addr_pattern.search(t)][0]
             except:
                 # There are no such address in it - is it a spam?
-                # TO-DO: Delete the message, log it, add the `from` address to the blacklist(?)
+                # TO-DO: log it or to add the `from` address to the blacklist?
+                # Should the message be deleted?
                 print AppMessage('ResponseNotFound', value=msg['header']).message
                 continue
             # Extracting request id.
@@ -51,7 +54,8 @@ def check_mail(mailbox_settings=None):
                 try:
                     request_id= int(field_to.split('@')[0].rsplit('-', 1)[-1])
                 except:
-                    print AppMessage('ResponseNotFound', value=msg['header']).message
+                    print AppMessage(
+                        'ResponseNotFound', value=msg['header']).message
                     continue
             new_message= new_message_in_thread(request_id, msg)
             if new_message:
@@ -61,16 +65,18 @@ def check_mail(mailbox_settings=None):
     return AppMessage('CheckMailComplete', value=messages_total).message
 
 
-@periodic_task(run_every=crontab(day_of_week="*", hour="*", minute="*/5"))
+@periodic_task(run_every=crontab(day_of_week="*", hour="*", minute="*"))
 def check_overdue():
     """
     Check in the db for overdue requests.
     """
     when= datetime.utcnow().replace(tzinfo=utc) - timedelta(days=OVERDUE_DAYS)
-    overdue_index= [i[0] for i in PIA_REQUEST_STATUS].index('overdue')
     total_overdue_requests= 0
-    for pia_request in PIARequest.objects.filter(created__lt=when):
-        if PIAThread.objects.filter(request=pia_request, is_response=True).count() == 0:
+    in_progress= get_request_status('in_progress')
+    for pia_request in PIARequest.objects.filter(
+            created__lt=when, status=in_progress):
+        if PIAThread.objects.filter(
+                request=pia_request, is_response=True).count() == 0:
             total_overdue_requests += 1
             # Send a reminder to the Authority
             reminder_sent= send_reminder(pia_request)
@@ -82,12 +88,13 @@ def check_overdue():
             # Set 'overdue' status to the request:
             # this doesn't depend on sending messages - even if there are errors
             # the request should be marked as `overdue`.
-            pia_request.status= PIA_REQUEST_STATUS[overdue_index][0]
+            pia_request.status= get_request_status('overdue')
             try:
                 pia_request.save()
             except Exception as e:
                 pass
-    return AppMessage('CheckOverdueComplete', value=total_overdue_requests).message
+    return AppMessage(
+        'CheckOverdueComplete', value=total_overdue_requests).message
 
 
 def new_message_in_thread(request_id, msg):
@@ -101,8 +108,10 @@ def new_message_in_thread(request_id, msg):
         return None
     # Collect and prepare data from the message.
     data= {'request': request, 'is_response': True,
-           'email_from': msg['header']['from'], 'email_to': msg['header']['to'],
-           'subject': msg['header']['subject'], 'body': msg['content']}
+           'email_from': msg['header']['from'],
+           'email_to': msg['header']['to'],
+           'subject': msg['header']['subject'],
+           'body': msg['content']}
     # Creating a new message in the Request's Thread.
     new_message= PIAThread(**data)
     try:
@@ -111,6 +120,13 @@ def new_message_in_thread(request_id, msg):
         new_message= None
         print AppMessage('MsgCreateFailed', value=(request_id, e,)).message
     if new_message:
+        # Change the status of the Request to 'awaiting classification'.
+        request.status= get_request_status('awaiting')
+        try:
+            request.save()
+        except Exception as e:
+            pass
+        # Process attachments.
         if msg['attachments']:
             for path in msg['attachments']:
                 filename= path.rsplit('/')[-1]
@@ -118,8 +134,9 @@ def new_message_in_thread(request_id, msg):
                 try:
                     PIAAttachment.objects.create(message=new_message,
                         filename=filename, filetype=filetype, path=path)
-                except:
-                    pass
+                except Exception as e:
+                    print AppMessage('AttachFailed', value=(
+                        filename, request_id, e,)).message
     return new_message
 
 

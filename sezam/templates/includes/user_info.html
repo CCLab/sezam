@@ -27,7 +27,13 @@
             <p><strong>{% trans 'About me' %}</strong> <br />{{ usr.profile.description|linebreaks|urlize }}</p>
             {% endif %}
             {% if usr.profile.web_site %}
+              {% if user.is_authenticated %}
+                {% if user = usr %}
+            <p><strong>{% trans 'My web-site' %}</strong> <br />{{ usr.profile.web_site|urlize }}</p>
+                {% else %}
             <p><strong>{% trans 'Check out my web-site' %}</strong> <br />{{ usr.profile.web_site|urlize }}</p>
+                {% endif %}
+              {% endif %}
             {% endif %}
             {% if user_profile %}
                 {% if user.is_authenticated %}
@@ -37,7 +43,7 @@
             <div class="row">
                 <div class="span1"><strong>{% trans 'Address:' %}</strong></div>
                 <div class="span3">{{ user_profile.address_street|default:"" }} {{ user_profile.address_line1|default:"" }} {{ user_profile.address_line2|default:"" }}
-                    <br>{{ user_profile.address_postalcode|default:"" }} {{ user_profile.address_city|default:"" }} {{ user_profile.address_country|default:"" }}</br>
+                    <br>{{ user_profile.address_postalcode|default:"" }} {{ user_profile.address_city|default:"" }} {{ user_profile.get_address_country_display|default:"" }}</br>
                 </div>
             </div>
                             {% if user_profile.tel_number %}
@@ -47,14 +53,12 @@
                 </div>
             </div>
                             {% endif %}
-
                             {% if user_profile.web_site %}
             <div class="row">
                 <div class="span1"><strong>{% trans 'Website:' %}</strong></div>
                 <div class="span3">{{ user_profile.web_site|urlize|default:"" }}</div>
             </div>
                             {% endif %}
-
                         {% endif %}
                     {% endif %}
                 {% endif %}

@@ -233,3 +233,6 @@ BROKER_URL = 'django://'
 
 # Days before unanswered request become overdue.
 OVERDUE_DAYS = 16
+
+# Is session expires when a user exits the browser.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

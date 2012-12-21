@@ -43,6 +43,10 @@
                         </div>
 
                         <div class="control-group">
+                            <div class="controls"><input type="checkbox" name="remember_me" value="true" checked> {% trans 'Remember Me' %}</input></div>
+                        </div>
+
+                        <div class="control-group">
                             <div class="controls">
                                 <input class="btn btn-primary" type="submit" name="save" value="Log in »" />
                             </div>
@@ -56,8 +60,8 @@
 {% block content-related %}
         <div class="row">
             <div class="span6">
-                <p>Forgotten your password? <a href="/accounts/password/reset">Click to reset</a></p>
-                <p>If you don't have an account, you can <a href="/accounts/register/">sign up</a> for one.</p>
+                <p>{% trans 'Forgotten your password?' %} <a href="/accounts/password/reset">{% trans 'Click to reset' %}</a></p>
+                <p>{% trans 'If you do not have an account, you can' %} <a href="/accounts/register/">{% trans 'sign up' %}</a> {% trans 'for one.' %}</p>
             </div>
         </div>
     </div>

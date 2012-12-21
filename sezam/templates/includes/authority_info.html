@@ -23,16 +23,16 @@
 
         <div class="span2">
             <p><strong>{% trans 'Address' %}:</strong>
-              <address><small>
+              <address>
               {{ authority.address_street }} {{ authority.address_num }}
               <br>{{ authority.address_postalcode|slice:":2" }}-{{ authority.address_postalcode|slice:"2:5" }} {{ authority.address_city }}</br>
-              </small></address>
+              </address>
             </p>
           </div>
           <div class="span2">
             <p>
               <strong>{% trans 'Telephones' %}:</strong>
-              <address><small>
+              <address>
               ({{ authority.tel_code }}) {{ authority.tel_number|slice:":3" }} {{ authority.tel_number|slice:"3:5" }}{{ authority.tel_number|slice:"5:" }} {% if authority.tel_internal %}({% trans 'internal' %} {{ authority.tel_internal }}) {% endif %}
 
               {% if authority.tel1_number %}
@@ -41,13 +41,13 @@
               {% if authority.tel2_number %}
               <br>({{ authority.tel2_code }}) {{ authority.tel2_number|slice:":3" }} {{ authority.tel2_number|slice:"3:5" }} {{ authority.tel2_number|slice:"5:" }} {% if authority.tel2_internal %}({% trans 'internal' %} {{ authority.tel2_internal }}) {% endif %}
               {% endif %}
-              </small></address>
+              </address>
             </p>
           </div>
           {% if authority.fax_number %}
           <div class="span2">
             <p><strong>{% trans 'Fax' %}:</strong>
-              <address><small>({{ authority.fax_code }}) {{ authority.fax_number|slice:":3" }} {{ authority.fax_number|slice:"3:5" }} {{ authority.fax_number|slice:"5:" }}</small></address>
+              <address>({{ authority.fax_code }}) {{ authority.fax_number|slice:":3" }} {{ authority.fax_number|slice:"3:5" }} {{ authority.fax_number|slice:"5:" }}</address>
             </p>
           </div>
         {% endif %}

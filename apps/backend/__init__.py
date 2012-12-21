@@ -507,6 +507,18 @@ APP_MESSAGES = {
         },
     'CheckOverdueComplete': {
         'message': _('Complete checking overdue requests. Total number of overdue requests: ')
+        },
+    'AttachFailed': {
+        'message': _('Cannot process attachment! See the original message!')
+        },
+    'ClassifyRespUser': {
+        'message': _('The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, please, check appropriate status.')
+        },
+    'ClassifyRespAnonim': {
+        'message': _("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%s/\">%s</a>, please sign in and let everyone know."),
+        },
+    'ClassifyRespAlien': {
+        'message': _("We don't know whether the most recent response to this request contains information or not."),
         }
     }
 
@@ -520,7 +532,7 @@ class AppMessage():
         if message_code is None:
             self.message= ''
         try:
-            self.message= APP_MESSAGES[message_code]
+            self.message= APP_MESSAGES[message_code]['message']
         except KeyError:
             self.message= 'ERROR: Message with code `%s` not found!' % message_code
 

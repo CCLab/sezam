@@ -1,0 +1,13 @@
+{% load i18n %}
+  <div class="content">
+        {% if user_profile %}
+            {% if user.is_authenticated %}
+                {% if user = user_profile.user %}
+    <legend>{% trans 'My drafts' %}</legend>
+    {% for draft in pia_drafts %}
+    <p>{{ draft.created }} <a href="/request/{{ draft.pk }}/preview/">{{ draft.subject }}</a></p>
+    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+  </div>

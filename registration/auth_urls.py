@@ -28,18 +28,26 @@ from django.conf.urls.defaults import *
 from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns('',
-                       url(r'^login/$',
-                           auth_views.login,
-                           {'template_name': 'registration/login.html'},
-                           name='auth_login'),
+                       # url(r'^login/$',
+                       #     auth_views.login,
+                       #     {'template_name': 'registration/login.html'},
+                       #     name='auth_login'),
                        # url(r'^logout/$',
                        #     auth_views.logout,
                        #     {'template_name': 'registration/logout.html'},
                        #     name='auth_logout'),
+
+                       # DK change
+                       url(r'^login/$',
+                           'apps.backend.utils.login',
+                           {'template_name': 'registration/login.html'},
+                           name='auth_login'),
                        url(r'^logout/$',
                            auth_views.logout,
-                           {'next_page': '/'}, # DK change
+                           {'next_page': '/'},
                            name='auth_logout'),
+                           # DK change
+                           
                        url(r'^password/change/$',
                            auth_views.password_change,
                            name='auth_password_change'),

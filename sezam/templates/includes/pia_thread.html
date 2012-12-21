@@ -1,26 +1,19 @@
   {% load i18n %}
 
+      <div class="span7">
       {% include "includes/user_message.html" %}
+      </div>
 
       <!-- Thread -->
       <div class="span7">
         {% for msg in thread %}
-          <div class="row">
+           <div class="row">
               {% if forloop.first %}
               <div>
-                <h2>{{ msg.request.summary }}</h2>
-                  <p class="lead">{% trans 'Request from' %} <a href="/user/{{ msg.request.user.id }}">{{ msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
-                  <br/><span class=
-                      {% if msg.request.status = 'in_progress' %}"label"
-                      {% elif msg.request.status = 'successful' %}"label label-success"
-                      {% elif msg.request.status = 'part_successful' %}"label label-success"
-                      {% elif msg.request.status = 'refused' %}"label label-important"
-                      {% elif msg.request.status = 'overdue' %}"label label-warning"
-                      {% elif msg.request.status = 'long_overdue' %}"label label-warning"
-                      {% elif msg.request.status = 'no_info' %}"label label-info"
-                      {% elif msg.request.status = 'withdrawn' %}"label label-info"
-                      {% endif %}>{{ msg.request.get_status_display }}</span>
-                  </p>
+                 <h2>{{ msg.request.summary }}</h2>
+                   <p class="lead">{% trans 'Request from' %} <a href="/user/{{ msg.request.user.id }}">{{ msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
+                   <br/>{% with msg.request as pia_request %}{% include 'includes/pia_request_status.html' %}{% endwith %}
+                   </p>
               </div>
               {% endif %}
           
@@ -41,7 +34,7 @@
                   </div>                  
                   {% endif %}
                   <div class="content">
-                      {{ msg.body|urlize|linebreaks }}
+                       {{ msg.body|urlize|linebreaks }}
                   </div>
               </div>
 
@@ -49,7 +42,7 @@
               {% if msg.annotations.count > 0 %}
                 {% for annotation in msg.annotations.all %}
               <div class="well well-white well-small well-dotted span6 pull-right">
-                  <div class="content">
+                <div class="content">
                   {% if msg.user.userpic != 'default_userpic.gif' %}
                     <div class="span1 pull-right">
                       <img src="{{ MEDIA_URL }}{{ annotation.user.profile.userpic }}" align="right" width="30" border="0" />
@@ -75,18 +68,20 @@
                       <li><a href="/request/{{ msg.request.id }}/status/{{ status.0 }}">{{ status.1 }}</a></li>
                       {% endfor %}
                   </ul>
-
                   {% endifequal %}
               </div>
               {% endif%}
               {% endif %}
-
           </div>
         {% endfor %}
-        
         {% if mode = 'reply' %}
           {% include "includes/pia_thread_reply_form.html" %}
         {% elif mode = 'annotate' %}
           {% include "includes/pia_thread_annotate_form.html" %}
+        {% else %}
+          <div class="span7">&nbsp;</div>
+          <div class="span7">
+            {% include "includes/user_message.html" %}
+          </div>
         {% endif %}
       </div>

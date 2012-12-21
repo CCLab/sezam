@@ -14,11 +14,16 @@
         <div class="content span7">
             {% include "includes/user_info.html" %}
         </div>
+        {% if user_profile %}
+        <div class="content span5">
+            {% include "includes/user_drafts.html" %}
+        </div>        
+        {% endif %}
         <div class="content span12">
             {% include "includes/pia_request_list.html" %}
         </div>
         {% else %}
-            {% if user_profile%}
+            {% if user_profile %}
         <div class="content span7">
             {% include "includes/user_info_form.html" %}
         </div>

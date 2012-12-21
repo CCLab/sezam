@@ -12,15 +12,27 @@ from apps.backend.models import GenericText, GenericPost, GenericMessage, Generi
 from apps.backend.utils import increment_id
 
 PIA_REQUEST_STATUS= (
-    ('in_progress', u'In progress'),
-    ('successful', u'Successful'),
-    ('part_successful', u'Partially successful'),
-    ('refused', u'Refused'),
-    ('overdue', u'Overdue'),
-    ('long_overdue', u'Long overdue'),
-    ('no_info', u'Information not held'),
-    ('withdrawn', u'Withdrawn by the requester'),
+    ('in_progress', _(u'In progress')),
+    ('successful', _(u'Successful')),
+    ('part_successful', _(u'Partially successful')),
+    ('refused', _(u'Refused')),
+    ('overdue', _(u'Overdue')),
+    ('long_overdue', _(u'Long overdue')),
+    ('no_info', _(u'Information not held')),
+    ('withdrawn', _(u'Withdrawn by the requester')),
+    ('awaiting', _(u'Awaiting classification'))
     )
+
+def get_request_status(status='in_progress'):
+    """
+    Simply return the proper element to fill the status of the PIARequest.
+    """
+    try:
+        status_index= [i[0] for i in PIA_REQUEST_STATUS].index(status)
+    except:
+        # The most neutral 'in_progress'.
+        status_index= 0
+    return PIA_REQUEST_STATUS[status_index][0]
 
 
 class PIAMessage(GenericMessage):

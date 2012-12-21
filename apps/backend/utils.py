@@ -4,6 +4,7 @@
 Functions used in other modules.
 """
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+from django.contrib.auth import views as auth_views
 from django.template.defaultfilters import slugify
 from django.contrib.sites.models import Site
 
@@ -194,7 +195,7 @@ def process_filter_request(request, statuses):
     filtered_status= {'all': [k[0] for k in statuses],
         'successful': ['successful', 'part_successful'],
         'unsuccessful': ['refused', 'no_info'],
-        'unresolved': ['in_progress', 'overdue', 'long_overdue', 'withdrawn']}
+        'unresolved': ['in_progress', 'overdue', 'long_overdue', 'withdrawn', 'awaiting']}
 
     # Define kwargs for filtering.
     query, initial= dict(), dict()
@@ -272,3 +273,14 @@ def email_from_name(name, **kwargs):
     if delimiter:
         template= template.replace('-', delimiter)
     return template
+
+
+def login(request, **kwargs):
+    """
+    Custom view - handling the login form with "Remember me" checkbox.
+    """
+    template_name= kwargs.get('template_name', 'registration/login.html')
+    response= auth_views.login(request, template_name)
+    if request.POST.has_key('remember_me'):
+        request.session.set_expiry(1209600) # 2 weeks
+    return response

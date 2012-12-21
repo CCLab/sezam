@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.http import Http404
 
 from apps.vocabulary.models import UserProfile
-from apps.pia_request.models import PIARequest, PIA_REQUEST_STATUS
+from apps.pia_request.models import PIARequest, PIARequestDraft, PIA_REQUEST_STATUS
 from apps.pia_request.forms import PIAFilterForm
 from apps.backend.utils import process_filter_request, handle_image, get_domain_name
 from forms import UserProfileForm, UserpicForm
@@ -48,13 +48,14 @@ def user_profile(request, id=None, **kwargs):
 
     if query:
         pia_requests= PIARequest.objects.filter(**query)
+        pia_drafts= PIARequestDraft.objects.filter(user=user)
     else:
-        pia_requests= list()
+        pia_requests, pia_drafts= list(), list()
 
     return render_to_response(template, { 'usr': user,
         'user_profile': user_profile, 'user_message': user_message,
-        'pia_requests': pia_requests, 'urlparams': urlparams,
-        'form': PIAFilterForm(initial=initial),
+        'pia_requests': pia_requests, 'pia_drafts': pia_drafts,
+        'urlparams': urlparams, 'form': PIAFilterForm(initial=initial),
         'page_title': _(u"User's profile") + ' - ' + get_domain_name()},
         context_instance=RequestContext(request))
 

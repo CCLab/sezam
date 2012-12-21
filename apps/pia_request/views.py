@@ -121,16 +121,40 @@ def save_request_draft(request, id=None, **kwargs):
             'request_id': request_id, 'user_message': user_message}
 
 
+def get_request_draft(request, id, **kwargs):
+    """
+    Return request draft data for display.
+    """
+    template= kwargs.get('template', 'request.html')
+    user_message= request.session.pop('user_message', {})
+    try:
+        draft= PIARequestDraft.objects.get(pk=id)
+    except:
+        raise Http404
+    initial={'authority_slug': draft.authority_slug,
+             'request_subject': draft.subject, 'request_body': draft.body,
+             'authority_name': '', 'user_name': ''}
+    authority_slug_list= draft.authority_slug.split(',')
+    authority= []
+    try: # Try to find Authority.
+        for slug in authority_slug_list:
+            authority.append(AuthorityProfile.objects.get(slug=slug))
+    except AuthorityProfile.DoesNotExist:
+        raise Http404
+    form= MakeRequestForm(initial=initial)
+    return {'template': template, 'form': form, 'authority': authority,
+            'request_id': id, 'user_message': user_message}
+
 @login_required
 def preview_request(request, id=None, **kwargs):
     """
     Preview request.
     If it's a new one, create a draft, otherwise (has ID) update it.
     """
-    if request.method != 'POST':
-        raise Http404
-
-    response_data= save_request_draft(request, id, **kwargs)    
+    if request.method == 'POST':
+        response_data= save_request_draft(request, id, **kwargs)
+    elif request.method == 'GET':
+        response_data= get_request_draft(request, id, **kwargs)
     return render_to_response(response_data.pop('template'), response_data,
         context_instance=RequestContext(request))
 
@@ -265,15 +289,28 @@ def view_thread(request, id=None, **kwargs):
     template= kwargs.get('template', 'thread.html')
     if request.method == 'POST':
         raise Http404
-
     try:
         thread= PIAThread.objects.filter(request=PIARequest.objects.get(
             id=int(id))).order_by('created')
     except (PIAThread.DoesNotExist, PIARequest.DoesNotExist):
         raise Http404
-    
-    return render_to_response(template,
-        {'thread': thread, 'request_status': PIA_REQUEST_STATUS,
+    # Turning public attention to those 'awaiting classification'.
+    user_message= {}
+    if thread[0].request.status == 'awaiting':
+        if request.user.is_anonymous():
+            user_message.update({
+                'success': AppMessage('ClassifyRespAnonim').message \
+                % (thread[0].request.user.pk, \
+                   thread[0].request.user.get_full_name())})
+        else:
+            if thread[0].request.user == request.user:
+                user_message.update({
+                    'success': AppMessage('ClassifyRespUser').message})
+            else:
+                user_message.update({
+                    'success': AppMessage('ClassifyRespAlien').message})
+    return render_to_response(template, {'thread': thread,
+        'user_message': user_message, 'request_status': PIA_REQUEST_STATUS,
         'request_id': id, 'form': None, 'page_title': '%s - %s' % (
             thread[0].request.summary[:50], get_domain_name())},
         context_instance=RequestContext(request))

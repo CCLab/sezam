@@ -30,16 +30,7 @@
         <div class="row">
             <div class="span7">
                 <h4><a href="/request/{{ pia_request.id }}/">{{ pia_request.summary }}</a></h4>
-                <span class=
-                    {% if pia_request.status = 'in_progress' %}"label"
-                    {% elif pia_request.status = 'successful' %}"label label-success"
-                    {% elif pia_request.status = 'part_successful' %}"label label-success"
-                    {% elif pia_request.status = 'refused' %}"label label-important"
-                    {% elif pia_request.status = 'overdue' %}"label label-warning"
-                    {% elif pia_request.status = 'long_overdue' %}"label label-warning"
-                    {% elif pia_request.status = 'no_info' %}"label label-info"
-                    {% endif %}
-                    >{% trans pia_request.get_status_display %}</span>
+                {% include 'includes/pia_request_status.html' %}
                 <small>{% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/user/{{ pia_request.user.pk }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}</small>
             </div>
             <div class="span5">

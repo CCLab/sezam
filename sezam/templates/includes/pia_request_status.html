@@ -1,0 +1,11 @@
+                <span class=
+                    {% if pia_request.status = 'in_progress' %}"label"
+                    {% elif pia_request.status = 'successful' %}"label label-success"
+                    {% elif pia_request.status = 'part_successful' %}"label label-success"
+                    {% elif pia_request.status = 'refused' %}"label label-important"
+                    {% elif pia_request.status = 'overdue' %}"label label-warning"
+                    {% elif pia_request.status = 'long_overdue' %}"label label-warning"
+                    {% elif pia_request.status = 'no_info' %}"label label-info"
+                    {% elif pia_request.status = 'awaiting' %}"label label-warning"
+                    {% endif %}
+                    >{{ pia_request.get_status_display }}</span>
