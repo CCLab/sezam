@@ -33,7 +33,7 @@ ul.jqtree-tree .jqtree-toggler {
     line-height: 12px;
     font-family: arial;  /* fix for ie9 */
     border-bottom: none;
-    color: #333;
+    color: #0088cc;
 }
 
 ul.jqtree-tree .jqtree-toggler:hover {
@@ -45,7 +45,7 @@ ul.jqtree-tree div {
 }
 
 ul.jqtree-tree .jqtree-title {
-    color: #1C4257;
+    color: #0088cc;
     vertical-align: middle;
 }
 
@@ -127,11 +127,11 @@ ul.jqtree-tree div {
 
 ul.jqtree-tree li.jqtree-selected > div,
 ul.jqtree-tree li.jqtree-selected > div:hover {
-    background-color: #97BDD6;
-    background: -webkit-gradient(linear, left top, left bottom, from(#BEE0F5), to(#89AFCA));
-    background: -moz-linear-gradient(top, #BEE0F5, #89AFCA);
-    background: -ms-linear-gradient(top, #BEE0F5, #89AFCA);
-    background: -o-linear-gradient(top, #BEE0F5, #89AFCA);
+    background-color: #f9f9f9;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#dadada));
+    background: -moz-linear-gradient(top, #f9f9f9, #dadada);
+    background: -ms-linear-gradient(top, #f9f9f9, #dadada);
+    background: -o-linear-gradient(top, #f9f9f9, #dadada);
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 

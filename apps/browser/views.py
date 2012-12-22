@@ -11,7 +11,7 @@ def display_index(request, **kwargs):
         """
     template= kwargs.get('template', 'index.html')
     authority_list= AuthorityProfile.objects.all().order_by('-created')
-    request_list= PIARequest.objects.all().order_by('-created')
+    request_list= PIARequest.objects.all().order_by('-lastchanged')
     data= {'authority_list': authority_list[:20],
         'request_list': request_list[:10],
         'authorities_count': authority_list.count(),
@@ -19,4 +19,3 @@ def display_index(request, **kwargs):
     return render_to_response(template, {'data': data,
         'page_title': _(u'Home') + ' - ' + get_domain_name()},
         context_instance=RequestContext(request))
-

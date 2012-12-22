@@ -4,19 +4,19 @@
 
 
 <div class="container">
-  <div class="hero-unit well-white">
+  <div class="index-unit">
       <div class="row">
-          <div class="span5">
+          <div class="span6">
               <h1>{% trans 'Public Information for everyone!' %}</h1>
               <span>&nbsp;</span>
               <p>{% trans 'The Law on Access to Public Information allows anyone to demand access to public information, public data and public assets held by public bodies, private bodies that exercise public tasks, trade unions and political parties. The requests can be oral or written. The bodies must respond within 14 days.' %}</p>
-              <a class="btn btn-primary btn-large">Make request now! »</a>
+              <a class="btn btn-primary btn-large" href="/authority/find/">Make request now! &#187;</a>
           </div>
           <div class="span5 pull-right">
               <img src="{{ STATIC_URL }}img/free_info_logo.jpg">
               <div>&nbsp;</div>
               <form class="navbar-search pull-left">
-                <input class="search-query" type="text" placeholder="{% trans 'Search' %}"> <input class="btn btn-inverse" type="submit" value="{% trans 'search over' %} »" name="all">
+                <input class="search-query" type="text" placeholder="{% trans 'Search' %}"> <input class="btn btn-inverse" type="submit" value="{% trans 'search over' %} &#187;" name="all">
                 <h3>{{ data.requests_count }} {% trans 'requests' %} {% trans 'and' %} {{ data.authorities_count }} {% trans 'authorities' %}</h3>
               </form>
           </div>
@@ -39,8 +39,8 @@
             <h2>{% trans 'What information has been released?' %}</h2>
             <p>{% trans 'Sezam.pl has made so far' %} <strong>{{ data.requests_count }}</strong> {% trans 'requests, including' %}:</p>
             {% for pia_request in data.request_list %}
-            <p/>{% trans 'The request to' %} <strong><a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a></strong> {% trans 'on' %} {{ pia_request.latest_thread_post.created }} {% trans 'about' %} <strong><a href="/request/{{ pia_request.id }}">{{ pia_request.summary }}</strong>
-                <blockquote><small>{{ pia_request.latest_thread_post.body|default:""|slice:":150" }}...</small></blockquote></a>
+            <p/>{% trans 'The request to' %} <strong><a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a></strong> {% trans 'about' %} <strong><a href="/request/{{ pia_request.id }}">{{ pia_request.summary }}</a></strong>. {% trans 'Sent' %} {{ pia_request.latest_thread_post.created|date:"j E Y" }}, {% trans 'last changed' %} {{ pia_request.lastchanged|date:"j E Y" }}
+                <blockquote><small><a href="/request/{{ pia_request.id }}">{{ pia_request.latest_thread_post.body|default:""|slice:":180" }}... </a></small></blockquote>
             {% endfor %}
             </p>
             <p><a class="btn" href="/request/">{% trans 'More requests' %} »</a></p>
