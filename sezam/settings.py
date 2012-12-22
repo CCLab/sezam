@@ -69,7 +69,7 @@ STATIC_ROOT = os.path.join(ROOT_PATH, 'static/')
 if 'Darwin' in platform():  # local
     STATIC_URL = 'http://localhost:8000/static/'
 elif 'Linux' in platform():  # server
-    STATIC_URL = 'http://sezam.centrumcyfrowe.pl:3002/static/'
+    STATIC_URL = 'http://sezam.centrumcyfrowe.pl/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
