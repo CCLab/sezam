@@ -1,0 +1,40 @@
+{% load i18n %}
+{% load highlight %}
+
+{% with result.object as obj %}
+<div class="row">
+  <div class="span7">
+    {% if obj.summary %}
+
+      {% with obj as pia_request %}
+    <h4><a href="/request/{{ pia_request.id }}/">{% highlight pia_request.summary with query %}</a></h4>
+    {% include 'includes/pia_request_status.html' %}
+    <small>
+      {% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} 
+      by <a href="/user/{{ pia_request.user.pk }}">{% highlight pia_request.user.get_full_name with query %}</a> 
+      to <a href="/authority/{{ pia_request.authority.slug }}">{% highlight pia_request.authority.name with query %}</a>, 
+      {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}
+    </small>
+  </div>
+  <div class="span5">
+    <blockquote>{% highlight result.report_text with query %}</blockquote>
+        {% endwith %}
+
+      {% else %}
+
+      <h4><a href="/authority/{{ obj.slug }}/">{% highlight obj.name with query %}</a></h4>
+      <small>
+        <strong>{% trans 'Authority record' %}:</strong> 
+        {% trans 'created' %}: {{ obj.created|date:"j E Y" }}, 
+        {% trans 'official' %}: {% highlight result.official_full_name with query %},
+        {% trans 'address' %}: {% highlight result.address_full with query %}
+      </small>
+  </div>
+  <div class="span5">
+    <blockquote>{% highlight result.report_text with query %}</blockquote>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endwith %}

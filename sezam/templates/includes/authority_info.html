@@ -15,7 +15,7 @@
         <br/>{% if authority.web_site1 %}<strong>{% trans 'Buletin of public information' %}:</strong> {{ authority.web_site1|urlize }}{% endif %}</p>
 
         {% if authority.description %}
-        <p><small>{{ authority.description|default:''|linebreaks|urlize|slice:":300" }}...</small></p>
+        <p><small>{{ authority.description|default:''|linebreaks|urlize }}</small></p>
         {% endif %}
         {% if authority.notes %}
         <p><small><strong>{% trans 'Notes' %}:</strong> {{ authority.notes|default:'' }}</small></p>

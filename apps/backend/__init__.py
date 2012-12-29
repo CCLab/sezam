@@ -444,13 +444,6 @@ class MailImporter():
         """
         Cleaning and decoding filename from the attachement.
         """
-        # if re.search(r'=\?UTF-8\?\w{1}\?', filename, re.IGNORECASE):
-        #     filename= re.sub(r'=\?UTF-8\?\w{1}\?', '', filename, re.IGNORECASE)
-        #     filename= re.sub(r'\?', '', filename)
-        #     try:
-        #         filename= base64.decodestring(filename).decode('utf8')
-        #     except Exception as e:
-        #         filename= None
         if re.search(r'=\?', filename):
             encoding= None
             try:
@@ -555,3 +548,62 @@ class AppMessage():
 """
 AppMessage - end
 """
+
+
+"""
+StretchHighlighter - a subclass of haystack's Highlighter to highlight
+the the text before and after the search phrase.
+"""
+from haystack.utils import Highlighter
+
+class StretchHighlighter(Highlighter):
+    def render_html(self, highlight_locations=None, start_offset=None, end_offset=None):
+        # Shifting offset to 50 max symbols ''back'', so that the
+        # highlighted chunk would appear in the middle of the result.
+        window= end_offset - start_offset
+        shifted_by= 50
+        if max(start_offset - shifted_by, 0) == 0:
+            shifted_by= start_offset
+        start_offset -= shifted_by
+        end_offset -= shifted_by
+
+        # If there is some highlight_location beyond the shifted window,
+        # extend the window to the length of the longest word with the limit
+        # of 1.33 of the original window.
+        try:
+            max_location= max([max(v) for k, v in highlight_locations.iteritems()])
+            max_word_len= max([len(k) for k in highlight_locations.keys()])
+            if end_offset < (max_location + max_word_len):
+                end_offset= min(max_location + max_word_len,
+                                start_offset + int(window * 1.33))
+        except: pass
+
+        highlighted_chunk= self.text_block[start_offset:end_offset]
+
+        # Creating `query_words` manually, because haystack applies .lower()
+        # to each word, which makes .replace() impossible.
+        _query_words= set([word for word in self.query.split() if not word.startswith('-')])
+        if self.css_class:
+            _css_class= self.css_class
+        else:
+            _css_class= 'highlighted'
+        for word in _query_words:
+            highlighted_chunk= highlighted_chunk.replace(word,
+                '<%(tag)s class="%(css)s">%(word)s</%(tag)s>' % {
+                'tag': self.html_tag, 'css':_css_class, 'word': word})
+        if start_offset > 0:
+            highlighted_chunk= '...' + highlighted_chunk
+        if end_offset < len(self.text_block):
+            highlighted_chunk += '...'
+
+        return highlighted_chunk
+"""
+StretchHighlighter - end
+"""
+
+
+# my_text = 'Please could you provide me with any information the BBC holds on how it is prepared for the eventuality of a zombie apocalypse/invasion and the associated costs to the licence payer for such preparations. What training has been provided to BBC staff and its subcontractors to defend themselves from the undead? What weaponry does the BBC have access to and who are the appropriate licence holders for the arsenal? Thank you for your request for information under the Freedom of Information Act 2000, as detailed in your email below. Your request was received on 30th November 2012. We will provide the requested information as promptly as possible, and at the latest within 20 working days. If you have any queries about your request, please contact us at the address below.'
+# my_query = 'provide information'
+# from apps.backend import StretchHighlighter
+# highlight= StretchHighlighter(my_query)
+# highlight.highlight(my_text)

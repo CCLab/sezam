@@ -6,12 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.template import RequestContext
-from django.db.models import Q
 
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
 from apps.backend.utils import get_domain_name, process_filter_request
+from apps.browser.forms import ModelSearchForm
 from sezam.settings import PAGINATE_BY
 
 
@@ -23,8 +23,16 @@ def display_authority(request, **kwargs):
         raise Http404
     user_message= request.session.pop('user_message', {})
     template= kwargs.get('template', 'authorities.html')
-    data= {'page_title': _(u'Public Authorities'), 'user_message': user_message}
-    return render_to_response(template, data,
+    search_only= kwargs.get('search_only', True)
+    try:
+        q= request.GET['q']
+        form= ModelSearchForm(request.GET)
+    except:
+        form= ModelSearchForm()
+
+    return render_to_response(template, {'form': form,
+        'user_message': user_message, 'search_only': search_only,
+        'page_title': _(u'Public Authorities') + ' ' + get_domain_name()},
         context_instance=RequestContext(request))
 
 
@@ -47,7 +55,8 @@ def get_authority_tree(request, **kwargs):
         for child in node.get_children().order_by('name'):
             append= True
             if child.is_leaf_node():
-                if AuthorityProfile.objects.filter(category=child).count() == 0:
+                if AuthorityProfile.objects.filter(
+                        category=child, active=True).count() == 0:
                     append= False
             if append:
                 data.append({'label': child.name, 'id': child.id,
@@ -87,10 +96,10 @@ def retrieve_authority_list(id=None):
                 category.extend(category[0].get_descendants())
             except Exception as e:
                 pass
-        return AuthorityProfile.objects.filter(category__in=category)\
-            .order_by('name')
+        return AuthorityProfile.objects.filter(
+            category__in=category, active=True).order_by('name')
     else:
-        return AuthorityProfile.objects.all().order_by('name')
+        return AuthorityProfile.objects.filter(active=True).order_by('name')
 
 
 def get_authority_list(request, id=None, **kwargs):
@@ -121,7 +130,7 @@ def get_authority_list(request, id=None, **kwargs):
     else:
         pageURI= '?page='
 
-    return render_to_response(template, {'results': results,
+    return render_to_response(template, {'page': results,
         'total_item': items, 'current': page,
         'pageURI': pageURI, 'per_page': PAGINATE_BY},
         context_instance=RequestContext(request))
@@ -132,19 +141,21 @@ def get_authority(slug):
     """
     Extract Authority from the model by its slug.
     """
+    query= {'slug': slug, 'active': True}
     try:
-        return AuthorityProfile.objects.get(slug=slug)
+        return AuthorityProfile.objects.get(**query)
     except AuthorityProfile.MultipleObjectsReturned:
-        return AuthorityProfile.objects.filter(slug=slug).order_by('name')[0]
+        return AuthorityProfile.objects.filter(**query).order_by('name')[0]
     except AuthorityCategory.DoesNotExist:
         return None
 
 
 def get_authority_info(request, slug, **kwargs):
-    """ Display the details on the selected authority:
-        - Authority info (contacts, description, etc.)
-        - Authority requests
-        - Fill the Breadcrumb by category.
+    """
+    Display the details on the selected authority:
+    * Authority info (contacts, description, etc.)
+    * Authority requests
+    * Fill the Breadcrumb by category.
     """
     template= kwargs.get('template', 'authority.html')
     user_message= request.session.pop('user_message', {})
@@ -179,8 +190,18 @@ def get_authority_info(request, slug, **kwargs):
     except Exception as e:
         pia_requests= list()
 
+    paginator= Paginator(pia_requests, PAGINATE_BY)
+    try:
+        page= int(request.GET.get('page', '1'))
+    except ValueError:
+        page= 1
+    try:
+        results= paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        results= paginator.page(paginator.num_pages)
+
     return render_to_response(template, {'authority': authority,
-        'pia_requests': pia_requests, 'categories': categories,
+        'page': results, 'categories': categories,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
         'page_title': '%s - %s' % (authority.name, get_domain_name),
         'urlparams': urlparams}, context_instance=RequestContext(request))

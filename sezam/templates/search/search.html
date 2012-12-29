@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load i18n %}
+  <div class="container">
+
+    <!-- Search form -->
+    <div class="row">
+      <h2>{% trans 'Search' %}</h2>
+      <form class="form-inline" action="/search/" method="get">
+        <div class="control-group">
+          {{ form.q }} <input class="btn btn-primary" type="submit" value="{% trans 'Search' %}">
+        </div>
+        <!-- {{ form.cleaned_data }} {{ query }} -->
+        {% trans 'Filter results' %} 
+        <div class="btn-group">
+          <input class="btn btn-small{% if form.cleaned_data.model_filter = 'all' %} active{% endif %}" type="submit" name="all" value="{% trans 'all' %}">
+          <input class="btn btn-small{% if form.cleaned_data.model_filter = 'authority' %} active{% endif %}" type="submit" name="authority" value="{% trans 'authorities' %}">
+          <input class="btn btn-small{% if form.cleaned_data.model_filter = 'piarequest' %} active{% endif %}" type="submit" name="piarequest" value="{% trans 'requests' %}">
+        </div>
+      </form>
+    </div>
+
+    <!-- Search results -->
+    <div class="row">
+      {% if query %}
+      <legend>{% include "includes/pagin_header.html" %}</legend>
+      <div id="accordion2" class="accordion">
+        {% for result in page.object_list %}
+          {% include "search/result_object.html" %}
+        {% empty %}
+        <p>{% trans 'No results found' %}.</p>
+        {% endfor %}
+      </div>
+      {% include "includes/pagin.html" %}
+      {% else %}
+      {# Show some example queries to run, maybe query syntax, something else? #}
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

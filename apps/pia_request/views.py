@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string
@@ -15,7 +16,7 @@ from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftFor
 from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name
 from apps.backend import AppMessage
 from apps.vocabulary.models import AuthorityProfile
-from sezam.settings import DEFAULT_FROM_EMAIL
+from sezam.settings import DEFAULT_FROM_EMAIL, PAGINATE_BY
 
 
 def request_list(request, status=None, **kwargs):
@@ -36,7 +37,17 @@ def request_list(request, status=None, **kwargs):
     else:
         pia_requests= PIARequest.objects.all()
 
-    return render_to_response(template, {'pia_requests': pia_requests,
+    paginator= Paginator(pia_requests, PAGINATE_BY)
+    try:
+        page= int(request.GET.get('page', '1'))
+    except ValueError:
+        page= 1
+    try:
+        results= paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        results= paginator.page(paginator.num_pages)
+
+    return render_to_response(template, {'page': results,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
         'page_title': _(u'View and search requests') + ' - ' + get_domain_name(),
         'urlparams': urlparams}, context_instance=RequestContext(request))

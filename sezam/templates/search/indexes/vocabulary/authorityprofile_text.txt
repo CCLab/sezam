@@ -1,0 +1,4 @@
+{{ object.name }}
+{{ object.description }}
+{{ object.address_street }} {{ object.address_line1 }} {{ object.address_line2 }} {{ object.address_city }}
+{{ object.official }} {{ object.official_name }} {{ object.official_lastname }}

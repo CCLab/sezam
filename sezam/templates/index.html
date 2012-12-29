@@ -2,49 +2,32 @@
 {% block content %}
 {% load i18n %}
 
-
-<div class="container">
+<div class="container container-fluid">
   <div class="index-unit">
-      <div class="row">
-          <div class="span6">
-              <h1>{% trans 'Public Information for everyone!' %}</h1>
-              <p>{% trans 'The Law on Access to Public Information allows anyone to demand access to public information, public data and public assets held by public bodies, private bodies that exercise public tasks, trade unions and political parties. The requests can be oral or written. The bodies must respond within 14 days.' %}</p>
-              <a class="btn btn-primary btn-large" href="/authority/find/">Make request now! &#187;</a>
-          </div>
-          <div class="span5 pull-right">
-              <img src="{{ STATIC_URL }}img/free_info_logo.jpg">
-              <div>&nbsp;</div>
-              <form class="navbar-search pull-left">
-                <input class="search-query" type="text" placeholder="{% trans 'Search' %}"> <input class="btn btn-inverse" type="submit" value="{% trans 'search over' %} &#187;" name="all">
-                <h3>{{ data.requests_count }} {% trans 'requests' %} {% trans 'and' %} {{ data.authorities_count }} {% trans 'authorities' %}</h3>
-              </form>
-          </div>
+    <div class="row">
+      <div class="span6">
+        <h1>{% trans 'Public Information for everyone!' %}</h1>
+        <p>{% trans 'The Law on Access to Public Information allows anyone to demand access to public information, public data and public assets held by public bodies, private bodies that exercise public tasks, trade unions and political parties. The requests can be oral or written. The bodies must respond within 14 days.' %}</p>
+        <a class="btn btn-primary btn-large" href="/authority/find/">Make request now! &#187;</a>
       </div>
+      <div class="span5">
+        <img src="{{ STATIC_URL }}img/free_info_logo.jpg">
+        <form class="well well-lightgray" action="/search/" method="get">
+          {{ form.q }} <input class="btn btn-inverse" type="submit" value="{% trans 'Search over' %} &#187;">
+          <h3>{{ data.requests_count }} {% trans 'requests' %} {% trans 'and' %} {{ data.authorities_count }} {% trans 'authorities' %}</h3>
+        </form>
+      </div>
+    </div>
   </div>
 
-      <div class="row">
-        <div class="span6">
-            <h2>{% trans 'Who can I request information from?' %}</h2>
-            <p class="lead">{{ data.domain_name|capfirst }} {% trans 'covers requests to' %} <strong>{{ data.authorities_count }}</strong> {% trans 'authorities, including' %}:</p>
-            {% for auth in data.authority_list %}
-                {% with auth.authority_requests.count as auth_request_count %}
-            <strong><a href="/authority/{{ auth.slug }}">{{ auth.name }}</a></strong> {% if auth_request_count = 0 %}&nbsp;{% else %}{{ auth_request_count }} {% trans 'requests' %} {% endif %}<br/>
-                {% endwith %}
-            {% endfor %}
-            </p>
-            <p><a class="btn" href="/authority/">{% trans 'Browse all authorities' %} &#187;</a></p>
-        </div>
-        <div class="span6">
-            <h2>{% trans 'What information has been released?' %}</h2>
-            <p class="lead">{{ data.domain_name|capfirst }} {% trans 'has made so far' %} <strong>{{ data.requests_count }}</strong> {% trans 'requests, including' %}:</p>
-            {% for pia_request in data.request_list %}
-            <p/>{% trans 'The request to' %} <strong><a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a></strong> {% trans 'about' %} <strong><a href="/request/{{ pia_request.id }}">{{ pia_request.summary }}</a></strong>. {% trans 'Sent' %} {{ pia_request.latest_thread_post.created|date:"j E Y" }}, {% trans 'last changed' %} {{ pia_request.lastchanged|date:"j E Y" }}
-                <blockquote><small><a href="/request/{{ pia_request.id }}">{{ pia_request.latest_thread_post.body|default:""|slice:":180" }}... </a></small></blockquote>
-            {% endfor %}
-            </p>
-            <p><a class="btn" href="/request/">{% trans 'More requests' %} &#187;</a></p>
-       </div>
-      </div>
+  <div class="row">
+    <div class="span6">
+      {% include 'includes/authority_list_mini.html' %}
+    </div>
+    <div class="span6">
+      {% include 'includes/pia_request_list_mini.html' %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}

@@ -95,6 +95,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
+    'apps.backend.utils.get_current_path',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -147,6 +148,7 @@ INSTALLED_APPS = (
     'registration',
     'xpaginate',
     'djcelery',
+    'haystack',
     'mptt',
 )
 
@@ -205,7 +207,7 @@ LOGIN_URL= '/accounts/login/'
 MPTT_ADMIN_LEVEL_INDENT = 20
 
 # Pagination settings
-PAGINATE_BY = 50
+PAGINATE_BY = 20
 
 # Thumbnail size
 THUMBNAIL_SIZE = (70, 70)
@@ -232,6 +234,17 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Use django database as a broker
 BROKER_URL = 'django://'
+
+# Haystack for elasticsearch
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+HAYSTACK_CUSTOM_HIGHLIGHTER = 'apps.backend.StretchHighlighter'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = PAGINATE_BY
 
 # Django-celery
 import djcelery

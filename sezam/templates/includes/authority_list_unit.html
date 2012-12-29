@@ -1,0 +1,28 @@
+{% load i18n %}
+{% load highlight %}
+
+      <div class="row">
+        <div class="container span5">
+          <h4><a href="/authority/{{ result.slug }}">{% highlight result.name with query %}</a></h4>
+          {% if obj_result.report_text %}
+            {% highlight obj_result.report_text with query %}
+          {% else %}
+            {% if result.description %}{{ result.description|default:''|linebreaks|urlize|slice:":200" }}...{% endif %}
+          {% endif %}
+          <p><small>
+              <span class="label">{% trans 'Official' %}</span> {% highlight result.official_full_name with query %}<br/>
+              <span class="label">{% trans 'Address' %}</span> {% highlight result.address_full with query %}<br/>
+          </small></p>
+        </div>
+        <div class="container span2 pull-right">
+          <a class="btn btn-small btn-primary" href="/request/{{ result.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Make Request' %}</a>
+          <small>
+            <p></p><p>
+            {% with result.authority_requests.count as request_count %}
+              {% if request_count = 0 %} {% else %} <strong>{% trans 'Requests made' %}:</strong> {{ request_count }}<br/> {% endif %}
+            {% endwith %}
+            <strong>{% trans 'Created' %}:</strong> {{ result.created }}</p>
+          </small>
+        </div>
+      </div>
+      <hr class="narrow soft"/>

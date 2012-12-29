@@ -1,12 +1,27 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from haystack.query import SearchQuerySet
+from haystack.views import SearchView
+from apps.browser.forms import ModelSearchForm
 
 urlpatterns = patterns('apps.authority.views',
-    url(r'^$', 'display_authority', {'template': 'authorities.html'},
-        name='display_authorities'),
 
-    url(r'^find/$', 'find_authority', {'template': 'coming_soon.html'},
-        name='find_authority'),
+    # Both `display_authorities` and `search_authority` launch the same process.
+    # `display_authorities` is for the Authorities page with the tree and list.
+    url(r'^$', 'display_authority', {'template': 'authorities.html',
+        'search_only': False}, name='display_authorities'),
+
+    # `search_authority` is for the empty Authorities page
+    # with the search form only.
+    url(r'^find/$', 'display_authority', {'template': 'authorities.html',
+        'search_only': True}, name='search_authority_blank'),
+
+    url(r'^search/$', SearchView(template='authorities.html',
+        searchqueryset=SearchQuerySet().all(), form_class=ModelSearchForm),
+        name='search_authority'),
+
+    url(r'^search/$', 'display_authority', {'template': 'authorities.html',
+        'search_only': True}, name='search_authority'),
 
     url(r'^tree/$', 'get_authority_tree'),
 

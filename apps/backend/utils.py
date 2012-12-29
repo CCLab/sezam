@@ -6,7 +6,9 @@ Functions used in other modules.
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.contrib.auth import views as auth_views
 from django.template.defaultfilters import slugify
+from django.utils.encoding import force_unicode
 from django.contrib.sites.models import Site
+from apps.backend.html2text import html2text
 
 from time import strptime, strftime
 from PIL import Image
@@ -137,6 +139,36 @@ def slugify_unique(value, model, slugfield="slug"):
 slugify_unique - end
 """
 
+
+def clean_text_for_search(text, perform_downcode=True):
+    """
+    Prepare text for indexing and search.
+    """
+    # Get the normalized unicode text.
+    text= force_unicode(text).strip()
+
+    # Remove e-mail quotation from the beginnings of the string.
+    text= re.sub(r'^\>+', '', text)
+
+    # Remove e-mail addresses.
+    text= re.sub(r'\b[A-Za-z0-9_\.-]+@[A-Za-z0-9_\.-]+[A-Za-z0-9_][A-Za-z0-9_]\b', '', text)
+
+    # Try to convert html to text.
+    try:
+        text= html2text(text)
+    except:
+        pass
+
+    # Clean the text from special characters, such as
+    # section divisions ***, etc. but preserve punctuation.
+    text= re.sub(r'\B\W{2,}\B', ' ', text)
+
+    # Downcode for better search.
+    # WARNING: search phrases should also be downcoded!
+    if perform_downcode:
+        text= downcode(text)
+
+    return text
 
 
 def get_domain_name(id=1):
@@ -284,3 +316,7 @@ def login(request, **kwargs):
     if request.POST.has_key('remember_me'):
         request.session.set_expiry(1209600) # 2 weeks
     return response
+
+
+def get_current_path(request):
+    return {'current_path': request.get_full_path()}

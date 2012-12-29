@@ -8,16 +8,13 @@ admin.autodiscover()
 
 urlpatterns= patterns('',
     url(r'^$', 'apps.browser.views.display_index', {'template': 'index.html'}),
+    # url(r'^search/', include('haystack.urls')),
+    url(r'^search/', include('apps.browser.urls')),
     url(r'^authority/', include('apps.authority.urls')),
     url(r'^request/', include('apps.pia_request.urls')),
     url(r'^user/', include('apps.userprofile.urls')),
-
     url(r'^accounts/', include('registration.backends.default.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
 

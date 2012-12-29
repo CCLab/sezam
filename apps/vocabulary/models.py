@@ -99,10 +99,10 @@ class Territory(AuthorityCategory):
 
 
 class AuthorityProfile(TreeVocabulary, SlugVocabulary):
-    """ Authority reference.
-        
-        Inherits from TreeVocabulary to support Authority->Department relation.
-        """
+    """
+    Authority reference.
+    Inherits from TreeVocabulary to support Authority->Department relation.
+    """
     description= TextField(null=True, blank=True,
                            verbose_name=_(u'Description'))
     notes= CharField(max_length=1000, null=True, blank=True,
@@ -163,6 +163,23 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
     # When the record was created.
     created= DateField(auto_now_add=True, verbose_name=_(u'Created'))
 
+    # Is active?
+    active= BooleanField(default=False, verbose_name=_(u'Active'),
+        help_text=_(u'Should this item appear in lists and search results?'))
+
+
+    def official_full_name(self):
+        return '%s %s %s' % (
+            self.official, self.official_name, self.official_lastname)
+
+    def address_full(self):
+        ln1, ln2= '', ''
+        if self.address_line1: ln1= ' %s' % self.address_line1
+        if self.address_line2: ln2= ' %s' % self.address_line2
+        return '%s %s%s%s %s-%s %s' % (
+            self.address_street, self.address_num, ln1, ln2,
+            str(self.address_postalcode[:3]), str(self.address_postalcode[3:]),
+            self.address_city)
 
     def save(self, *args, **kwargs):
 	""" Override save: get rid of non-digits in postalcode, telephone numbers

@@ -29,24 +29,25 @@ def get_request_status(status='in_progress'):
     """
     try:
         status_index= [i[0] for i in PIA_REQUEST_STATUS].index(status)
-    except:
-        # The most neutral 'in_progress'.
+    except: # The most neutral 'in_progress'.
         status_index= 0
     return PIA_REQUEST_STATUS[status_index][0]
 
 
 class PIAMessage(GenericMessage):
-    """ Class for multitable inheritance by message-like objects related to PIA,
-        such as PIARequest and PIAThread.
-        """
+    """
+    Class for multitable inheritance by message-like objects related to PIA,
+    such as PIARequest and PIAThread.
+    """
     def __unicode__(self):
         return 'from: %s; to: %s; subj.: %s' % (self.email_from,
                                                 self.email_to, self.subject)
 
 
 class PIAAttachment(GenericFile):
-    """ A file attached to he message in the Thread.
-        """
+    """
+    A file attached to he message in the Thread.
+    """
     message= ForeignKey(PIAMessage, related_name='attachments')
 
     def __unicode__(self):
@@ -62,8 +63,8 @@ class PIARequest(GenericEvent):
     in Threads.
 
     Note: `latest_thread_post` de-normalizes the models' strcture, but
-    it is nesessary measure for getting details of the request and its
-    last update by one query (as it goes through pagination).
+    it is a nesessary measure for getting details of the request and its
+    last update in one query (as it goes through pagination).
     """
     user= ForeignKey(User, related_name='requests_made',
                      verbose_name=_(u'User'))
@@ -87,6 +88,8 @@ class PIAThread(PIAMessage):
                         verbose_name=_(u'request'))
     is_response= BooleanField(default=True,
                               verbose_name=_(u'Is it a response?'))
+    def __unicode__(self):
+        return "%s (request %d)" % (self.subject[:50], self.request.id)
 
 
 class PIAAnnotation(GenericText):
@@ -100,12 +103,12 @@ class PIAAnnotation(GenericText):
 
 
 class PIARequestDraft(GenericPost):
-    """ A draft of PIA request. Being deleted right after the request is sent.
+    """
+    A draft of PIA request. Being deleted right after the request is sent.
         
-        A draft of the reply to the Authority can also be saved,
-        `thread_message` points to the message in the thread, to which the reply
-        is intended.
-        """
+    A draft of the reply to the Authority can also be saved, `thread_message`
+    points to the message in the thread, to which the reply is intended.
+    """
     authority_slug= CharField(max_length=1000,
                               verbose_name=_(u'Recipients (slugs)'))
     user= ForeignKey(User, help_text=_(u'Request from user'))

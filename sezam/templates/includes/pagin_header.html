@@ -1,0 +1,2 @@
+{% load i18n %}
+{% trans 'Found' %} <strong>{{ page.paginator.count }}</strong> {% trans 'records' %}. {% trans 'Showing' %} {{ page.object_list|length }} {% trans 'results on page' %} <strong>{{ page.number }}</strong> {% trans 'of' %} <strong>{{ page.paginator.num_pages }}</strong>

@@ -11,7 +11,6 @@ $('#auth_tree').bind(
 $('#auth_tree').bind(
     'tree.init',
     function(event) {
-        // alert(window.location);
         $('#authority_list').html('&nbsp;').load('/authority/list/');
     }
 );

@@ -1,51 +1,50 @@
-  {% load i18n %}
-    <div class="row">
-        <legend>
-            {% if authority %}{% trans 'Requests to' %} {{ authority.name }}
-            {% else %}{% trans 'Public Information Access Requests' %}
-            {% endif %}
-        </legend>
+{% load i18n %}
+<div class="row">
+  <h2>
+  {% if authority %}{% trans 'Requests to' %} {{ authority.name }}
+  {% else %}{% trans 'Public Information Access Requests' %}
+  {% endif %}
+  </h2>
+  <legend>{% include "includes/pagin_header.html" %}</legend>
 
-        <form class="form-inline" name="formPIAFilterForm" id="form_PIAFilterForm" enctype="multipart/form-data" action="" method="get">
-            <div class="control-group">
-                {{ form.keywords.label }} {{ form.keywords }}
-                &nbsp;
-                {{ form.date_after.label }} {{ form.date_after }}
-                &nbsp;
-                {{ form.date_before.label }} {{ form.date_before }}
-                &nbsp;
-                <input class="btn" type="submit" name="{{ urlparams.status }}" value='{% trans "Filter" %}' />
-            </div>
-            {% trans 'Requests' %}
-            <div class="btn-group">
-                <input class="btn btn-small{% if urlparams.status = '' or urlparams.status = 'all' %} active{% endif %}" type="submit" name="all" value='{% trans "all" %}' />
-                <input class="btn btn-small{% if urlparams.status = 'successful' %} active{% endif %}" type="submit" name="successful" value='{% trans "successful" %}' />
-                <input class="btn btn-small{% if urlparams.status = 'unsuccessful' %} active{% endif %}" type="submit" name="unsuccessful" value='{% trans "unsuccessful" %}' />
-                <input class="btn btn-small{% if urlparams.status = 'unresolved' %} active{% endif %}"  type="submit" name="unresolved" value='{% trans "unresolved" %}' />
-            </div>
-        </form>
-        
-        {% if pia_requests %}
-        {% for pia_request in pia_requests %}
-        <div class="row">
-            <div class="span7">
-                <h4><a href="/request/{{ pia_request.id }}/">{{ pia_request.summary }}</a></h4>
-                {% include 'includes/pia_request_status.html' %}
-                <small>{% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/user/{{ pia_request.user.pk }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}</small>
-            </div>
-            <div class="span5">
-                <blockquote>{{ pia_request.latest_thread_post.body|default:""|slice:":180" }}...
-                </blockquote>
-            </div>
-        </div>
-          {% endfor %}
-        {% else %}
-        <p>
-          {% if urlparams.params = '?' %}
-            {% trans 'There are no requests so far. ' %} <a href="/request/{{ authority.slug }}/">{% trans 'Make the first' %}</a>.
-          {% else %}
-            {% trans 'There are no requests matching the query.' %}
-          {% endif %}
-        {% endif %}
-        </p>
+  <form class="form-inline" name="formPIAFilterForm" id="form_PIAFilterForm" enctype="multipart/form-data" action="" method="get">
+    <div class="control-group">
+      {{ form.keywords.label }} {{ form.keywords }}
+      &nbsp;
+      {{ form.date_after.label }} {{ form.date_after }}
+      &nbsp;
+      {{ form.date_before.label }} {{ form.date_before }}
+      &nbsp;
+      <input class="btn" type="submit" name="{{ urlparams.status }}" value='{% trans "Filter" %}' />
     </div>
+    {% trans 'Requests' %}
+    <div class="btn-group">
+      <input class="btn btn-small{% if urlparams.status = '' or urlparams.status = 'all' %} active{% endif %}" type="submit" name="all" value='{% trans "all" %}' />
+      <input class="btn btn-small{% if urlparams.status = 'successful' %} active{% endif %}" type="submit" name="successful" value='{% trans "successful" %}' />
+      <input class="btn btn-small{% if urlparams.status = 'unsuccessful' %} active{% endif %}" type="submit" name="unsuccessful" value='{% trans "unsuccessful" %}' />
+      <input class="btn btn-small{% if urlparams.status = 'unresolved' %} active{% endif %}"  type="submit" name="unresolved" value='{% trans "unresolved" %}' />
+    </div>
+  </form>
+        
+  {% for pia_request in page.object_list %}
+  <div class="row">
+    <div class="span7">
+      <h4><a href="/request/{{ pia_request.id }}/">{{ pia_request.summary }}</a></h4>
+      {% include 'includes/pia_request_status.html' %}
+      <small>{% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} by <a href="/user/{{ pia_request.user.pk }}">{{ pia_request.user.get_full_name }}</a> to <a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a>, {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}</small>
+    </div>
+    <div class="span5">
+      <blockquote>{{ pia_request.latest_thread_post.body|default:""|slice:":180" }}...</blockquote>
+    </div>
+  </div>
+  {% empty %}
+  <p>
+    {% if urlparams.params = '?' %}
+    {% trans 'There are no requests so far. ' %} <a href="/request/{{ authority.slug }}/">{% trans 'Make the first' %}</a>.
+    {% else %}
+    {% trans 'There are no requests matching the query.' %}
+    {% endif %}
+  </p>
+  {% endfor %}
+  {% include "includes/pagin.html" %}
+</div>

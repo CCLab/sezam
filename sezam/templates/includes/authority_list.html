@@ -1,44 +1,32 @@
 {% load i18n %}
-    <!-- List of authorities -->
     <div id="authority_list" class="content">
-    <!-- Search panel -->
-      <div class="row">
-        <form class="navbar-search span7">
-          <input type="text" class="search-query" placeholder="Search">
-        </form>
-      </div>
       <div class="row">
         &nbsp;
       </div>
       <div class="row">
         <div class="span7">
-        <p class="lead">{% trans 'Found' %} <strong>{{ total_item }}</strong> {% trans 'public authorities' %}</p>
+        <legend>{% include "includes/pagin_header.html" %}</legend>
         </div>
       </div>
-      {% for result in results %}
-      <div class="row">
-        <div class="span7">
-          <h3><a href="/authority/{{ result.slug }}">{{ result.name }}</a>
-            <a class="btn btn-small btn-primary pull-right" href="/request/{{ result.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Request' %}</a>
-          </h3>
-            {% if result.description %}{{ result.description|default:''|linebreaks|urlize|slice:":200" }}... <br/>{% endif %}
-            {% with result.authority_requests.count as request_count %}
-              {% if request_count = 0 %} {% else %} <strong>{% trans 'Requests made' %}:</strong> {{ request_count }}<br/> {% endif %}
-            {% endwith %}
-            <strong>{% trans 'Created' %}:</strong> {{ result.created }}
-          <hr class="narrow soft"/>
-        </div>
-      </div>
-      {% endfor %}
+      {% if query %}
+        {% for obj_result in page.object_list %}
+          {% with obj_result.object as result %}
+            {% include "includes/authority_list_unit.html" %}
+          {% endwith %}
+        {% empty %}
+        <p>{% trans 'No results found' %}.</p>
+        {% endfor %}
+      {% else %}
+        {% for result in page.object_list %}
+          {% with '' as query %}
+            {% include "includes/authority_list_unit.html" %}
+          {% endwith %}
+        {% endfor %}
+      {% endif %}
     </div>
-    <!-- spinner -->
-    <script>
-$('.authority-profile').click(
-    function(evt) {
-        var $this = $(evt.target);
-        alert($this.parents('div').find('.authority-info'));
-        $this.parents('div').find('.authority-info').show();
-        return false;
-});
-    </script>
+
     {% include "includes/pagin.html" %}
+
+    {% if not query or query = '' %}
+    <script src="{{ STATIC_URL }}js/sz.authpagin.js"></script>
+    {% endif %}
