@@ -200,7 +200,7 @@ def send_report(pia_request, status, **kwargs):
     """
     Send a report message to the User.
     """
-    template= kwargs.get('email_template', 'emails/report_overdue_to_user.txt')
+    template= kwargs.get('template', 'emails/report_overdue_to_user.txt')
     message_subject= kwargs.get('subject', None)
     report_date= kwargs.get('report_date', None)
     if report_date is None:
