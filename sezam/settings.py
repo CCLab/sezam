@@ -194,11 +194,11 @@ if 'Darwin' in platform():  # local
     DEFAULT_FROM_EMAIL = 'wniosek.dip@op.pl'
 elif 'Linux' in platform():  # server
     EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 25
-    EMAIL_HOST_USER = ''
-    EMAIL_HOST_PASSWORD = ''
-    EMAIL_USE_TLS = False
-    DEFAULT_FROM_EMAIL = 'info@sezam.pl'
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = 'sezam'
+    EMAIL_HOST_PASSWORD = 'mazes.8'
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = 'wniosek.dip@sezam.centrumcyfrowe.pl'
 
 # User management
 LOGIN_URL= '/accounts/login/'
@@ -213,16 +213,29 @@ PAGINATE_BY = 20
 THUMBNAIL_SIZE = (70, 70)
 
 # Email - mailbox backend settings.
-MAILBOXES = {
-    'default': { # Test mailbox: go to http://poczta.onet.pl/ to check mail.
-        'host': 'imap.poczta.onet.pl',
-        'port': 993,
-        'login': 'wniosek.dip@op.pl',
-        'domain': 'op.pl',
-        'password': 'sans640tirepita',
-        'use_ssl': True,
+if 'Darwin' in platform():  # local
+    MAILBOXES = {
+        'default': { # Test mailbox: go to http://poczta.onet.pl/ to check mail.
+            'host': 'imap.poczta.onet.pl',
+            'port': 993,
+            'login': 'wniosek.dip@op.pl',
+            'domain': 'op.pl',
+            'password': 'sans640tirepita',
+            'use_ssl': True,
+        }
     }
-}
+elif 'Linux' in platform():  # server
+    MAILBOXES = {
+        'default': { # Local mailbox.
+            'host': 'localhost',
+            'port': 143,
+            'login': 'sezam',
+            'domain': 'sezam.centrumcyfrowe.pl',
+            'password': 'mazes.8',
+            'use_ssl': True,
+        }
+    }
+
 # Directory for saving attachments from incoming e-mails.
 ATTACHMENT_DIR= os.path.join(MEDIA_ROOT, 'attachments/')
 
