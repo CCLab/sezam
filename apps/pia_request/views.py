@@ -8,13 +8,15 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.core.mail import EmailMessage
 from django.http import Http404
+from haystack.query import SearchQuerySet
 
 import re
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
-from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name
+from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name, clean_text_for_search, downcode
 from apps.backend import AppMessage
+from apps.browser.forms import ModelSearchForm
 from apps.vocabulary.models import AuthorityProfile
 from sezam.settings import DEFAULT_FROM_EMAIL, PAGINATE_BY
 
@@ -59,29 +61,28 @@ def new_request(request, slug=None, **kwargs):
     Display the form for making a request to the Authority (slug).
     """
     template= kwargs.get('template', 'request.html')
-    initial= {}
     if request.method == 'GET':
         try: # Try to find Authority.
             authority= AuthorityProfile.objects.get(slug=slug)
         except AuthorityProfile.DoesNotExist:                
             raise Http404
-        initial.update({'authority_slug': [authority.slug]})
-        if authority.official_lastname:
-            initial.update({'authority_name': '%s %s' % (
-                authority.official_name, authority.official_lastname)})
-        else:
-            initial.update({'authority_name': authority.name})
         authority= [authority] # Result should always be a list.
-    else:
-
-        # TO-DO: reaction for POST here (several Authorities).
-        initial.update({'authority_name': ' ', 'authority_slug': ' '})
-    if request.user.is_anonymous():
-        initial.update({'user_name': ''})
-    else:
-        initial.update({'user_name': request.user.get_full_name()})
+    elif request.method == 'POST':
+        # Multiple Authorities.
+        authority_slug= dict(request.POST).get(u'authority_slug', None)
+        authority= list()
+        if authority_slug:
+            for slug in authority_slug:
+                try:
+                    auth= AuthorityProfile.objects.get(slug=slug)
+                except:
+                    continue
+                authority.append(auth)
+        else: # Nothing selected.
+            return redirect(request.META.get('HTTP_REFERER'))
+    initial= {'authority': authority, 'user': request.user}
     return render_to_response(template, {
-        'authority': authority, 'form': MakeRequestForm(initial=initial)},
+        'form': MakeRequestForm(initial=initial)},
         context_instance=RequestContext(request))
 
 
@@ -90,71 +91,59 @@ def save_request_draft(request, id=None, **kwargs):
     """
     Saving a draft whether it is a new request or an updated one.
     """
+    request_id= id
     template= kwargs.get('template', 'request.html')
-    if request.method != 'POST':
-        raise Http404
-    form= MakeRequestForm(request.POST)
     user_message= request.session.pop('user_message', {})
-
-    # Slugs should be saved in the list for the case
-    # it is a draft of the request to several Authorities.
-    try:
-        authority_slug= eval(request.POST[u'authority_slug'])
-    except:
-        authority_slug= []
-    authority= []
-    try: # Try to find Authority.
-        for slug in authority_slug:
-            authority.append(AuthorityProfile.objects.get(slug=slug))
-    except AuthorityProfile.DoesNotExist:
-        raise Http404
-
+    form= MakeRequestForm(request.POST)
+    data= {'request_id': request_id, 'template': template,
+           'user_message': user_message}
     if form.is_valid():
-        if id: # Already saved, need to be updated.
-            piarequest_draft= PIARequestDraft.objects.get(id=int(id))
-            piarequest_draft.subject= form.cleaned_data['request_subject']
-            piarequest_draft.body= form.cleaned_data['request_body']
-            piarequest_draft.authority_slug= ','.join(authority_slug)
-        else:
-            try:
-                piarequest_draft= PIARequestDraft.objects.create(
-                    user=request.user, authority_slug=','.join(authority_slug),
-                    subject=form.cleaned_data['request_subject'],
-                    body=form.cleaned_data['request_body'])
-            except Exception as e:
-                pass # TO-DO: Process exceptions (for example anonymous user)
-        piarequest_draft.save()
-        request_id= piarequest_draft.id
-    else:
-        request_id= None
+        selected_authority= form.cleaned_data['authority']
+        if selected_authority:
+            params={'user': form.cleaned_data['user'],
+                'body': form.cleaned_data['body'],
+                'subject': ''.join(form.cleaned_data['subject'].splitlines())}
 
-    return {'template': template, 'form': form, 'authority': authority,
-            'request_id': request_id, 'user_message': user_message}
+            if id: # Already saved, need to be updated.
+                piarequest_draft= PIARequestDraft.objects.get(id=int(id))
+                for k,v in params.iteritems():
+                    setattr(piarequest_draft, k, v)
+            else:
+                piarequest_draft= PIARequestDraft(**params)
+
+            try:
+                piarequest_draft.save()
+                request_id= piarequest_draft.id
+            except Exception as e:
+                ex= AppMessage('DraftSavingFailed', value=(data,)).message % e
+                user_message.update({'fail': ex})
+                return data.update({'user_message': user_message})
+
+            piarequest_draft.authority.clear()
+            for authority in selected_authority:
+                piarequest_draft.authority.add(authority)
+
+            user_message.update({'success': _(u'Draft successfully saved. You can send it now, or check other stuff on our web-site.')})
+            data.update({'user_message': user_message,
+                         'request_id': request_id})
+    data.update({'form': form}) # Updating form after validation.
+    return data
 
 
 def get_request_draft(request, id, **kwargs):
     """
     Return request draft data for display.
     """
-    template= kwargs.get('template', 'request.html')
-    user_message= request.session.pop('user_message', {})
     try:
-        draft= PIARequestDraft.objects.get(pk=id)
+        draft= PIARequestDraft.objects.get(pk=int(id))
     except:
         raise Http404
-    initial={'authority_slug': draft.authority_slug,
-             'request_subject': draft.subject, 'request_body': draft.body,
-             'authority_name': '', 'user_name': ''}
-    authority_slug_list= draft.authority_slug.split(',')
-    authority= []
-    try: # Try to find Authority.
-        for slug in authority_slug_list:
-            authority.append(AuthorityProfile.objects.get(slug=slug))
-    except AuthorityProfile.DoesNotExist:
-        raise Http404
-    form= MakeRequestForm(initial=initial)
-    return {'template': template, 'form': form, 'authority': authority,
+    template= kwargs.get('template', 'request.html')
+    user_message= request.session.pop('user_message', {})
+    form= MakeRequestForm(instance=draft)
+    return {'template': template, 'form': form,
             'request_id': id, 'user_message': user_message}
+
 
 @login_required
 def preview_request(request, id=None, **kwargs):
@@ -196,77 +185,76 @@ def send_request(request, id=None, **kwargs):
         response_data= save_request_draft(request, id, **kwargs)
         return render_to_response(response_data.pop('template'), response_data,
                                   context_instance=RequestContext(request))
+
+    # Discard the draft.
+    if request.POST.get('discard_request_draft'):
+        if id: # Saved draft (otherwise we just don't bother).
+            result= _do_discard_request_draft(int(id))
+            if result != 'success':
+                request.session['message']= AppMessage(
+                    'DraftDiscardFailed', value=(id,)).message % result
+        # After discarding a draft redirect to User's Profile page.
+        return redirect(reverse('user_profile', args=(request.user.id,)))
+
     template= kwargs.get('email_template', 'emails/request_to_authority.txt')
+    successful, failed= list(), list()
 
-    # No newlines in Email subject!
-    message_subject = ''.join(request.POST.get('request_subject').splitlines())
-    message_content= render_to_string(template, {
-        'content': request.POST.get('request_body', ''),
-        'info_email': 'info@%s' % get_domain_name()})
+    form= MakeRequestForm(request.POST)
+    if form.is_valid():
+        # No newlines in Email subject!
+        message_subject = ''.join(form.cleaned_data['subject'].splitlines())
+        message_content= render_to_string(template, {
+            'content': form.cleaned_data['body'],
+            'info_email': 'info@%s' % get_domain_name()})
 
-    # Convert to a list.
-    authority_slug= eval(request.POST.get('authority_slug'))
-
-    successful, successful_slugs, failed= list(), set(), list()
-    for slug in authority_slug:
-        # Collect the information for the e-mail message and the message in
-        # PIAThread, specific for the current authority.
-        # PIARequest is being created first to get its id, which is a part of
-        # the `reply-to` field in the message header (however it is becoming
-        # `from` in the PIAThread message).
-        # `from` field looks like this: name.surname.request_id@domain.name
-        # If for some reason sending the request fails, it is being removed from
-        # the db.
-        authority= AuthorityProfile.objects.get(slug=slug)
-        try:
-            email_to= authority.email
-        except:
-            failed.append('%s: <a href="/authority/%s">%s</a>' % (
-                AppMessage('AuthEmailNotFound').message,
-                authority.slug, authority.name))
-            continue
-        pia_request= PIARequest.objects.create(summary= message_subject,
-            authority=authority, user=request.user)
-        email_from= email_from_name(request.user.get_full_name(),
-                                    id=pia_request.id, delimiter='.')
-        message_data= {'request': pia_request, 'is_response': False,
-                       'email_to': email_to, 'email_from': email_from,
-                       'subject': message_subject, 'body': message_content}
-        message_request= EmailMessage(message_subject, message_content,
-            DEFAULT_FROM_EMAIL, [email_to], headers = {'Reply-To': email_from})
-        try: # sending the message to the Authority, check if it doesn't fail.
-            message_request.send(fail_silently=False)
-        except Exception as e:
-            try: # Wipe from the db, if it cannot be send.
-                pia_request.delete()
+        message_draft= PIARequestDraft.objects.get(id=int(id))
+        selected_authority= form.cleaned_data['authority']
+        for authority in selected_authority:
+            try:
+                email_to= authority.email
             except:
-                pass
-            failed.append('<a href="/authority/%s">%s</a> (%s)' % (
-                authority.slug, authority.name, e))
-            continue
+                failed.append('%s: <a href="/authority/%s">%s</a>' % (
+                    AppMessage('AuthEmailNotFound').message, authority.name))
+                continue
+            pia_request= PIARequest.objects.create(summary=message_subject,
+                authority=authority, user=request.user)
+            email_from= email_from_name(request.user.get_full_name(),
+                                        id=pia_request.id, delimiter='.')
+            message_data= {'request': pia_request, 'is_response': False,
+                           'email_to': email_to, 'email_from': email_from,
+                           'subject': message_subject, 'body': message_content}
+            message_request= EmailMessage(message_subject, message_content,
+                DEFAULT_FROM_EMAIL, [email_to], headers={'Reply-To': email_from})
+            try: # sending the message to the Authority, check if it doesn't fail.
+                message_request.send(fail_silently=False)
+            except Exception as e:
+                try: # Wipe from the db, if it cannot be send.
+                    pia_request.delete()
+                except:
+                    pass
+                failed.append('<a href="/authority/%s">%s</a> (%s)' % (
+                    authority.slug, authority.name, e))
+                continue
+            # Creating the 1st message in the thread.
+            pia_msg= PIAThread.objects.create(**message_data)
+            successful.append('<a href="/authority/%s">%s</a>' % (
+                authority.slug, authority.name))
+            message_draft.authority.remove(authority)
 
-        # Creating the 1st message in the thread.
-        pia_msg= PIAThread.objects.create(**message_data)
-        successful.append('<a href="/authority/%s">%s</a>' % (
-            authority.slug, authority.name))
-        successful_slugs.add(authority.slug)
-
-    message_draft= PIARequestDraft.objects.get(id=int(id))
-    if len(authority_slug) == len(successful):
-        try: # Remove draft if nothing failed.
-            message_draft.delete()
-        except:
-            pass # TO-DO: Log it!
-    elif len(authority_slug) == len(failed):
-        pass # This doesn't affect the draft - it stays the same.
-    else: # Remove from the draft those slugs that were successful.
-        draft_slugs= set(message_draft.authority_slug.split(','))
-        message_draft.authority_slug= ','.join(
-            list(draft_slugs - successful_slugs))
-        try:
-            message_draft.save()
-        except:
-            pass # TO-DO: Log it!
+        # Update authorities - remove those that were successful,
+        # or delete the draft if all successful.
+        if len(failed) == 0:
+            try: # Remove draft if nothing failed.
+                message_draft.delete()
+            except Exception as e:
+                failed.append(AppMessage('DraftRemoveFailed', value=(message_draft.id,)).message % e)
+        else: # Save updated Draft (unsuccessful Authorities already removed).
+            try:
+                message_draft.save()
+            except:
+                pass # TO-DO: Log it!
+            # Update the form with updated instance of the Draft.
+            form= MakeRequestForm(instance=message_draft)
 
     # Report the results.
     user_message= {'success': None, 'fail': None}
@@ -281,16 +269,47 @@ def send_request(request, id=None, **kwargs):
     request.session['user_message']= user_message
 
     # Re-direct (depending on the Authorities and Failed status).
-    if len(authority_slug) == len(failed):
-        # If all are failed, return to the draft page.
-        response_data= save_request_draft(request, id, **kwargs)
-        return render_to_response(response_data.pop('template'), response_data,
-                                  context_instance=RequestContext(request))
-    else: # Otherwise:
-        if len(authority_slug) == 1: # Authority profile.
-            return redirect(reverse('get_authority_info', args=(authority_slug[0],)))
+    if len(list(selected_authority)) == len(successful): # All is good.
+        if len(list(selected_authority)) == 1: # Authority profile.
+            return redirect(reverse('get_authority_info', args=(
+                selected_authority[0].slug,)))
         else: # Or list of Authorities in case of a mass message.
             return redirect(reverse('display_authorities'))
+    else:
+        # Some are not good - return to the draft page.
+        response_data= save_request_draft(request, id, **kwargs)
+        response_data.update({'form': form})
+        return render_to_response(response_data.pop('template'), response_data,
+                                  context_instance=RequestContext(request))
+
+
+def retrieve_similar_items(pia_request, limit=None):
+    """
+    Retrieve items similar to the given one.
+    """
+    # WARNING!
+    # This is a dirty way to get similar requests to the current one - via
+    # search on its summary, but haystack's more_like_this doesn't work
+    # properly.
+    # [0:11] means that the request, by whose summary we're looking is also
+    # somewhere in the result, so we have to exclude it, and to return
+    # the rest 10.
+    # text_for_search= downcode(clean_text_for_search(thread[0].request.summary))
+    # similar_items= []
+    # for res in sqs.raw_search(text_for_search)[0:11]:
+    #     if res.object.pk != thread[0].request.pk:
+    #         similar_items.append(res)
+
+    # WARNING! Using `django_ct__exact` (haystack's internal foeld)
+    # is a dirty trick, but the only working. Find better solution!
+    similar_items= SearchQuerySet().more_like_this(pia_request).filter(
+        django_ct__exact='pia_request.piarequest')
+
+    if limit:
+        try:
+            return similar_items[:int(limit)]
+        except: pass
+    return similar_items
 
 
 def view_thread(request, id=None, **kwargs):
@@ -320,11 +339,52 @@ def view_thread(request, id=None, **kwargs):
             else:
                 user_message.update({
                     'success': AppMessage('ClassifyRespAlien').message})
+    similar_items= retrieve_similar_items(thread[0].request, 10)
+
     return render_to_response(template, {'thread': thread,
-        'user_message': user_message, 'request_status': PIA_REQUEST_STATUS,
+        'similar_items': similar_items, 'user_message': user_message,
+        'request_status': PIA_REQUEST_STATUS,
         'request_id': id, 'form': None, 'page_title': '%s - %s' % (
             thread[0].request.summary[:50], get_domain_name())},
         context_instance=RequestContext(request))
+
+
+def similar_requests(request, id=None, **kwargs):
+    """
+    Browse requests, similar to the given one.
+    """
+    if request.method == 'POST':
+        raise Http404
+    if id is None:
+        raise Http404
+    try:
+        rq= PIARequest.objects.get(pk=int(id))
+    except:
+        raise Http404
+    user_message= request.session.pop('user_message', {})
+    template= kwargs.get('template', 'search/search.html')
+    form= ModelSearchForm(request.GET)
+
+    initial, query, urlparams= process_filter_request(
+        request, PIA_REQUEST_STATUS)
+
+    similar_items= retrieve_similar_items(rq)
+
+    paginator= Paginator(similar_items, PAGINATE_BY)
+    try:
+        page= int(request.GET.get('page', '1'))
+    except ValueError:
+        page= 1
+    try:
+        results= paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        results= paginator.page(paginator.num_pages)
+
+    return render_to_response(template, {'page': results, 'query': rq.summary,
+        'form': PIAFilterForm(initial=initial), 'user_message': user_message,
+        'page_title': _(u'Browse similar requests') + ' - ' + get_domain_name(),
+        'urlparams': urlparams}, context_instance=RequestContext(request))
+
 
 
 @login_required
@@ -493,3 +553,44 @@ def annotate_request(request, id=None, **kwargs):
         'form': CommentForm(), 'page_title': page_title, 'mode': 'annotate',
         'request_status': PIA_REQUEST_STATUS},
         context_instance=RequestContext(request))    
+
+
+def _do_discard_request_draft(draft_id):
+    """
+    Deleting draft from the db.
+    """
+    try:
+        draft= PIARequestDraft.objects.get(pk=int(draft_id))
+    except Exception as e:
+        return e
+    try:
+        draft.delete()
+    except Exception as e:
+        return e
+    return 'success'
+    
+
+@login_required
+def discard_request_draft(request, id=None, **kwargs):
+    """
+    Discards a draft or a bunch of drafts. If id is omitted,
+    the list of drafts to discard should be gathered from POST data.
+    """
+    if request.method != 'POST':
+        raise Http404
+    message= request.session.pop('message', [])
+    draft_id_list= []
+    if id:
+        draft_id_list.append(id)
+    else:
+        try:
+            draft_id_list.extend(dict(request.POST).get('draft_id', None))
+        except TypeError: # Nothing selected.
+            pass # No reaction.
+    if draft_id_list:
+        for draft_id in draft_id_list:
+            result= _do_discard_request_draft(draft_id)
+            if result != 'success':
+                ex= AppMessage('DraftDiscardFailed', value=(draft_id,)).message % result
+                request.session['message']= ex
+    return redirect(request.META.get('HTTP_REFERER'))

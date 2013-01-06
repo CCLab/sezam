@@ -16,7 +16,11 @@
               <li class="active"><a href="/authority/">{% trans 'Authorities' %}</a></li>
             </ul>
             <ul class="nav pull-right">
-              <li>{% include "search/search_form.html" %}</li>
+              <li>
+                <form class="navbar-search" method="get" action="/search/">
+                  <input id="id_q" class="search-query" type="text" placeholder="Szukaj" name="q">
+                </form>
+              </li>
                 {% if user.is_authenticated %}
               <li class="divider span1"></li>
               <li class="dropdown">

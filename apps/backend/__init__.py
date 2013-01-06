@@ -25,7 +25,7 @@ from apps.backend.html2text import html2text
 CountryField
 """
 COUNTRIES = (
-    ('000', '-'),
+    ('000', ''),
     ('AFG', _('Afghanistan')),
     ('ALA', _('Aland Islands')),
     ('ALB', _('Albania')),
@@ -524,6 +524,15 @@ APP_MESSAGES = {
         },
     'ClassifyRespAlien': {
         'message': _("We don't know whether the most recent response to this request contains information or not."),
+        },
+    'DraftCreateFailed': {
+        'message': _("Failed to create a PIA Reqiest draft. System error is: %s"),
+        },
+    'DraftDiscardFailed': {
+        'message': _("Failed to discard a PIA Reqiest draft. System error is: %s"),
+        },
+    'DraftRemoveFailed': {
+        'message': _("Failed to remove a PIA Reqiest draft, while sending PIA Request. System error is: %s"),
         }
     }
 
@@ -558,7 +567,7 @@ from haystack.utils import Highlighter
 
 class StretchHighlighter(Highlighter):
     def render_html(self, highlight_locations=None, start_offset=None, end_offset=None):
-        # Shifting offset to 50 max symbols ''back'', so that the
+        # Shifting offset to 50 max symbols "back", so that the
         # highlighted chunk would appear in the middle of the result.
         window= end_offset - start_offset
         shifted_by= 50
@@ -580,17 +589,24 @@ class StretchHighlighter(Highlighter):
 
         highlighted_chunk= self.text_block[start_offset:end_offset]
 
-        # Creating `query_words` manually, because haystack applies .lower()
-        # to each word, which makes .replace() impossible.
-        _query_words= set([word for word in self.query.split() if not word.startswith('-')])
         if self.css_class:
             _css_class= self.css_class
         else:
             _css_class= 'highlighted'
+
+        # Creating `query_words` manually, because haystack applies .lower()
+        # to each word, which makes .replace() impossible.
+        _query_words= set([word for word in self.query.split() if not word.startswith('-')])
+
+        # Highlight should be case insensitive!
         for word in _query_words:
-            highlighted_chunk= highlighted_chunk.replace(word,
-                '<%(tag)s class="%(css)s">%(word)s</%(tag)s>' % {
-                'tag': self.html_tag, 'css':_css_class, 'word': word})
+            p= re.compile(word, re.IGNORECASE)
+            found= p.findall(highlighted_chunk)
+            if found:
+                for w in set(found):
+                    highlighted_chunk= highlighted_chunk.replace(w,
+                        '<%(tag)s class="%(css)s">%(word)s</%(tag)s>' % {
+                            'tag': self.html_tag, 'css':_css_class, 'word': w})
         if start_offset > 0:
             highlighted_chunk= '...' + highlighted_chunk
         if end_offset < len(self.text_block):
@@ -601,8 +617,8 @@ class StretchHighlighter(Highlighter):
 StretchHighlighter - end
 """
 
-
-# my_text = 'Please could you provide me with any information the BBC holds on how it is prepared for the eventuality of a zombie apocalypse/invasion and the associated costs to the licence payer for such preparations. What training has been provided to BBC staff and its subcontractors to defend themselves from the undead? What weaponry does the BBC have access to and who are the appropriate licence holders for the arsenal? Thank you for your request for information under the Freedom of Information Act 2000, as detailed in your email below. Your request was received on 30th November 2012. We will provide the requested information as promptly as possible, and at the latest within 20 working days. If you have any queries about your request, please contact us at the address below.'
+# # test
+# my_text = 'Please could you provide me with any information the BBC holds on how it is prepared for the eventuality of a zombie apocalypse/invasion and the associated costs to the licence payer for such preparations. What training has been provided to BBC staff and its subcontractors to defend themselves from the undead? What weaponry does the BBC have access to and who are the appropriate licence holders for the arsenal? Thank you for your request for information under the Freedom of Information Act 2000, as detailed in your email below. Your request was received on 30th November 2012. We will provide the requested information as promptly as possible, and at the latest within 20 working days. If you have any queries about your request, please contact us at the address below. Information follows.'
 # my_query = 'provide information'
 # from apps.backend import StretchHighlighter
 # highlight= StretchHighlighter(my_query)

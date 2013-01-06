@@ -140,7 +140,7 @@ slugify_unique - end
 """
 
 
-def clean_text_for_search(text, perform_downcode=True):
+def clean_text_for_search(text):
     """
     Prepare text for indexing and search.
     """
@@ -163,10 +163,12 @@ def clean_text_for_search(text, perform_downcode=True):
     # section divisions ***, etc. but preserve punctuation.
     text= re.sub(r'\B\W{2,}\B', ' ', text)
 
-    # Downcode for better search.
-    # WARNING: search phrases should also be downcoded!
-    if perform_downcode:
-        text= downcode(text)
+    # Remove all returns and new lines.
+    text= re.sub(r'\n+', ' ', text)
+    text= re.sub(r'\r+', ' ', text)
+
+    # Convert multiple spaces to singles.
+    text= re.sub(r'\s{2,}', ' ', text)
 
     return text
 
@@ -316,7 +318,3 @@ def login(request, **kwargs):
     if request.POST.has_key('remember_me'):
         request.session.set_expiry(1209600) # 2 weeks
     return response
-
-
-def get_current_path(request):
-    return {'current_path': request.get_full_path()}

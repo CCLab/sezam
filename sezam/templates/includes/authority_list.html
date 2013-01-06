@@ -8,6 +8,20 @@
         <legend>{% include "includes/pagin_header.html" %}</legend>
         </div>
       </div>
+
+      <form method="post" action="/request/multiple/">
+      {% csrf_token %}
+
+      {% if user.is_authenticated %}
+        {% if user.profile.trusted %}
+      <div class="alert alert-info">
+        <p><small><strong>{% trans "You can select several Authorities, and then send a request to all of them." %}</small></strong>
+          <input class="btn btn-primary btn-large pull-right" type="submit" value="{% trans 'Make requests' %}">
+          <br/>{% trans "For each selected authority a separate request will be sent, so that you can trace them separately." %}</p>
+      </div>
+        {% endif %}
+      {% endif %}
+
       {% if query %}
         {% for obj_result in page.object_list %}
           {% with obj_result.object as result %}
@@ -23,6 +37,8 @@
           {% endwith %}
         {% endfor %}
       {% endif %}
+      </form>
+
     </div>
 
     {% include "includes/pagin.html" %}

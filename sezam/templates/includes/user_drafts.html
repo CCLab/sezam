@@ -1,13 +1,40 @@
 {% load i18n %}
-  <div class="content">
-        {% if user_profile %}
-            {% if user.is_authenticated %}
-                {% if user = user_profile.user %}
-    <legend>{% trans 'My drafts' %}</legend>
-    {% for draft in pia_drafts %}
-    <p>{{ draft.created }} <a href="/request/{{ draft.pk }}/preview/">{{ draft.subject }}</a></p>
-    {% endfor %}
-                {% endif %}
-            {% endif %}
-        {% endif %}
-  </div>
+{% if user_profile %}
+  {% if user.is_authenticated %}
+    {% if user = user_profile.user %}
+<div class="well well-white well-dotted">
+  <legend>{% trans 'My drafts' %} {% if pia_drafts %}({{ pia_drafts.count }}){% endif %}</legend>
+       
+      {% if pia_drafts %}
+  <form method="post" action="/request/discard/">
+    {% csrf_token %}
+  <table class="table table-striped table-condensed">
+    <tbody>
+        {% for draft in pia_drafts %}
+      <tr>
+        <td>
+          <input class="action-select" type="checkbox" name="draft_id" value="{{ draft.id }}" />
+        </td>
+        <td>
+          <small>
+          {% for auth in draft.authority.all|slice:":2" %}
+            <strong><a href="/authority/{{ auth.slug }}/">{{ auth.name|slice:":8" }}{% if auth.name|length > 8 %}.{% endif %}</a></strong>{% if forloop.last %}...{% else %}, {% endif %}
+          {% endfor %}
+          {% if draft.authority.all.count > 1 %}({{ draft.authority.all.count }}){% endif %}
+          </small>
+        </td>
+        <td><small><a href="/request/{{ draft.pk }}/preview/">{{ draft.subject|slice:":45" }}{% if draft.subject|length > 45 %}...{% endif %}</a></small></td>
+        <td><small>{{ draft.created|date:"j.m.Y" }}</small></td>
+        </tr>
+        {% endfor %}
+     </tbody>
+  </table>
+  <input class="btn btn-small" type="submit" name="discard" value="{% trans 'Discard selected' %}">
+  </form>
+      {% else %}
+  <p>{% trans "There are no drafts saved." %}</p>
+      {% endif %}
+</div>
+    {% endif %}
+  {% endif %}
+{% endif %}

@@ -109,15 +109,28 @@ class PIARequestDraft(GenericPost):
     A draft of the reply to the Authority can also be saved, `thread_message`
     points to the message in the thread, to which the reply is intended.
     """
-    authority_slug= CharField(max_length=1000,
-                              verbose_name=_(u'Recipients (slugs)'))
+    authority= ManyToManyField(AuthorityProfile,
+                               verbose_name=_(u'Recipients (IDs)'))
     user= ForeignKey(User, help_text=_(u'Request from user'))
     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
     thread_message= OneToOneField(PIAThread, null=True, blank=True,
         default=None, related_name='draft', verbose_name=_(u'Message'))
-    
+
+    # def get_authority_snippet(self):
+    #     """
+    #     Return the snippet for Authority list in the draft.
+    #     """
+    #     authority_list= []
+    #     for slug in self.authority_slug.split(','):
+    #         try:
+    #             authority_list.append(
+    #                 AuthorityProfile.objects.get(slug=slug.strip()))
+    #         except AuthorityProfile.DoesNotExist:
+    #             continue
+    #     return authority_list
+
     def __unicode__(self):
-        return self.subject[20:]
+        return self.subject
 
 
 @receiver(post_save)

@@ -1,5 +1,5 @@
 from django.shortcuts import render_to_response
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, EmptyPage
 from django.http import HttpResponse, Http404
 from django.views.generic.simple import direct_to_template
 from django.utils.translation import ugettext_lazy as _

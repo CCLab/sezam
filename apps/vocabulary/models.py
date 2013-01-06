@@ -198,18 +198,21 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
 
 
 class UserProfile(Model):
-    """ Custom user profile with additional information.
-        All the fields are optional, except of slug.
+    """
+    Custom user profile with additional information.
+    All the fields are optional, except of slug.
         
-        UserProfile is not inherited from Vocabulary, since it doesn't need a
-        name (his/her name is in User).
-        """
+    UserProfile is not inherited from Vocabulary, since it doesn't need a
+    name (his/her name is in User).
+    """
     user= OneToOneField(User, primary_key=True, parent_link=True,
                         related_name='profile', verbose_name=_(u'User'))
     description= TextField(null=True, blank=True,
                            verbose_name=_(u'About'))
     company= CharField(max_length=300, null=True, blank=True,
                        verbose_name=_(u'Company/organizaion'))
+    trusted= BooleanField(default=False, verbose_name=_(u'Trusted'),
+        help_text=_(u'Trusted users have access to extended functions'))
     # ADDRESS DETAILS
     address_street= CharField(max_length=300, null=True, blank=True,
                                      verbose_name=_(u'Street'),

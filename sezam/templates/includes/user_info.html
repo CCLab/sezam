@@ -1,68 +1,72 @@
 {% load i18n %}
-<div class="row well well-lightgray well-shadowed">
+<div class="row">
+  <div class="well well-lightgray well-shadowed">
     <legend>
-        {{ usr.get_full_name }}
-        {% if user_profile %}
-            {% if user.is_authenticated %}
-                {% if user = user_profile.user %}
-        <div class="content pull-right"><small><a href="/user/{{ user_profile.user.pk }}/profile/update/">{% trans 'Update profile information' %}</a></small></div>
-                {% endif %}
-            {% endif %}
+      {{ usr.get_full_name }}
+      {% if user_profile %}
+        {% if user.is_authenticated %}
+          {% if user = user_profile.user %}
+      <div class="content pull-right"><small><a href="/user/{{ user_profile.user.pk }}/profile/update/">{% trans 'Update profile information' %}</a></small></div>
+          {% endif %}
         {% endif %}
+      {% endif %}
     </legend>
     <div class="row">
-        <div class="span1">
-            <img src="{{ MEDIA_URL }}{{ usr.profile.userpic }}" />
-        {% if user.is_authenticated %}
-            {% if user = usr %}
-            <br/><small><a class="legend small" href="/user/{{ user_profile.user.pk }}/userpic/">{% trans 'Change pic' %}</a></small>
-            {% endif %}
+      <div class="span1">
+        <img src="{{ MEDIA_URL }}{{ usr.profile.userpic }}" />
+      {% if user.is_authenticated %}
+        {% if user = usr %}
+        <br/><small><a class="legend small" href="/user/{{ user_profile.user.pk }}/userpic/">{% trans 'Change pic' %}</a></small>
         {% endif %}
+      {% endif %}
+      </div>
+      <div class="span4">
+        <!-- public info -->
+        <p><strong>{% trans 'Joined:' %}</strong> {{ usr.date_joined|date:"j E Y" }},
+        <strong>{% trans 'requests:' %}</strong> {{ usr.requests_made.count }}</p>
+      {% if usr.profile.description %}
+        <p><strong>{% trans 'About me' %}: </strong>{{ usr.profile.description|linebreaks|urlize }}</p>
+      {% endif %}
+      {% if usr.profile.web_site %}
+        {% if user.is_authenticated %}
+          {% if user = usr %}
+        <p><strong>{% trans 'My web-site' %}</strong> {{ usr.profile.web_site|urlize }}</p>
+        {% else %}
+        <p><strong>{% trans 'Check out my web-site' %}</strong> <br />{{ usr.profile.web_site|urlize }}</p>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      {% if user_profile %}
+        {% if user.is_authenticated %}
+          {% if user = user_profile.user %}
+        <hr> <!-- private info -->
+            {% if user_profile.address_street %}
+        <div class="row">
+          <div class="span1"><strong>{% trans 'Address:' %}</strong></div>
+          <div class="span3">{{ user_profile.address_street|default:"" }} {{ user_profile.address_line1|default:"" }} {{ user_profile.address_line2|default:"" }}
+            <br/>{{ user_profile.address_postalcode|default:"" }} {{ user_profile.address_city|default:"" }}
+            {{ user_profile.get_address_country_display|default:"" }}
+          </div>
         </div>
-        <div class="span5">
-            <!-- public info -->
-            <p><strong>{% trans 'Joined:' %}</strong> {{ usr.date_joined|date:"j E Y" }}</p>
-            <p><strong>{% trans 'Made requests:' %}</strong> {{ usr.requests_made.count }}</p>
-            {% if usr.profile.description %}
-            <p><strong>{% trans 'About me' %}</strong> <br />{{ usr.profile.description|linebreaks|urlize }}</p>
             {% endif %}
-            {% if usr.profile.web_site %}
-              {% if user.is_authenticated %}
-                {% if user = usr %}
-            <p><strong>{% trans 'My web-site' %}</strong> <br />{{ usr.profile.web_site|urlize }}</p>
-                {% else %}
-            <p><strong>{% trans 'Check out my web-site' %}</strong> <br />{{ usr.profile.web_site|urlize }}</p>
-                {% endif %}
+            {% if user_profile.tel_number %}
+        <div class="row">
+          <div class="span1"><strong>{% trans 'Telephone:' %}</strong></div>
+          <div class="span3">{{ user_profile.tel_code|default:"" }} {{ user_profile.tel_number|default:"" }} {% if user_profile.tel_internal %} ({% trans 'internal'%} {{ user_profile.tel_internal|default:"" }})
+          </div>
+        </div>
+              {% endif %}
+              {% if user_profile.web_site %}
+        <div class="row">
+          <div class="span1"><strong>{% trans 'Website:' %}</strong></div>
+          <div class="span3">{{ user_profile.web_site|urlize|default:"" }}</div>
+        </div>
               {% endif %}
             {% endif %}
-            {% if user_profile %}
-                {% if user.is_authenticated %}
-                    {% if user = user_profile.user %}
-            <hr> <!-- private info -->
-                        {% if user_profile.address_street %}
-            <div class="row">
-                <div class="span1"><strong>{% trans 'Address:' %}</strong></div>
-                <div class="span3">{{ user_profile.address_street|default:"" }} {{ user_profile.address_line1|default:"" }} {{ user_profile.address_line2|default:"" }}
-                    <br>{{ user_profile.address_postalcode|default:"" }} {{ user_profile.address_city|default:"" }} {{ user_profile.get_address_country_display|default:"" }}</br>
-                </div>
-            </div>
-                            {% if user_profile.tel_number %}
-            <div class="row">
-                <div class="span1"><strong>{% trans 'Telephone:' %}</strong></div>
-                <div class="span3">{{ user_profile.tel_code|default:"" }} {{ user_profile.tel_number|default:"" }} {% if user_profile.tel_internal %} ({% trans 'internal'%} {{ user_profile.tel_internal|default:"" }}){% endif %}
-                </div>
-            </div>
-                            {% endif %}
-                            {% if user_profile.web_site %}
-            <div class="row">
-                <div class="span1"><strong>{% trans 'Website:' %}</strong></div>
-                <div class="span3">{{ user_profile.web_site|urlize|default:"" }}</div>
-            </div>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-        </div>
+          {% endif %}
+        {% endif %}
+        {% endif %}
+      </div>
     </div>
+  </div>
 </div>

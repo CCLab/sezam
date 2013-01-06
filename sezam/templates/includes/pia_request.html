@@ -1,23 +1,32 @@
-  {% load i18n %}
+{% load i18n %}
 
     <!-- Request -->
       <div class="container">
         <form class="form-vertical well span7" 
               name="formRequest" id="request_preview_send" enctype="multipart/form-data"
-              action="/request/{% if request_id %}{{ request_id }}/send{% else %}preview{% endif%}/" method="post">
+              action="/request/{% if request_id %}{{ request_id }}/send{% else %}preview{% endif %}/" method="post">
           {% csrf_token %}
-          {{ form.authority_name.label }} {% for auth in authority %}<strong><a href="/authority/{{ auth.slug }}">{{ auth.name }}</a></strong> {% if not forloop.last %}&nbsp; {% endif %} {% endfor %}
-          {{ form.authority_name }} {{ form.authority_slug }}
-          <div class="control-group"><p class="small"></p></div>
+
+          {{ form.user }}
+
+          <div class="control-group">{{ form.authority.label }}
+          {% if user.profile.trusted %}
+            {% for error in form.authority.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+            {{ form.authority }}
+          {% else %}
+            <div style="display:none"> {{ form.authority }} </div>
+            <span class="badge badge-info">{{ form.get_authority_label }}</span>
+          {% endif %}
+          </div>
+
           <div class="control-group">
-            {{ form.request_subject.label }}
-              {% for error in form.request_subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-            {{ form.request_subject }}
+            {{ form.subject.label }} {% for error in form.subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+            {{ form.subject }}
           </div>
           <div class="control-group">
-            {% for error in form.request_body.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+            {% for error in form.body.errors %}<span class="label label-important"><span class="label label-important">{{ error }} </span>{% endfor %}
             <div class="controls">
-              {{ form.request_body }}
+              {{ form.body }}
               <div class="span3 pull-right">
                 <p>{% trans "Write your request in <strong>simple, precise language</strong>." %}</p>
                 <p>{% trans "Ask for <strong>specific</strong> documents or information, this site is not suitable for general enquiries."%}</p>
@@ -31,22 +40,29 @@
             </div>
           </div>
 
+        {% if form.non_field_errors %}
+          <div class="row">
+            {% for error in form.non_field_errors %}
+            <span class="label label-important">{{ error|escape }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
         {% if request_id %}
           <!-- data containers -->
-          <input name="authority_slug" type="text" value="{{ form.authority_slug.value }}" style="display: none;"></input>
-
           <div class="row">
             <div class="span2"><p class="lead"><strong>{% trans 'Preview request' %}:</strong></p></div>
-            <div class="span5 pull-right"><p id="request_subject_preview" class="lead">{{ form.request_subject.value }}</p></div>
+            <div class="span5 pull-right"><p id="request_subject_preview" class="lead">{{ form.subject.value }}</p></div>
           </div>
-          <div id="request_body_preview" class="well well-yellow">{{ form.request_body.value|urlize|linebreaks }}</div>
+          <div id="request_body_preview" class="well well-yellow">{{ form.body.value|urlize|linebreaks }}</div>
           <div class="form-actions">
-            <div class="span4 pull-right">
+            <div class="span3 pull-right">
               <p>{% trans "Check you haven't included any personal information." %}</p>
               <p>{% trans "Your name, request and any responses will appear in search engines" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
             </div>
-            <input class="btn" name="save_request_draft" type="submit" value='{% trans "Save draft" %}' />
             <input class="btn btn-primary" name="send_request" type="submit" value='{% trans "Send request" %}' />
+            <input class="btn" name="save_request_draft" type="submit" value='{% trans "Save draft" %}' />
+            <input class="btn" name="discard_request_draft" type="submit" value='{% trans "Discard" %}' />
           </div>
         </form>
 

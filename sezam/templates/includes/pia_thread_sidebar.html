@@ -30,7 +30,7 @@
 
         <h3>{% trans 'Offensive? Unsuitable?' %}</h3>
         <p>{% trans 'Requests for personal information and vexatious requests are not considered valid for FOI purposes' %} (<a href="/help/about/">{% trans 'read more' %}</a>).</p>
-        <p>{% trans 'If you believe this request is not suitable, you can report it for attention by the site administrators.' %}).</p>
+        <p>{% trans "If you believe this request is not suitable, you can report it for attention by the site administrators." %}).</p>
         <div class="nav nav-pills nav-stacked">
           <ul class="nav nav-list">
             <li class="active"><a href="/request/{{ thread.0.id }}/report/">Report this request</a></li>
@@ -38,22 +38,23 @@
         </div>
 
         <h3>{% trans 'Similar requests' %}</h3>
-        <h4><a href="/request/{{ thread.0.id }}/follow/">Langtree Artisan</a></h4>
-        <small>To <a href="http://www.whatdotheyknow.com/body/homes_and_communities_agency">Homes and Communities Agency</a> by <a href="http://www.whatdotheyknow.com/user/richard_killip">Richard Killip</a> 15 March 2012</small>
-        <h4><a href="/request/{{ thread.0.id }}/follow/">Odeon cinema building, Bradford</a></h4>
-        <small>To <a href="http://www.whatdotheyknow.com/body/homes_and_communities_agency">Yorkshire Forward</a> by <a href="http://www.whatdotheyknow.com/user/richard_killip">Richard Killip</a> 15 March 2012</small>
-        <h4><a href="/request/{{ thread.0.id }}/follow/">Odeon cinema building, Bradford</a></h4>
-        <small>To <a href="http://www.whatdotheyknow.com/body/homes_and_communities_agency">Correspondence and Advice </a> by <a href="http://www.whatdotheyknow.com/user/richard_killip">Jim Mitcham</a> 16 April 2012</small>
-        <h4><a href="/request/{{ thread.0.id }}/follow/">Langtree Artisan</a></h4>
-        <small>To <a href="http://www.whatdotheyknow.com/body/homes_and_communities_agency">Homes and Communities Agency</a> by <a href="http://www.whatdotheyknow.com/user/richard_killip">Richard Killip</a> 15 March 2012</small>
-        <h4><a href="/request/{{ thread.0.id }}/follow/">Odeon cinema building, Bradford</a></h4>
-        <small>To <a href="http://www.whatdotheyknow.com/body/homes_and_communities_agency">Yorkshire Forward</a> by <a href="http://www.whatdotheyknow.com/user/richard_killip">Richard Killip</a> 15 March 2012</small>
-        <h4><a href="/request/{{ thread.0.id }}/follow/">Odeon cinema building, Bradford</a></h4>
-        <small>To <a href="http://www.whatdotheyknow.com/body/homes_and_communities_agency">Correspondence and Advice </a> by <a href="http://www.whatdotheyknow.com/user/richard_killip">Jim Mitcham</a> 16 April 2012</small>
-        <p></p>
+        <div>
+          {% if similar_items %}
+            {% for rq in similar_items %}
+            <h4><a href="/request/{{ rq.pk }}/">{{ rq.summary }}</a></h4>
+            <small>
+              {% trans 'To' %} <a href="/authority/{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
+              {% trans 'by' %} <a href="/user/rq.object.user.pk">{{ rq.object.user.get_full_name }}</a><br/>
+              {{ rq.object.latest_thread_post.created|date:"j E Y" }}
+            </small>
+            {% endfor %}
+          {% endif %}
+        </div>
+        <p>&nbsp;</p>
         <div class="nav nav-pills nav-stacked">
-          <ul class="nav nav-list">            
-            <li><a href="/request/{{ thread.0.id }}/similar/">More similar requests</a></li>
+          <ul class="nav nav-list">
+            <!-- <li><a href="/search/?q={{ thread.0.request.summary }}&piarequest=requests">{% trans "More similar requests" %}</a></li> -->
+            <li><a href="/request/{{ thread.0.request.id }}/similar/">{% trans "More similar requests" %}</a></li>
           </ul>
         </div>
       </div>

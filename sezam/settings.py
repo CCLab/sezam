@@ -95,7 +95,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
-    'apps.backend.utils.get_current_path',
+    'apps.backend.context_processors.get_current_path',
 )
 
 # Make this unique, and don't share it with anybody.

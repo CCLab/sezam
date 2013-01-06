@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.core.paginator import Paginator, EmptyPage
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -11,7 +12,7 @@ from apps.pia_request.forms import PIAFilterForm
 from apps.backend.utils import process_filter_request, handle_image, get_domain_name
 from forms import UserProfileForm, UserpicForm
 
-from sezam.settings import MEDIA_ROOT, THUMBNAIL_SIZE
+from sezam.settings import MEDIA_ROOT, THUMBNAIL_SIZE, PAGINATE_BY
 
 
 def user_profile(request, id=None, **kwargs):
@@ -48,13 +49,24 @@ def user_profile(request, id=None, **kwargs):
 
     if query:
         pia_requests= PIARequest.objects.filter(**query)
-        pia_drafts= PIARequestDraft.objects.filter(user=user)
+        pia_drafts= PIARequestDraft.objects.filter(
+            user=user).order_by('-lastchanged')
     else:
         pia_requests, pia_drafts= list(), list()
 
+    paginator= Paginator(pia_requests, PAGINATE_BY)
+    try:
+        page= int(request.GET.get('page', '1'))
+    except ValueError:
+        page= 1
+    try:
+        results= paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        results= paginator.page(paginator.num_pages)
+
     return render_to_response(template, { 'usr': user,
         'user_profile': user_profile, 'user_message': user_message,
-        'pia_requests': pia_requests, 'pia_drafts': pia_drafts,
+        'page': results, 'pia_drafts': pia_drafts,
         'urlparams': urlparams, 'form': PIAFilterForm(initial=initial),
         'page_title': _(u"User's profile") + ' - ' + get_domain_name()},
         context_instance=RequestContext(request))

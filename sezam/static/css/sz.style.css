@@ -18,6 +18,9 @@
     -moz-box-shadow: inset 0 5px 5px rgba(0, 0, 0, 0.05);
     box-shadow: inset 0 5px 5px rgba(0, 0, 0, 0.05);
 }
+.well-borderless {
+    border: 0px
+}
 hr.soft {
     height: 1px;
     background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
@@ -28,6 +31,10 @@ hr.soft {
 }
 hr.narrow {
     margin: 10px 0;
+}
+.container-hint {
+    padding: 0 15px 0 0;
+    margin-bottom: 0;
 }
 .index-unit {
     padding: 10px;

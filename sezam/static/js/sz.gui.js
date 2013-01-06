@@ -8,7 +8,7 @@ $(function() {
     });
 
     // Message draft auto-preview.
-    $('#id_request_body').on(
+    $('#id_body').on(
         'keyup',
         function(event) {
             $('#request_body_preview').html($(event.target).val().replace(/\n/g, "<br//>"));
@@ -16,7 +16,7 @@ $(function() {
         );
   
     // Message draft subject auto-preview.
-    $('#id_request_subject').on(
+    $('#id_subject').on(
         'keyup',
         function(event) {
             $('#request_subject_preview').html($(event.target).val().replace(/\n/g, "<br//>"));
