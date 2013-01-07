@@ -16,12 +16,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'sezam',
-        'USER': 'sezamsu',
-        'PASSWORD': 'yootooQuieng8CeR',
-        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '', # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': '',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -65,11 +65,7 @@ STATIC_ROOT = os.path.join(ROOT_PATH, 'static/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-# WARNING: Absolute path for the development period only!
-if 'Darwin' in platform():  # local
-    STATIC_URL = 'http://localhost:8000/static/'
-elif 'Linux' in platform():  # server
-    STATIC_URL = 'http://sezam.centrumcyfrowe.pl/static/'
+STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -143,7 +139,8 @@ INSTALLED_APPS = (
     'apps.backend',
     'apps.vocabulary',
     'apps.userprofile',
-    # 3rd party modules
+
+    # 3rd party
     'kombu.transport.django',
     'registration',
     'xpaginate',
@@ -185,20 +182,12 @@ LOGGING = {
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window.
 
 # SMTP settings
-if 'Darwin' in platform():  # local
-    EMAIL_HOST = 'smtp.poczta.onet.pl'
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = 'wniosek.dip@op.pl'
-    EMAIL_HOST_PASSWORD = 'sans640tirepita'
-    EMAIL_USE_TLS = False
-    DEFAULT_FROM_EMAIL = 'wniosek.dip@op.pl'
-elif 'Linux' in platform():  # server
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = 'sezam'
-    EMAIL_HOST_PASSWORD = 'mazes.8'
-    EMAIL_USE_TLS = True
-    DEFAULT_FROM_EMAIL = 'wniosek.dip@sezam.centrumcyfrowe.pl'
+EMAIL_HOST = ''
+EMAIL_PORT = None
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = ''
 
 # User management
 LOGIN_URL= '/accounts/login/'
@@ -213,33 +202,21 @@ PAGINATE_BY = 20
 THUMBNAIL_SIZE = (70, 70)
 
 # Email - mailbox backend settings.
-if 'Darwin' in platform():  # local
-    MAILBOXES = {
-        'default': { # Test mailbox: go to http://poczta.onet.pl/ to check mail.
-            'host': 'imap.poczta.onet.pl',
-            'port': 993,
-            'login': 'wniosek.dip@op.pl',
-            'domain': 'op.pl',
-            'password': 'sans640tirepita',
-            'use_ssl': True,
-        }
+MAILBOXES = {
+    'default': { # Test mailbox: go to http://poczta.onet.pl/ to check mail.
+        'host': '',
+        'port': None,
+        'login': '',
+        'domain': '',
+        'password': '',
+        'use_ssl': False,
     }
-elif 'Linux' in platform():  # server
-    MAILBOXES = {
-        'default': { # Local mailbox.
-            'host': 'localhost',
-            'port': 143,
-            'login': 'sezam',
-            'domain': 'sezam.centrumcyfrowe.pl',
-            'password': 'mazes.8',
-            'use_ssl': True,
-        }
-    }
+}
 
 # Directory for saving attachments from incoming e-mails.
 ATTACHMENT_DIR= os.path.join(MEDIA_ROOT, 'attachments/')
 
-# Days before unanswered request become overdue.
+# Days before unanswered request becomes overdue.
 OVERDUE_DAYS = 16
 
 # Is session expires when a user exits the browser.
@@ -251,9 +228,9 @@ BROKER_URL = 'django://'
 # Haystack for elasticsearch
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
+        'ENGINE': '',
+        'URL': '',
+        'INDEX_NAME': '',
     },
 }
 HAYSTACK_CUSTOM_HIGHLIGHTER = 'apps.backend.StretchHighlighter'
@@ -262,3 +239,6 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = PAGINATE_BY
 # Django-celery
 import djcelery
 djcelery.setup_loader()
+
+# Passwords, etc.
+from conf import *
