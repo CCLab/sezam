@@ -4,11 +4,13 @@
       <div class="row">
         <div class="container span5">
           <h4><a href="/authority/{{ result.slug }}">{% highlight result.name with query %}</a></h4>
+          <p>
           {% if obj_result.report_text %}
             {% highlight obj_result.report_text with query %}
           {% else %}
             {% if result.description %}{{ result.description|default:''|urlize|slice:":200" }}...{% endif %}
           {% endif %}
+          </p>
           <p><small>
               <span class="label">{% trans 'Official' %}</span> {% highlight result.official_full_name with query %}<br/>
               <span class="label">{% trans 'Address' %}</span> {% highlight result.address_full with query %}<br/>
