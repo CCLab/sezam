@@ -7,7 +7,7 @@
           {% if obj_result.report_text %}
             {% highlight obj_result.report_text with query %}
           {% else %}
-            {% if result.description %}{{ result.description|default:''|linebreaks|urlize|slice:":200" }}...{% endif %}
+            {% if result.description %}{{ result.description|default:''|urlize|slice:":200" }}...{% endif %}
           {% endif %}
           <p><small>
               <span class="label">{% trans 'Official' %}</span> {% highlight result.official_full_name with query %}<br/>
