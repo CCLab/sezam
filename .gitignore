@@ -40,9 +40,9 @@ pip-log.txt
 #Celery
 celery*
 
+#Local conf
+sezam/conf.py
+
 #Site media
 sezam/site_media/*.jpg
 sezam/site_media/attachments/*
-
-#Local conf
-sezam/conf.py
