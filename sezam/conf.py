@@ -14,7 +14,7 @@ DATABASES = {
     }
 }
 
-STATIC_URL = ''
+STATIC_URL = 'http://localhost:8000/static/'
 
 # SMTP settings
 EMAIL_HOST = ''
@@ -32,7 +32,7 @@ MAILBOXES = {
         'login': '',
         'domain': '',
         'password': '',
-        'use_ssl': False,
+        'use_ssl': True,
     }
 }
 
