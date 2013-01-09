@@ -436,7 +436,8 @@ class MailImporter():
             # constructed with use of MEDIA_ROOT
             return dir_name + now + '/' + filename
         except Exception as e:
-            print AppMessage('CantSaveAttachmnt', value=(filename, e,)).message
+            print AppMessage('CantSaveAttachmnt', value=(
+                filename, e,)).message % filename
             return None
 
 
@@ -505,7 +506,7 @@ APP_MESSAGES = {
         'message': _('Sending e-mail message failed')
         },
     'CantSaveAttachmnt': {
-        'message': _('Cannot save attachment')
+        'message': _('Cannot save attachment %s')
         },
     'CheckMailComplete': {
         'message': _('Complete checking e-mail. Total number of messages: %s')
@@ -533,6 +534,9 @@ APP_MESSAGES = {
         },
     'DraftRemoveFailed': {
         'message': _("Failed to remove a PIA Reqiest draft, while sending PIA Request. System error is: %s"),
+        },
+    'AttachTooBig': {
+        'message': _("Attachment %s exceeds maximum filesize!"),
         }
     }
 

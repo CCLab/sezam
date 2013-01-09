@@ -92,6 +92,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'apps.backend.context_processors.get_current_path',
+    'apps.backend.context_processors.get_resource_name',
+    'apps.backend.context_processors.get_settings',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -189,6 +191,10 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = ''
 
+# Should the system use default 'from' e-mail address for all messages?
+# WARNING! This might be overridden in the local conf.py.
+USE_DEFAULT_FROM_EMAIL = False
+
 # User management
 LOGIN_URL= '/accounts/login/'
 
@@ -214,13 +220,24 @@ MAILBOXES = {
 }
 
 # Directory for saving attachments from incoming e-mails.
-ATTACHMENT_DIR= os.path.join(MEDIA_ROOT, 'attachments/')
+ATTACHMENT_DIR = os.path.join(MEDIA_ROOT, 'attachments/')
+
+# Accepted file types
+ATTACHMENT_ACCEPTED_FILETYPES = ( 'odt', 'ods',
+    'pdf', 'jpg', 'jpeg', 'tif', 'tiff', 'png',
+    'doc', 'dot', 'pps','ppt', 'ppsx', 'pptx', 'xls', 'xlsx',
+    'xml', 'csv', 'txt',
+    )
+
+# Max attachment filesize
+ATTACHMENT_MAX_FILESIZE = 15728640 # 15Mb
 
 # Days before unanswered request becomes overdue.
 OVERDUE_DAYS = 16
 
 # Is session expires when a user exits the browser.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AFTER = 1209600 # 2 weeks
 
 # Use django database as a broker
 BROKER_URL = 'django://'

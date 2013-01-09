@@ -14,11 +14,11 @@ import re
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
-from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name, clean_text_for_search, downcode
+from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name, clean_text_for_search, downcode, save_attached_file
 from apps.backend import AppMessage
 from apps.browser.forms import ModelSearchForm
 from apps.vocabulary.models import AuthorityProfile
-from sezam.settings import DEFAULT_FROM_EMAIL, PAGINATE_BY
+from sezam.settings import DEFAULT_FROM_EMAIL, USE_DEFAULT_FROM_EMAIL, PAGINATE_BY, MEDIA_ROOT, ATTACHMENT_MAX_FILESIZE
 
 
 def request_list(request, status=None, **kwargs):
@@ -51,8 +51,8 @@ def request_list(request, status=None, **kwargs):
 
     return render_to_response(template, {'page': results,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': _(u'View and search requests') + ' - ' + get_domain_name(),
-        'urlparams': urlparams}, context_instance=RequestContext(request))
+        'page_title': _(u'View and search requests'), 'urlparams': urlparams},
+        context_instance=RequestContext(request))
 
 
 @login_required
@@ -62,7 +62,7 @@ def new_request(request, slug=None, **kwargs):
     """
     template= kwargs.get('template', 'request.html')
     if request.method == 'GET':
-        try: # Try to find Authority.
+        try:
             authority= AuthorityProfile.objects.get(slug=slug)
         except AuthorityProfile.DoesNotExist:                
             raise Http404
@@ -123,10 +123,32 @@ def save_request_draft(request, id=None, **kwargs):
             for authority in selected_authority:
                 piarequest_draft.authority.add(authority)
 
-            user_message.update({'success': _(u'Draft successfully saved. You can send it now, or check other stuff on our web-site.')})
-            data.update({'user_message': user_message,
-                         'request_id': request_id})
-    data.update({'form': form}) # Updating form after validation.
+            # Report about saving draft only if it was 'Save', not 'Preview'.
+            if id:
+                user_message.update({'success': _(
+                    u'Draft successfully saved. You can send it now, \
+                    or check other stuff on our web-site.')})
+
+    # Process attachments.
+    # bookmark
+    attachments= dict(request.FILES).get('attachments', [])
+    attachment_failed= []
+    user_dir_name= 'attachments/%s_upload' % \
+        request.user.get_full_name().strip().lower().replace(' ', '_')
+    for attachment in attachments:
+        f= save_attached_file(attachment, MEDIA_ROOT,
+            max_size=ATTACHMENT_MAX_FILESIZE, dir_name=user_dir_name)
+        if f['errors']:
+            attachment_failed.append(f.name)
+        else:
+            pass # Save attachment to the db and connect it to the draft.
+    if attachment_failed:
+        user_message.update({'fail': 'Filed to save attachments: %s!' % \
+                             ', '.join(attachment_failed)})
+        data.update({'user_message': user_message})
+
+    data.update({'user_message': user_message,
+                 'request_id': request_id, 'form': form})
     return data
 
 
@@ -168,14 +190,14 @@ def send_request(request, id=None, **kwargs):
         * sends the message to the selected Authorities (should always be a 
         list, even if it is a request to only one authority). The field `TO` 
         is being filled out according to the pattern:
-        request-<request-id>@<domain>,
+        <user.name>.<user.last_name>.<request_id>@<domain>,
         where <request_id> is an ID of a newly created request.
 
         * successful e-mails are stored in `successful` dict, failed are in
         `failed` (if message sending failed, newly created request is deleted
         from the DB).
 
-        * cleans the draft out.
+        * cleans the draft out, if everything went well.
         """
     if request.method != 'POST':
         raise Http404
@@ -218,13 +240,14 @@ def send_request(request, id=None, **kwargs):
                 continue
             pia_request= PIARequest.objects.create(summary=message_subject,
                 authority=authority, user=request.user)
-            email_from= email_from_name(request.user.get_full_name(),
-                                        id=pia_request.id, delimiter='.')
+            reply_to= email_from_name(request.user.get_full_name(),
+                                      id=pia_request.id, delimiter='.')
+            email_from= DEFAULT_FROM_EMAIL if USE_DEFAULT_FROM_EMAIL else reply_to
             message_data= {'request': pia_request, 'is_response': False,
-                           'email_to': email_to, 'email_from': email_from,
+                           'email_to': email_to, 'email_from': reply_to,
                            'subject': message_subject, 'body': message_content}
             message_request= EmailMessage(message_subject, message_content,
-                DEFAULT_FROM_EMAIL, [email_to], headers={'Reply-To': email_from})
+                email_from, [email_to], headers={'Reply-To': reply_to})
             try: # sending the message to the Authority, check if it doesn't fail.
                 message_request.send(fail_silently=False)
             except Exception as e:
@@ -343,9 +366,8 @@ def view_thread(request, id=None, **kwargs):
 
     return render_to_response(template, {'thread': thread,
         'similar_items': similar_items, 'user_message': user_message,
-        'request_status': PIA_REQUEST_STATUS,
-        'request_id': id, 'form': None, 'page_title': '%s - %s' % (
-            thread[0].request.summary[:50], get_domain_name())},
+        'request_status': PIA_REQUEST_STATUS, 'request_id': id, 'form': None,
+        'page_title': thread[0].request.summary[:50]},
         context_instance=RequestContext(request))
 
 
@@ -382,9 +404,8 @@ def similar_requests(request, id=None, **kwargs):
 
     return render_to_response(template, {'page': results, 'query': rq.summary,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': _(u'Browse similar requests') + ' - ' + get_domain_name(),
+        'page_title': _(u'Browse similar requests'),
         'urlparams': urlparams}, context_instance=RequestContext(request))
-
 
 
 @login_required
@@ -404,8 +425,7 @@ def reply_to_thread(request, id=None, **kwargs):
     # The last message in the thread (reference for annotations and replies!).
     msg= thread.reverse()[0]
     
-    page_title= _(u'Reply to the request: ') + ' - ' + '%s - %s' % (
-        thread[0].request.summary[:50], get_domain_name())
+    page_title= _(u'Reply to: ') + '%s' % (thread[0].request.summary[:50])
 
     if request.method == 'POST': # Process the Reply form data.
         if request.POST.get('cancel_reply_draft', None):
@@ -437,9 +457,11 @@ def reply_to_thread(request, id=None, **kwargs):
                     message_data= {'request': msg.request, 'is_response': False,
                         'email_to': email_to, 'email_from': email_from,
                         'subject': initial['subject'], 'body': initial['body']}
+
+                    _email_from= DEFAULT_FROM_EMAIL if USE_DEFAULT_FROM_EMAIL else email_from
+                        
                     reply= EmailMessage(initial['subject'], initial['body'],
-                                        DEFAULT_FROM_EMAIL, [email_to],
-                                        headers = {'Reply-To': email_from})
+                        _email_from, [email_to], headers = {'Reply-To': email_from})
                     try: # to send the message.
                         reply.send(fail_silently=False)
                         # Save a new message in the thread.
@@ -518,8 +540,7 @@ def annotate_request(request, id=None, **kwargs):
     # The last message in the thread (reference for annotations and replies!).
     msg= thread.reverse()[0]
     
-    page_title= _(u'Annotate request: ') + ' - ' + '%s - %s' % (
-        thread[0].request.summary[:50], get_domain_name())
+    page_title= _(u'Annotate request: ') + thread[0].request.summary[:50]
 
     if request.method == 'POST': # Process Comment form data.
         if request.POST.get('cancel_comment', None):

@@ -4,12 +4,19 @@
 Functions used in other modules.
 """
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from django.contrib.auth import views as auth_views
 from django.template.defaultfilters import slugify
 from django.utils.encoding import force_unicode
 from django.contrib.sites.models import Site
+from django.utils.timezone import utc
+
+from sezam.settings import SESSION_EXPIRE_AFTER
+from apps.backend import AppMessage
 from apps.backend.html2text import html2text
 
+from datetime import datetime
 from time import strptime, strftime
 from PIL import Image
 
@@ -292,6 +299,43 @@ def handle_image(f, store_path, **kwargs):
     return filename + ext
 
 
+def save_attached_file(f, store_root, **kwargs):
+    """
+    Check if attachments are ok, save files,
+    return what is needed to save attachment in the db.
+    """
+    max_size= kwargs.get('max_size', 104857600) # Limit 100MB, if not limited
+    dir_name= kwargs.get('dir_name', id_generator()) # Random name, if not given
+
+    f_info= {'size': len(f), 'path': None, 'errors': []} # Object to return
+    if f_info['size'] > max_size:
+        f_info['errors'].append(AppMessage('AttachTooBig').message % f.name)
+
+    # TO-DO: 'Sniff' the file before saving
+
+    if len(f_info['errors']) == 0:
+
+        # Ensure all directory names.
+        now= datetime.strftime(datetime.utcnow().replace(
+            tzinfo=utc), '%d-%m-%Y_%H-%M')
+        dir_full= ('%s/%s/%s' % (store_root, dir_name, now)).replace('//', '/')
+        path_report= ('%s/%s/%s' % (dir_name, now, f.name)).replace('//', '/')
+        path_full= ('%s/%s' % (dir_full, f.name)).replace('//', '/')
+
+        # Ensure directory on disk.
+        if not os.path.exists(dir_full):
+            os.makedirs(dir_full)
+
+        try:
+            path= default_storage.save(path_full, ContentFile(f.read()))
+            f_info['path']= path_report # Returns relative (to MEDIA_ROOT) path.
+        except Exception as e:
+            print AppMessage('CantSaveAttachmnt').message % f.name, e
+            f_info['errors'].append(
+                AppMessage('CantSaveAttachmnt').message % f.name)
+    return f_info
+
+
 def email_from_name(name, **kwargs):
     """
     Build e-mail address from given name.
@@ -316,5 +360,5 @@ def login(request, **kwargs):
     template_name= kwargs.get('template_name', 'registration/login.html')
     response= auth_views.login(request, template_name)
     if request.POST.has_key('remember_me'):
-        request.session.set_expiry(1209600) # 2 weeks
+        request.session.set_expiry(SESSION_EXPIRE_AFTER)
     return response

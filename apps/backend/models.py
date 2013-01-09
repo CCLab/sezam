@@ -8,13 +8,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class GenericEvent(Model):
-    """ Meta-class for any kind of event, such as creation of the Request or
-        changing the structure of Authority.
+    """
+    Meta-class for any kind of event, such as creation of the Request or
+    changing the structure of Authority.
         
-        Events produce effects in time, stored in connected models (such as
-        Request <-> Thread), but it is crusial for ordering to have information
-        about the last updates - hence the `lastchanged`.
-        """
+    Events produce effects in time, stored in connected models (such as
+    Request <-> Thread), but it is crusial for ordering to have information
+    about the last updates - hence the `lastchanged`.
+    """
     created= DateTimeField(auto_now_add=True, verbose_name=_(u'Created'))
     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Last changed'))
     summary= CharField(max_length=255, null=True, blank=True,
@@ -25,9 +26,10 @@ class GenericEvent(Model):
 
 
 class GenericText(Model):
-    """ An abstract text for all text based models: Messages, Comments,
-        Annotations, etc.
-        """
+    """
+    An abstract text for all text based models: Messages, Comments,
+    Annotations, etc.
+    """
     body= TextField(null=True, blank=True, verbose_name=_(u'Body'))
     
     class Meta:

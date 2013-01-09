@@ -16,14 +16,15 @@ from sezam.settings import MEDIA_ROOT, THUMBNAIL_SIZE, PAGINATE_BY
 
 
 def user_profile(request, id=None, **kwargs):
-    """ Show user's full profile.
+    """
+    Show user's full profile.
         
-        If this user is logged on and she's asking about her own profile,
-        show private profile info and request drafts.
+    If this user is logged on and she's asking about her own profile,
+    show private profile info and request drafts.
         
-        Otherwise display public profile (name, when joined), lists of requests
-        made by user so far, and annotations made by user.
-        """
+    Otherwise display public profile (name, when joined), lists of requests
+    made by user so far, and annotations made by user.
+    """
     if request.method == 'POST':
         raise Http404
     user_message= request.session.pop('user_message', {})
@@ -73,8 +74,9 @@ def user_profile(request, id=None, **kwargs):
 
 
 def user_profile_update(request, id=None, **kwargs):
-    """ Show/process form for user's profile update.
-        """
+    """
+    Show/process form for user's profile update.
+    """
     user_message= request.session.pop('user_message', {})
     template= kwargs.get('template', 'user.html')
 
@@ -119,7 +121,6 @@ def user_set_userpic(request, id=None, **kwargs):
     user= get_object_or_404(User, pk=int(id))
 
     if request.method == 'POST':
-        # Save changes.
         form= UserpicForm(request.POST)
         if request.POST.get('submit_userpic', None):
             file_path= request.FILES.get('file_path', None)

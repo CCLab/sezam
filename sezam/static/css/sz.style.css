@@ -65,3 +65,10 @@ hr.narrow {
     border-style: dotted;
     border-width: 0;
 }
+/* Re-define accordion-heading accordion-toggle - should not include block */
+.accordion-heading-noblock {
+  border-bottom: 10;
+}
+.accordion-toggle-noblock {
+  padding: 8px 15px;
+}

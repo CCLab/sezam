@@ -32,7 +32,7 @@ def display_authority(request, **kwargs):
 
     return render_to_response(template, {'form': form,
         'user_message': user_message, 'search_only': search_only,
-        'page_title': _(u'Public Authorities') + ' ' + get_domain_name()},
+        'page_title': _(u'Public Authorities')},
         context_instance=RequestContext(request))
 
 
@@ -203,8 +203,8 @@ def get_authority_info(request, slug, **kwargs):
     return render_to_response(template, {'authority': authority,
         'page': results, 'categories': categories,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': '%s - %s' % (authority.name, get_domain_name),
-        'urlparams': urlparams}, context_instance=RequestContext(request))
+        'page_title': authority.name, 'urlparams': urlparams},
+        context_instance=RequestContext(request))
 
 
 def find_authority(request, **kwargs):
@@ -212,5 +212,5 @@ def find_authority(request, **kwargs):
         """
     template= kwargs.get('template', 'index.html')
     return render_to_response(template, {
-        'page_title': _(u'Look for the authority') + ' - ' + get_domain_name()},
+        'page_title': _(u'Look for the authority')},
         context_instance=RequestContext(request))

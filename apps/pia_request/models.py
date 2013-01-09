@@ -62,7 +62,7 @@ class PIARequest(GenericEvent):
     User to the Authority, serves as a reference to the info on Request
     in Threads.
 
-    Note: `latest_thread_post` de-normalizes the models' strcture, but
+    Note: `latest_thread_post` de-normalizes the models' structure, but
     it is a nesessary measure for getting details of the request and its
     last update in one query (as it goes through pagination).
     """
@@ -105,7 +105,7 @@ class PIAAnnotation(GenericText):
 class PIARequestDraft(GenericPost):
     """
     A draft of PIA request. Being deleted right after the request is sent.
-        
+
     A draft of the reply to the Authority can also be saved, `thread_message`
     points to the message in the thread, to which the reply is intended.
     """
@@ -115,19 +115,6 @@ class PIARequestDraft(GenericPost):
     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
     thread_message= OneToOneField(PIAThread, null=True, blank=True,
         default=None, related_name='draft', verbose_name=_(u'Message'))
-
-    # def get_authority_snippet(self):
-    #     """
-    #     Return the snippet for Authority list in the draft.
-    #     """
-    #     authority_list= []
-    #     for slug in self.authority_slug.split(','):
-    #         try:
-    #             authority_list.append(
-    #                 AuthorityProfile.objects.get(slug=slug.strip()))
-    #         except AuthorityProfile.DoesNotExist:
-    #             continue
-    #     return authority_list
 
     def __unicode__(self):
         return self.subject

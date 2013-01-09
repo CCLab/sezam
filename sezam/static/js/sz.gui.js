@@ -38,4 +38,17 @@ $(function() {
             $('#date_before').datepicker('hide');
             }
         );
+
+    // Multi-file attachments.
+    $('#attach-files').MultiFile({ 
+        list: '#attach-list',
+        max: 5,
+        STRING:{
+            file: '<em title="Kliknij, aby usunąć" onclick="$(this).parent().prev().click()">$file</em>',
+            remove: '<i class="icon-remove-sign"></i>',
+            selected: 'Selecionado: $file',
+            denied: 'Nie możesz wybrać plik typu $ext.\nSpróbuj ponownie...',
+            duplicate: 'Ten plik został już wybrany:\n$file!'
+        }
+    });
   });

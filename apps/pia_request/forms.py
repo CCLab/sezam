@@ -98,7 +98,7 @@ class ReplyDraftForm(forms.Form):
     subject= forms.CharField(label=_(u'Subject'),
         widget=forms.TextInput(attrs={'class': 'span6'}))
     body= forms.CharField(label=_(u'Reply'),
-        widget=forms.Textarea(attrs={'class': 'span7', 'id': 'id_request_body'}))
+        widget=forms.Textarea(attrs={'class': 'span7'}))
 
     def __init__(self, *args, **kwargs):
         initial= kwargs.pop('initial', None)

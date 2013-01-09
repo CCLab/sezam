@@ -18,12 +18,12 @@
         <td>
           <small>
           {% for auth in draft.authority.all|slice:":2" %}
-            <strong><a href="/authority/{{ auth.slug }}/">{{ auth.name|slice:":8" }}{% if auth.name|length > 8 %}.{% endif %}</a></strong>{% if forloop.last %}...{% else %}, {% endif %}
+            <strong><a href="/request/{{ draft.id }}/preview/">{{ auth.name|slice:":8" }}{% if auth.name|length > 8 %}.{% endif %}</a></strong>{% if forloop.last %}...{% else %}, {% endif %}
           {% endfor %}
           {% if draft.authority.all.count > 1 %}({{ draft.authority.all.count }}){% endif %}
           </small>
         </td>
-        <td><small><a href="/request/{{ draft.pk }}/preview/">{{ draft.subject|slice:":45" }}{% if draft.subject|length > 45 %}...{% endif %}</a></small></td>
+        <td><small><a href="/request/{{ draft.id }}/preview/">{{ draft.subject|slice:":45" }}{% if draft.subject|length > 45 %}...{% endif %}</a></small></td>
         <td><small>{{ draft.created|date:"j.m.Y" }}</small></td>
         </tr>
         {% endfor %}

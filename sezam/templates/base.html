@@ -29,9 +29,11 @@
     <script src="{{ STATIC_URL }}js/jquery-1.8.2.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap-datepicker.js"></script>
     <script src="{{ STATIC_URL }}js/tree.jquery.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.MultiFile.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.MetaData.js"></script>
     <script src="{{ STATIC_URL }}js/sz.gui.js"></script> <!-- Sezam gui functions -->
 
-    <title>{{ page_title }}</title>
+    <title>{{ page_title|default:""}} {% if page_title %}-{% endif %} {{ resource_name }}</title>
 
   </head>
 
