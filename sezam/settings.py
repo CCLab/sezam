@@ -3,6 +3,8 @@ import os
 import sys
 from platform import platform
 
+PROJECT_TITLE = 'sezam.pl'
+
 ROOT_PATH = os.path.dirname(__file__)
 
 DEBUG = True
@@ -226,11 +228,14 @@ ATTACHMENT_DIR = os.path.join(MEDIA_ROOT, 'attachments/')
 ATTACHMENT_ACCEPTED_FILETYPES = ( 'odt', 'ods',
     'pdf', 'jpg', 'jpeg', 'tif', 'tiff', 'png',
     'doc', 'dot', 'pps','ppt', 'ppsx', 'pptx', 'xls', 'xlsx',
-    'xml', 'csv', 'txt',
+    'xml', 'csv', 'txt', 'rtf',
     )
 
 # Max attachment filesize
 ATTACHMENT_MAX_FILESIZE = 15728640 # 15Mb
+
+# Max number of attachments
+ATTACHMENT_MAX_NUMBER = 5
 
 # Days before unanswered request becomes overdue.
 OVERDUE_DAYS = 16

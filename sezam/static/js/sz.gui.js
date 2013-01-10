@@ -42,7 +42,6 @@ $(function() {
     // Multi-file attachments.
     $('#attach-files').MultiFile({ 
         list: '#attach-list',
-        max: 5,
         STRING:{
             file: '<em title="Kliknij, aby usunąć" onclick="$(this).parent().prev().click()">$file</em>',
             remove: '<i class="icon-remove-sign"></i>',

@@ -1,0 +1,37 @@
+{% load i18n %}
+
+<!-- attach new files -->
+{% with form.instance.attachments.count as attached_sofar_count %}
+
+{% if attachments_allowed = 0 %}
+<p class="text-warning">
+  <small><strong>{% trans 'Warning!' %}</strong> {% trans "You have exceeded the limit of attachment. To attach new files you have to delete some first" %}</small>
+</p>
+{% else %}
+<div id="attchment-wrap" class="control-group MultiFile-wrap">
+  <div class="span4 pull-right">
+    <p>
+      <small>
+        {% trans "You can upload up to 5 files. Only ceratin types of files are allowed (PDF, MS Office, Apache OpenOffice and images). The size of each file should not exceed" %} {{ ATTACHMENT_MAX_FILESIZE|filesizeformat }}.
+      </small>
+    </p>
+  </div>
+  <input class="span2" name="attachments" type="file" id="attach-files" maxlength="{% if attachments_allowed %}{{ attachments_allowed }}{% else %}5{% endif %}" accept="{{ ATTACHMENT_ACCEPTED_FILETYPES }}" />
+  <div>&nbsp;</div><div>&nbsp;</div>
+  <div id="attach-list" class="well well-lightgray well-dotted">
+  </div>
+</div>
+{% endif %}
+
+<!-- already attached -->
+{% if attached_sofar_count > 0 %}
+<small>{% trans "Files attached so far. Uncheck to remove file from the draft." %}</small>
+<div id="attached-list" class="well well-lightgray">
+  {% for attachment in form.instance.attachments.all %}
+      <input class="action-select" type="checkbox" checked name="attached_id" value="{{ attachment.id }}" />
+      <em>{{ attachment.filename }}</em><br/>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endwith %}

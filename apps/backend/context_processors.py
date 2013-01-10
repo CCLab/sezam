@@ -30,4 +30,6 @@ def get_settings(request):
     return {
         'ATTACHMENT_ACCEPTED_FILETYPES': '|'.join(settings.ATTACHMENT_ACCEPTED_FILETYPES),
         'ATTACHMENT_MAX_FILESIZE': settings.ATTACHMENT_MAX_FILESIZE,
+        'PROJECT_TITLE': settings.PROJECT_TITLE,
+        'ATTACHMENT_MAX_NUMBER': settings.ATTACHMENT_MAX_NUMBER
         }

@@ -62,7 +62,7 @@ class GenericFile(Model):
         """
     filetype= CharField(max_length=10, verbose_name=_(u'File type'))
     filename= CharField(max_length=1000, verbose_name=_(u'File name'))
-    filesize= IntegerField(verbose_name=_(u'File size'))
+    filesize= IntegerField(default=125, verbose_name=_(u'File size'))
     path= CharField(max_length=1000,
                     verbose_name=_(u'Path to file (relative to site_media)'))
 

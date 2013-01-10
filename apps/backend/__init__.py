@@ -527,14 +527,17 @@ APP_MESSAGES = {
         'message': _("We don't know whether the most recent response to this request contains information or not."),
         },
     'DraftCreateFailed': {
-        'message': _("Failed to create a PIA Reqiest draft. System error is: %s"),
+        'message': _("Failed to create a Reqiest draft. System error is: %s"),
         },
     'DraftDiscardFailed': {
-        'message': _("Failed to discard a PIA Reqiest draft. System error is: %s"),
+        'message': _("Failed to discard a Reqiest draft. System error is: %s"),
         },
     'DraftRemoveFailed': {
-        'message': _("Failed to remove a PIA Reqiest draft, while sending PIA Request. System error is: %s"),
+        'message': _("Failed to remove a draft, while sending Request. System error is: %s"),
         },
+    'DraftSaveFailed': {
+        'message': _("Failed to save a Request draft, while sending PIA Request. System error is: %s"),
+        },    
     'AttachTooBig': {
         'message': _("Attachment %s exceeds maximum filesize!"),
         }

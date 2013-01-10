@@ -102,15 +102,23 @@ class PIAAnnotation(GenericText):
     created= DateTimeField(auto_now_add=True, verbose_name=_(u'Posted'))
 
 
-class PIARequestDraft(GenericPost):
+class PIARequestDraft(PIAMessage):
     """
     A draft of PIA request. Being deleted right after the request is sent.
 
-    A draft of the reply to the Authority can also be saved, `thread_message`
-    points to the message in the thread, to which the reply is intended.
+    There are 2 kinds of Drafts:
+    * A draft that initiates the Request.
+    This has null `thread_message` = null and be linked to several Authorities.
+
+    * A draft that is a response to the message from Authority (or a draft
+    of the reply from Authority, received by snail mail, and being entered
+    to the system by User manually).
+    In those drafts `thread_message` should point to the message in the Thread,
+    on which it is a reply, and should _always_ have a link to the specified
+    Authority - the one from the message the Draft is pointing to.
     """
     authority= ManyToManyField(AuthorityProfile,
-                               verbose_name=_(u'Recipients (IDs)'))
+                               verbose_name=_(u'Authority(ies)'))
     user= ForeignKey(User, help_text=_(u'Request from user'))
     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
     thread_message= OneToOneField(PIAThread, null=True, blank=True,
@@ -118,6 +126,24 @@ class PIARequestDraft(GenericPost):
 
     def __unicode__(self):
         return self.subject
+
+
+# class PIARequestDraft(GenericPost):
+#     """
+#     A draft of PIA request. Being deleted right after the request is sent.
+
+#     A draft of the reply to the Authority can also be saved, `thread_message`
+#     points to the message in the thread, to which the reply is intended.
+#     """
+#     authority= ManyToManyField(AuthorityProfile,
+#                                verbose_name=_(u'Recipients (IDs)'))
+#     user= ForeignKey(User, help_text=_(u'Request from user'))
+#     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
+#     thread_message= OneToOneField(PIAThread, null=True, blank=True,
+#         default=None, related_name='draft', verbose_name=_(u'Message'))
+
+#     def __unicode__(self):
+#         return self.subject
 
 
 @receiver(post_save)

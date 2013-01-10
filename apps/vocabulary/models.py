@@ -167,6 +167,8 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
     active= BooleanField(default=False, verbose_name=_(u'Active'),
         help_text=_(u'Should this item appear in lists and search results?'))
 
+    def official_short_name(self):
+        return '%s %s' % (self.official_name, self.official_lastname)
 
     def official_full_name(self):
         return '%s %s %s' % (

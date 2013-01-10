@@ -7,7 +7,6 @@ from haystack.query import SearchQuerySet
 from apps.browser.forms import ModelSearchForm
 from apps.pia_request.models import PIARequest
 from apps.vocabulary.models import AuthorityProfile
-from apps.backend.utils import get_domain_name
 
 def display_index(request, **kwargs):
     """
@@ -17,14 +16,12 @@ def display_index(request, **kwargs):
     form= kwargs.get('form', ModelSearchForm)
     authority_list= AuthorityProfile.objects.all().order_by('-created')
     request_list= PIARequest.objects.all().order_by('-lastchanged')
-    domain_name= get_domain_name()
     data= {'authority_list': authority_list[:20],
         'request_list': request_list[:10],
         'authorities_count': authority_list.count(),
-        'requests_count': request_list.count(),
-        'domain_name': domain_name}
+        'requests_count': request_list.count()}
     return render_to_response(template, {'data': data, 'form': form,
-        'page_title': _(u'Home') + ' - ' + domain_name},
+        'page_title': _(u'Home')},
         context_instance=RequestContext(request))
 
 
@@ -43,7 +40,7 @@ def search_all(request, **kwargs):
 
     result= SearchQuerySet().auto_query(q)
 
-    return render_to_response(template, {
-        'result': result, 'form': form, 'user_message': user_message,
-        'page_title': _(u'Search') + ' - ' + get_domain_name()},
+    return render_to_response(template, {'result': result,
+        'form': form, 'user_message': user_message,
+        'page_title': _(u'Search')},
         context_instance=RequestContext(request))

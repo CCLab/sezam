@@ -306,6 +306,10 @@ def save_attached_file(f, store_root, **kwargs):
     """
     max_size= kwargs.get('max_size', 104857600) # Limit 100MB, if not limited
     dir_name= kwargs.get('dir_name', id_generator()) # Random name, if not given
+    dir_id= kwargs.get('dir_id', None)
+    if dir_id is None: # Now, if not given
+        dir_id= datetime.strftime(datetime.utcnow().replace(
+            tzinfo=utc), '%d-%m-%Y_%H-%M')
 
     f_info= {'size': len(f), 'path': None, 'errors': []} # Object to return
     if f_info['size'] > max_size:
@@ -316,10 +320,10 @@ def save_attached_file(f, store_root, **kwargs):
     if len(f_info['errors']) == 0:
 
         # Ensure all directory names.
-        now= datetime.strftime(datetime.utcnow().replace(
-            tzinfo=utc), '%d-%m-%Y_%H-%M')
-        dir_full= ('%s/%s/%s' % (store_root, dir_name, now)).replace('//', '/')
-        path_report= ('%s/%s/%s' % (dir_name, now, f.name)).replace('//', '/')
+        dir_full= ('%s/attachments/%s/%s' % (
+            store_root, dir_name, dir_id)).replace('//', '/')
+        path_report= ('%s/%s/%s' % (
+            dir_name, dir_id, f.name)).replace('//', '/')
         path_full= ('%s/%s' % (dir_full, f.name)).replace('//', '/')
 
         # Ensure directory on disk.

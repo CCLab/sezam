@@ -1,25 +1,36 @@
 {% load i18n %}
 
 {% if form %}
-          <div class="row">
-                  <form class="well form-vertical" name="formReply" id="reply_preview_send" enctype="multipart/form-data" action="/request/{{ request_id }}/reply/" method="post">
-                      {% csrf_token %}
-                      <span id="form_reply"></span>
-                      <div class="control-group">
-                          {{ form.subject.label }} &nbsp;
-                          {% for error in form.subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-                          {{ form.subject }}
-                      </div>
-                      <div class="control-group">
-                          {% for error in form.body.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-                          {{ form.body }}
-                      </div>
-                      <div class="form-actions">
-                          <input class="btn" name="save_reply_draft" type="submit" value='{% trans "Save draft" %}' />
-                          <input class="btn" name="cancel_reply_draft" type="submit" value='{% trans "Cancel" %}' />
-                          <input class="btn btn-primary" name="send_reply" type="submit" value='{% trans "Reply" %}' />
-                      </div>
-                      <div id="request_body_preview" class="well well-yellow">{{ form.body.value|linebreaks|urlize }}</div>
-                  </form>
-          </div>
+<span id="form_reply"></span>
+<div class="row">
+  <form class="well form-vertical" name="formReply" id="reply_preview_send" enctype="multipart/form-data" action="/request/{{ request_id }}/reply/" method="post">
+    {% csrf_token %}
+    <div class="control-group">
+      {{ form.subject.label }} &nbsp;
+      {% for error in form.subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      {{ form.subject }}
+    </div>
+    <div class="control-group">
+      {% for error in form.body.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      {{ form.body }}
+    </div>
+    <div class="control-group">
+      {% for error in form.authority.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      {{ form.authority }}
+    </div>
+    <div class="control-group">
+      {% for error in form.user.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      {{ form.user }}
+    </div>
+
+    {% include "includes/pia_request_attachment.html" %}
+
+    <div class="form-actions">
+      <input class="btn btn-primary" name="send_reply" type="submit" value='{% trans "Reply" %}' />
+      <input class="btn" name="save_reply_draft" type="submit" value='{% trans "Save draft" %}' />
+      <input class="btn" name="cancel_reply_draft" type="submit" value='{% trans "Discard" %}' />
+    </div>
+    <div id="request_body_preview" class="well well-yellow">{{ form.body.value|linebreaks|urlize }}</div>
+  </form>
+</div>
 {% endif %}

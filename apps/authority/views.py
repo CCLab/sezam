@@ -10,7 +10,7 @@ from django.template import RequestContext
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
-from apps.backend.utils import get_domain_name, process_filter_request
+from apps.backend.utils import process_filter_request
 from apps.browser.forms import ModelSearchForm
 from sezam.settings import PAGINATE_BY
 

@@ -9,7 +9,7 @@ from django.http import Http404
 from apps.vocabulary.models import UserProfile
 from apps.pia_request.models import PIARequest, PIARequestDraft, PIA_REQUEST_STATUS
 from apps.pia_request.forms import PIAFilterForm
-from apps.backend.utils import process_filter_request, handle_image, get_domain_name
+from apps.backend.utils import process_filter_request, handle_image
 from forms import UserProfileForm, UserpicForm
 
 from sezam.settings import MEDIA_ROOT, THUMBNAIL_SIZE, PAGINATE_BY
@@ -69,7 +69,7 @@ def user_profile(request, id=None, **kwargs):
         'user_profile': user_profile, 'user_message': user_message,
         'page': results, 'pia_drafts': pia_drafts,
         'urlparams': urlparams, 'form': PIAFilterForm(initial=initial),
-        'page_title': _(u"User's profile") + ' - ' + get_domain_name()},
+        'page_title': user.get_full_name()},
         context_instance=RequestContext(request))
 
 
@@ -106,7 +106,7 @@ def user_profile_update(request, id=None, **kwargs):
 
     return render_to_response(template, {'user_message': user_message,
         'user_profile': user_profile, 'form': form,
-        'page_title': _(u"User's profile") + ' - ' + get_domain_name()},
+        'page_title': _(u"Update profile ") + user_profile.user.get_full_name()},
         context_instance=RequestContext(request))
 
 
@@ -140,6 +140,7 @@ def user_set_userpic(request, id=None, **kwargs):
     elif request.method == 'GET':
         form= UserpicForm()
 
-    return render_to_response(template, {'user_message': user_message,
-        'form': form, 'page_title': _(u"User's profile") + ' - ' + get_domain_name()},
+    return render_to_response(template, {
+        'user_message': user_message, 'form': form,
+        'page_title': _(u"Update userpic ") + user.get_full_name()},
         context_instance=RequestContext(request))

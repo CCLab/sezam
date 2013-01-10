@@ -74,7 +74,7 @@
               {% endif %}
           </div>
         {% endfor %}
-        {% if mode = 'reply' %}
+        {% if mode == 'reply' or mode == 'draft' %}
           {% include "includes/pia_thread_reply_form.html" %}
         {% elif mode = 'annotate' %}
           {% include "includes/pia_thread_annotate_form.html" %}

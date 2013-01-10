@@ -56,14 +56,7 @@
           </div>
           <div id="request_body_preview" class="well well-yellow">{{ form.body.value|urlize|linebreaks }}</div>
 
-          <div id="attchment-wrap" class="control-group MultiFile-wrap">
-            <div class="span4 pull-right">
-              <p><small>{% trans "You can upload up to 5 files. Only ceratin types of files are allowed (PDF, MS Office, Apache OpenOffice and images). The size of each file should not exceed" %} {{ ATTACHMENT_MAX_FILESIZE|filesizeformat }}.</small></p>
-            </div>
-            <input class="span2" name="attachments" type="file" id="attach-files" accept="{{ ATTACHMENT_ACCEPTED_FILETYPES }}" />
-            <div>&nbsp;</div><div>&nbsp;</div>
-            <div id="attach-list" class="well well-white well-dotted"></div>
-          </div>
+          {% include "includes/pia_request_attachment.html" %}
 
           <div class="form-actions">
             <input class="btn btn-primary" name="send_request" type="submit" value='{% trans "Send request" %}' />
