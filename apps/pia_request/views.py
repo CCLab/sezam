@@ -118,7 +118,11 @@ def process_attachments(msg, attachments, **kwargs):
     if dir_id: # If so, remove its part from dir_name.
         dir_name= dir_name.replace(dir_id, '').replace('//', '/')
 
-    attached_so_far= {f.filename: f.filesize for f in msg.attachments.all()}
+    # attached_so_far= {f.filename: f.filesize for f in msg.attachments.all()}
+    # This doesn't work in python 2.6, so:
+    attached_so_far= {}
+    for f in msg.attachments.all():
+        attached_so_far.update({f.filename: f.filesize})
 
     attachment_failed= []
     for attachment in attachments:
