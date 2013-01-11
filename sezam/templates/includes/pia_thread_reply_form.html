@@ -14,21 +14,19 @@
       {% for error in form.body.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
       {{ form.body }}
     </div>
-    <div class="control-group">
-      {% for error in form.authority.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-      {{ form.authority }}
-    </div>
-    <div class="control-group">
-      {% for error in form.user.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-      {{ form.user }}
-    </div>
+
+    {{ form.authority }}
+    {{ form.user }}
+    {% if form.instance.id %}
+    <input type="text" name="draft_id" value="{{ form.instance.id }}" style="display:none">
+    {% endif %}
 
     {% include "includes/pia_request_attachment.html" %}
 
     <div class="form-actions">
       <input class="btn btn-primary" name="send_reply" type="submit" value='{% trans "Reply" %}' />
       <input class="btn" name="save_reply_draft" type="submit" value='{% trans "Save draft" %}' />
-      <input class="btn" name="cancel_reply_draft" type="submit" value='{% trans "Discard" %}' />
+      <input class="btn" name="discard_reply_draft" type="submit" value='{% trans "Discard" %}' />
     </div>
     <div id="request_body_preview" class="well well-yellow">{{ form.body.value|linebreaks|urlize }}</div>
   </form>
