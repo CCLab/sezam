@@ -520,9 +520,6 @@ def send_request(request, id=None, **kwargs):
             'user_message': user_message},
             context_instance=RequestContext(request))
 
-    import pdb
-    pdb.set_trace()
-
     # Report the results (ignore `save_draft` user messages).
     user_message= {'success': None, 'fail': None}
     if successful:
