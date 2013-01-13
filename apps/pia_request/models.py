@@ -88,6 +88,7 @@ class PIAThread(PIAMessage):
                         verbose_name=_(u'request'))
     is_response= BooleanField(default=True,
                               verbose_name=_(u'Is it a response?'))
+
     def __unicode__(self):
         return "%s (request %d)" % (self.subject[:50], self.request.id)
 
@@ -108,7 +109,7 @@ class PIARequestDraft(PIAMessage):
 
     There are 2 kinds of Drafts:
     * A draft that initiates the Request.
-    This has null `thread_message` = null and be linked to several Authorities.
+    This has `thread_message` = null and can be linked to several Authorities.
 
     * A draft that is a response to the message from Authority (or a draft
     of the reply from Authority, received by snail mail, and being entered
@@ -124,26 +125,19 @@ class PIARequestDraft(PIAMessage):
     thread_message= OneToOneField(PIAThread, null=True, blank=True,
         default=None, related_name='draft', verbose_name=_(u'Message'))
 
+    def fill_authority(self, authority=None, **kwargs):
+        """
+        Re-filll the list of authorities in the draft.
+        """
+        if authority:
+            self.authority.clear()
+            if not isinstance(authority, list):
+                authority= list(authority)
+                for auth in authority:
+                    self.authority.add(auth)
+
     def __unicode__(self):
         return self.subject
-
-
-# class PIARequestDraft(GenericPost):
-#     """
-#     A draft of PIA request. Being deleted right after the request is sent.
-
-#     A draft of the reply to the Authority can also be saved, `thread_message`
-#     points to the message in the thread, to which the reply is intended.
-#     """
-#     authority= ManyToManyField(AuthorityProfile,
-#                                verbose_name=_(u'Recipients (IDs)'))
-#     user= ForeignKey(User, help_text=_(u'Request from user'))
-#     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
-#     thread_message= OneToOneField(PIAThread, null=True, blank=True,
-#         default=None, related_name='draft', verbose_name=_(u'Message'))
-
-#     def __unicode__(self):
-#         return self.subject
 
 
 @receiver(post_save)

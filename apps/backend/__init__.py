@@ -514,9 +514,6 @@ APP_MESSAGES = {
     'CheckOverdueComplete': {
         'message': _('Complete checking overdue requests. Total number of overdue requests: ')
         },
-    'AttachFailed': {
-        'message': _('Cannot process attachment! See the original message!')
-        },
     'ClassifyRespUser': {
         'message': _('The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, please, check appropriate status.')
         },
@@ -537,7 +534,13 @@ APP_MESSAGES = {
         },
     'DraftSaveFailed': {
         'message': _("Failed to save a Request draft, while sending PIA Request. System error is: %s"),
-        },    
+        },
+    'AttachFailed': {
+        'message': _('Cannot process attachment! See the original message!')
+        },
+    'AttachSaveFailed': {
+        'message': _('Failed to save attachments: %s')
+        },        
     'AttachTooBig': {
         'message': _("Attachment %s exceeds maximum filesize!"),
         }

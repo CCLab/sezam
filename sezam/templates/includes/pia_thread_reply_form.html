@@ -2,9 +2,25 @@
 
 {% if form %}
 <span id="form_reply"></span>
+
+<div class="row">
+  {% include "includes/user_message.html" %}
+</div>
+
 <div class="row">
   <form class="well form-vertical" name="formReply" id="reply_preview_send" enctype="multipart/form-data" action="/request/{{ request_id }}/reply/" method="post">
     {% csrf_token %}
+
+    {% if form.errors %}
+    <div class="control-group">
+      <div class="controls">
+        {% for error in form.non_field_errors %}
+        <span class="label label-important">{{ error|escape }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
     <div class="control-group">
       {{ form.subject.label }} &nbsp;
       {% for error in form.subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
@@ -15,11 +31,13 @@
       {{ form.body }}
     </div>
 
-    {{ form.authority }}
-    {{ form.user }}
-    {% if form.instance.id %}
-    <input type="text" name="draft_id" value="{{ form.instance.id }}" style="display:none">
-    {% endif %}
+    <div style="display:none">
+      {{ form.authority }}
+      {{ form.user }}
+      {% if form.instance.id %}
+      <input type="text" name="draft_id" value="{{ form.instance.id }}">
+      {% endif %}
+    </div>
 
     {% include "includes/pia_request_attachment.html" %}
 

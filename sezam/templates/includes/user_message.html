@@ -1,10 +1,24 @@
     {% autoescape off %}
     {% if user_message %}
       {% if user_message.success %}
-    <div class="alert alert-success"><button class="close" data-dismiss="alert" type="button">×</button>{{ user_message.success }}</div>
-      {% endif%}
+        {% for notification in user_message.success %}
+    <div class="alert alert-success"><button class="close" data-dismiss="alert" type="button">×</button>{{ notification }}</div>
+        {% endfor %}
+      {% endif %}
       {% if user_message.fail %}
-    <div class="alert alert-error"><button class="close" data-dismiss="alert" type="button">×</button>{{ user_message.fail }}</div>
+        {% for notification in user_message.fail %}
+    <div class="alert alert-error"><button class="close" data-dismiss="alert" type="button">×</button>{{ notification }}</div>
+        {% endfor %}
+      {% endif%}
+      {% if user_message.warning %}
+        {% for notification in user_message.warning %}
+    <div class="alert"><button class="close" data-dismiss="alert" type="button">×</button>{{ notification }}</div>
+        {% endfor %}
+      {% endif%}
+      {% if user_message.info %}
+        {% for notification in user_message.info %}
+    <div class="alert alert-info"><button class="close" data-dismiss="alert" type="button">×</button>{{ notification }}</div>
+        {% endfor %}
       {% endif%}
     {% endif %}
     {% endautoescape %}

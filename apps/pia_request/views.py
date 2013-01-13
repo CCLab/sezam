@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
@@ -16,12 +16,11 @@ from time import struct_time, strptime
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIAAttachment, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
-from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name, clean_text_for_search, downcode, save_attached_file
+from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name, clean_text_for_search, downcode, save_attached_file, update_user_message
 from apps.backend import AppMessage
 from apps.browser.forms import ModelSearchForm
 from apps.vocabulary.models import AuthorityProfile
 from sezam.settings import DEFAULT_FROM_EMAIL, USE_DEFAULT_FROM_EMAIL, PAGINATE_BY, MEDIA_ROOT, ATTACHMENT_MAX_FILESIZE, ATTACHMENT_MAX_NUMBER
-
 
 def request_list(request, status=None, **kwargs):
     """
@@ -148,23 +147,19 @@ def process_attachments(msg, attachments, **kwargs):
 
         filename= f['path'].rsplit('/')[-1]
         filetype= f['path'].rsplit('.')[-1]
-        err_msg= AppMessage('AttachFailed', value=(filename, msg.id,)).message
         try:
             pia_attachment, created= PIAAttachment.objects.get_or_create(
                 message=msg, filename=filename, filetype=filetype, path=f['path'])
-        except Exception as e:
-            print err_msg
-        pia_attachment.filesize= f['size']
-        try:
+            pia_attachment.filesize= f['size']
             pia_attachment.save()
         except Exception as e:
-            print err_msg
+            print e
 
     if attachment_failed:
-        return {'fail': 'Filed to save attachments: %s!' % \
-                ', '.join(attachment_failed)}
+        return AppMessage('AttachSaveFailed').message % ', '.join(
+            attachment_failed)
     else:
-        return {} # No news are good news.
+        return None # No news are good news.
 
 
 def _do_remove_attachment(id_attachment):
@@ -219,81 +214,102 @@ def remove_attachments(draft, id_list_remain=[], count_new=0):
     return max(0, num_allowed), dir_name
 
 
-@login_required
+def save_draft(data, **kwargs):
+    """
+    Saving a request or reply draft.
+    `data` is a dict of values to be saved.
+
+    Returns a dictionary of the structure:
+    {
+        'draft': <saved draft instance or None in case or errors>,
+        'errors': <processing errors>,
+        'attachments_allowed': <updated number of allowed attachments>
+    }
+    """
+    d= data
+    _r= ['body', 'subject', 'authority', 'attachments', 'attached']
+    _u= ['body', 'subject']
+    _id= d.pop('id', None)
+    lookup_fields= dict((k, d[k]) for k in d.keys() if k not in _r)
+    update_fields= dict((k, d[k]) for k in data.keys() if k in _u)
+
+    # Update or create.
+    if _id:
+        try:
+            draft= PIARequestDraft.objects.get(id=int(_id))
+        except:
+            pass
+    # All following exceptions are fatal, return with draft: None.
+    else:
+        try:
+            draft, created= PIARequestDraft.objects.get_or_create(
+                **lookup_fields)
+        except Exception as e:
+            return {'draft': None, 'errors': e}
+    try:
+        for k, v in update_fields.iteritems():
+            setattr(draft, k, v)
+    except Exception as e:
+        return {'draft': None, 'errors': e}
+    try:
+        draft.save()
+    except Exception as e:
+        return {'draft': None, 'errors': e}
+
+    # Maintain many-to-many link with Authority.
+    draft.fill_authority(d['authority'])
+
+    # Process attachments:
+    # * delete from the db and disk those that are unchecked.
+    attachments_allowed, dir_name= remove_attachments(draft,
+        id_list_remain=d['attached'], count_new=len(d['attachments']))
+    # * add to the db and save on disk newly attached.
+    if dir_name is None:
+        dir_name='%s_%s' % (
+            d['user'].get_full_name().strip().lower().replace(' ', '_'),
+            'upload')
+    attach_errors= process_attachments(draft, d['attachments'],
+                                       dir_name=dir_name)
+    return {'draft': draft, 'errors': attach_errors,
+            'attachments_allowed': attachments_allowed}
+
+
 def save_request_draft(request, id=None, **kwargs):
     """
     Saving a draft whether it is a new request or an updated one.
     """
-    request_id= id
+    draft_id= id
     template= kwargs.get('template', 'request.html')
     user_message= request.session.pop('user_message', {})
     form= MakeRequestForm(request.POST)
     attachments_allowed= ATTACHMENT_MAX_NUMBER
-    data= {'request_id': request_id, 'template': template,
-           'attachments_allowed': attachments_allowed,
-           'user_message': user_message}
+    response= {'request_id': draft_id, 'template': template,
+               'attachments_allowed': attachments_allowed,
+               'user_message': user_message}
 
     if form.is_valid():
-        selected_authority= form.cleaned_data['authority']
-        if selected_authority:
-            params={
-                'email_from': form.cleaned_data['email_from'],
-                'email_to': form.cleaned_data['email_to'],
-                'user': form.cleaned_data['user'],
-                'body': form.cleaned_data['body'],
-                'subject': ''.join(form.cleaned_data['subject'].splitlines())}
+        data= form.cleaned_data
+        data.update({'attachments': dict(request.FILES).get('attachments', []),
+                     'attached': dict(request.POST).get(u'attached_id', [])})
+        if draft_id:
+            data.update({'id': draft_id})
 
-            if id: # Already saved, need to be updated.
-                piarequest_draft= PIARequestDraft.objects.get(id=int(id))
-                for k,v in params.iteritems():
-                    setattr(piarequest_draft, k, v)
-            else:
-                piarequest_draft= PIARequestDraft(**params)
+        result= save_draft(data)
 
-            try:
-                piarequest_draft.save()
-            except Exception as e:
-                ex= AppMessage('DraftSaveFailed', value=(data,)).message % e
-                user_message.update({'fail': ex})
-                data.update({'user_message': user_message})
-                return data
-
-            piarequest_draft.authority.clear()
-            for authority in selected_authority:
-                piarequest_draft.authority.add(authority)
-
-            request_id= piarequest_draft.id
-
-            # For is initiated from instanse, so, it should be made after all
-            # changes to the `piarequest_draft` are done!
-            form= MakeRequestForm(instance=piarequest_draft)
-
-            # Report about saving draft only if it was 'Save', not 'Preview'.
-            if id:
-                user_message.update({'success': _(
-                    u'Draft successfully saved. You can send it now, \
-                    or check other stuff on our web-site.')})
-
-            # Process attachments.
-            attachments= dict(request.FILES).get('attachments', [])
-
-            # Delete from the db and disk those that are unchecked.
-            attachments_allowed, dir_name= remove_attachments(piarequest_draft,
-                id_list_remain=dict(request.POST).get(u'attached_id', []),
-                count_new=len(attachments))
-
-            # Add to the db and save on disk newly attached.
-            if dir_name is None:
-                dir_name='%s_%s' % (
-                    request.user.get_full_name().strip().lower().replace(' ', '_'),
-                    'upload')
-                
-            attach_report= process_attachments(piarequest_draft, attachments,
-                                               dir_name=dir_name)
-            user_message.update(attach_report)
-    data.update({'request_id': request_id, 'user_message': user_message,
+        # Report.
+        if result['errors']:
+            user_message= update_user_message(user_message,
+                                              result['errors'], 'fail')
+        if result['draft']:
+            draft_id= result['draft'].id
+            form= MakeRequestForm(instance=result['draft'])
+            attachments_allowed= result['attachments_allowed']
+            if id: # Report only if it's draft save, not the first preview.
+                user_message= update_user_message(user_message,
+                    _(u'Draft saved successfully.'), 'success')
+    response.update({'request_id': draft_id, 'user_message': user_message,
                  'attachments_allowed': attachments_allowed, 'form': form})
-    return data
+    return response
 
 
 def get_request_draft(request, id, **kwargs):
@@ -343,8 +359,9 @@ def attach_files(message, draft):
     Attaching files to EmailMessage from those specified in the Draft.
     """
     for attachment in draft.attachments.all():
+        path= ('%s/attachments/%s' % (MEDIA_ROOT, attachment.path)).replace('//', '/')
         try:
-            message.attach_file('%s/attachments/%s' % (MEDIA_ROOT, attachment.path))
+            message.attach_file(path)
         except Exception as e:
             print AppMessage('AttachFailed', value=(attachment.path, draft.id,)).message
     return message
@@ -386,12 +403,7 @@ def send_request(request, id=None, **kwargs):
     if request.method != 'POST':
         raise Http404
 
-    # Check if we only should save the draft.
-    if request.POST.get('save_request_draft'):
-        response_data= save_request_draft(request, id, **kwargs)
-        return render_to_response(response_data.pop('template'), response_data,
-                                  context_instance=RequestContext(request))
-
+    # SCENARIO 1.
     # Discard the draft.
     if request.POST.get('discard_request_draft'):
         if id: # Saved draft (otherwise we just don't bother).
@@ -405,17 +417,49 @@ def send_request(request, id=None, **kwargs):
     template= kwargs.get('email_template', 'emails/request_to_authority.txt')
     successful, failed= list(), list()
 
+    # SCENARIO 2.
+    # Only save the draft.
+    if request.POST.get('save_request_draft'):
+        response_data= save_request_draft(request, id, **kwargs)
+        return render_to_response(response_data.pop('template'), response_data,
+                                  context_instance=RequestContext(request))
+
+    # SCENARIO 3.
+    # Send the message(s).
     form= MakeRequestForm(request.POST)
     if form.is_valid():
-        # No newlines in Email subject!
-        message_subject = ''.join(form.cleaned_data['subject'].splitlines())
-        message_content= render_to_string(template, {
-            'content': form.cleaned_data['body'],
-            'info_email': 'info@%s' % get_domain_name()})
-
-        message_draft= PIARequestDraft.objects.get(id=int(id))
+        # Saving it for the purpose of processing the results.
         selected_authority= form.cleaned_data['authority']
-        for authority in selected_authority:
+        
+        data= form.cleaned_data
+        data.update({'attachments': dict(request.FILES).get('attachments', []),
+                     'attached': dict(request.POST).get(u'attached_id', [])})
+        if id:
+            data.update({'id': id})
+
+        result= save_draft(data)
+
+        # Report.
+        if result['errors']:
+            user_message= update_user_message(user_message,
+                                              result['errors'], 'fail')
+        if result['draft']:
+            message_draft= result['draft']
+            # Update number of allowed attachments.
+            request.session['attachments_allowed']= result['attachments_allowed']
+        else:
+            # Something went wrong while saving draft.
+            request.session['user_message']= user_message
+            return redirect(reverse('preview_request', args=(id,)))
+
+        # No newlines in Email subject!
+        message_subject = ''.join(message_draft.subject.splitlines())
+        message_content= render_to_string(template,
+            {'content': message_draft.body,
+             'info_email': 'info@%s' % get_domain_name()})
+
+        # Process draft - try to send message to every Authority in the Draft.
+        for authority in message_draft.authority.all():
             try:
                 email_to= authority.email
             except:
@@ -460,10 +504,6 @@ def send_request(request, id=None, **kwargs):
         # or delete the draft if all successful.
         if len(failed) == 0:
             try: # Remove draft if nothing failed.
-                # WARNING! Normally this should be done the following way:
-                #     result= _do_discard_request_draft(message_draft)
-                # But this would wipe out attachment files from disk, which
-                # should stay in place, since they are attached to e-mail(s).
                 message_draft.delete()
             except Exception as e:
                 failed.append(AppMessage('DraftRemoveFailed', value=(message_draft.id,)).message % e)
@@ -474,15 +514,24 @@ def send_request(request, id=None, **kwargs):
                 pass # TO-DO: Log it!
             # Update the form with updated instance of the Draft.
             form= MakeRequestForm(instance=message_draft)
+    else:
+        return render_to_response(template, {'request_id': id, 'form': form,
+            'attachments_allowed': attachments_allowed,
+            'user_message': user_message},
+            context_instance=RequestContext(request))
 
-    # Report the results.
+    import pdb
+    pdb.set_trace()
+
+    # Report the results (ignore `save_draft` user messages).
     user_message= {'success': None, 'fail': None}
     if successful:
-        user_message['success']= _(
-            u'Successfully sent request(s) to: %s') % ', '.join(successful)
+        user_message= update_user_message(user_message,
+            _(u'Successfully sent request(s) to: %s') % ', '.join(successful),
+            'success')
     if failed:
-        user_message['fail']= _(
-            u'Request(s) sending failed: %s') % ', '.join(failed)
+        user_message= update_user_message(user_message,
+            _(u'Request(s) sending failed: %s') % ', '.join(failed), 'fail')
 
     # Report the results to the user session.
     request.session['user_message']= user_message
@@ -496,11 +545,10 @@ def send_request(request, id=None, **kwargs):
             return redirect(reverse('display_authorities'))
     else:
         # Some are not good - return to the draft page.
-        response_data= save_request_draft(request, id, **kwargs)
-        response_data.update({'form': form})
-        return render_to_response(response_data.pop('template'), response_data,
-                                  context_instance=RequestContext(request))
-
+        return render_to_response(template, {'request_id': id, 'form': form,
+            'attachments_allowed': attachments_allowed,
+            'user_message': user_message},
+            context_instance=RequestContext(request))
 
 def retrieve_similar_items(pia_request, limit=None):
     """
@@ -545,6 +593,8 @@ def view_thread(request, id=None, **kwargs):
         raise Http404
     # Turning public attention to those 'awaiting classification'.
     user_message= request.session.pop('user_message', {})
+    attachments_allowed= request.session.pop('attachments_allowed',
+                                             ATTACHMENT_MAX_NUMBER)
     if thread[0].request.status == 'awaiting':
         if request.user.is_anonymous():
             user_message.update({
@@ -575,6 +625,7 @@ def view_thread(request, id=None, **kwargs):
     return render_to_response(template, {'thread': thread, 'form': form,
         'similar_items': similar_items, 'user_message': user_message,
         'request_status': PIA_REQUEST_STATUS, 'request_id': id, 'mode': mode,
+        'attachments_allowed': attachments_allowed,
         'page_title': thread[0].request.summary[:50]},
         context_instance=RequestContext(request))
 
@@ -616,50 +667,6 @@ def similar_requests(request, id=None, **kwargs):
         'urlparams': urlparams}, context_instance=RequestContext(request))
 
 
-def save_reply_draft(request, data, **kwargs):
-    """
-    Saving the draft of user's reply.
-    """
-    # Change the keys for proper search for the draft in the db.
-    user_message= kwargs.get('user_message', {})
-    lookup_fields= data.copy()
-    del lookup_fields['subject'], lookup_fields['body']
-    authority= lookup_fields.pop('authority')
-    reply_draft, created= PIARequestDraft.objects.get_or_create(
-        **lookup_fields)
-    reply_draft.body= data['body']
-    reply_draft.subject= data['subject']
-    try:
-        reply_draft.save()
-        user_message.update({'success': _(u'Draft saved')})
-    except Exception as e:
-        user_message.update({'fail': AppMessage(
-            'DraftSaveFailed').message % e})
-        request.session['user_message']= user_message
-        return redirect('/request/%s/#form_reply' % id)
-
-    # Successfully saved, update Authority.
-    reply_draft.authority.add(authority)
-
-    # Process attachments.
-    attachments= dict(request.FILES).get('attachments', [])
-    # Delete from the db and disk those that are unchecked.
-    attachments_allowed, dir_name= remove_attachments(reply_draft,
-        id_list_remain=dict(request.POST).get(u'attached_id', []),
-        count_new=len(attachments))
-    if dir_name is None:
-        dir_name='%s_%s' % (
-            request.user.get_full_name().strip().lower().replace(' ', '_'),
-            'upload')
-    # Add to the db and save on disk newly attached.
-    attach_report= process_attachments(reply_draft, attachments,
-                                       dir_name=dir_name)
-    user_message.update(attach_report)
-    request.session['user_message']= user_message
-
-    return reply_draft
-
-
 @login_required
 def reply_to_thread(request, id=None, **kwargs):
     """
@@ -677,110 +684,15 @@ def reply_to_thread(request, id=None, **kwargs):
 
     # The last message in the thread (reference for annotations and replies!).
     msg= thread.reverse()[0]
-    
+
     page_title= _(u'Reply to: ') + thread[0].request.summary[:50]
 
-    if request.method == 'POST': # Process the Reply form data.
-        form= ReplyDraftForm(request.POST)
-
-        if request.POST.get('discard_reply_draft', None):
-            # Cancel reply - try to find the draft first.
-            try:
-                draft_id= form.data['draft_id']
-            except:
-                draft_id= None
-            if draft_id:
-                try:
-                    PIARequestDraft.objects.get(id=int(draft_id)).delete()
-                except Exception as e:
-                    pass
-            # If there are no draft, simply redirect back.
-            return redirect(reverse('view_thread', args=(str(id),)))
-
-        
-        if form.is_valid():
-            data= {'thread_message': msg,
-                'body': form.cleaned_data['body'],
-                'subject': form.cleaned_data['subject'],
-                'user': form.cleaned_data['user'],
-                'authority': msg.request.authority}
-
-            reply_draft= save_reply_draft(request, data)
-
-            # CASE 1
-            # If user wants to save the draft only,
-            # redirect to the Thread view.
-            if request.POST.get('save_reply_draft', None):
-                return redirect('/request/%s/#form_reply' % id)
-
-            # CASE 2
-            # If user wants to manually save a reply from Authority,
-            # all the data and attachments are already in the draft.
-            elif request.POST.get('save_reply', None):
-                # TO-DO: here goes process of manual saving the response
-                # from Authority.
-                pass
-
-            # CASE 3
-            # If user wants to send the message, all the data
-            # and attachments are already in the draft.
-            elif request.POST.get('send_reply', None):
-                email_to= msg.email_from if msg.is_response else msg.email_to
-                email_from= email_from_name(data['user'].get_full_name(),
-                                            id=id, delimiter='.')
-                message_data= {'request': msg.request, 'is_response': False,
-                    'email_to': email_to, 'email_from': email_from,
-                    'subject': data['subject'], 'body': data['body']}
-
-                _email_from= DEFAULT_FROM_EMAIL if USE_DEFAULT_FROM_EMAIL else email_from
-
-                # Save a new message in the thread.
-                pia_msg= PIAThread(**message_data)
-                try:
-                    pia_msg.save()
-                except Exception as e:
-                    return redirect(reverse('view_thread', args=(str(id),)))
-
-                # Make and send email.
-                reply= EmailMessage(data['subject'], data['body'],
-                    _email_from, [email_to], headers = {'Reply-To': email_from})
-                reply= attach_files(reply, reply_draft) # Attachments from draft.
-
-                try: # to send the message.
-                    reply.send(fail_silently=False)
-                    user_message.update({'success': _(u'Reply sent successfully')})
-                except Exception as e:
-                    user_message.update({'fail': _(u'Error sending reply! System error: %s' % e)})
-                    # If unsuccessful, delete the created message.
-                    # All the data stays in the Draft.
-                    pia_msg.delete()
-                    request.session['user_message']= user_message
-
-                    return redirect(reverse('view_thread', args=(str(id),)))
-
-                # If successful, re-link the attachments and delete the draft.
-                if reply_draft.attachments.count() > 0:
-                    for attachment in reply_draft.attachments.all():
-                        attachment.message= pia_msg
-                        attachment.save()
-                reply_draft.delete()
-
-                request.session['user_message']= user_message
-
-                return redirect(reverse('view_thread', args=(str(id),)))
-
-        # Finally, if form is invalid and nobody wants to discard a draft.
-        return render_to_response(template, {'thread': thread,
-            'request_id': id, 'form': form, 'page_title': page_title,
-            'user_message': user_message, 'mode': 'reply',
-            'attachments_allowed': attachments_allowed,},
-            context_instance=RequestContext(request))
-
-    elif request.method == 'GET': # Show empty form to fill.
+    if request.method == 'GET': # Show empty form to fill.
         if id is None:
             raise Http404
-        initial= {'user': request.user, 'authority': [msg.request.authority],
-                  'subject': re_subject(msg.subject),
+        initial= {'thread_message': msg,
+                  'user': request.user, 'authority': [msg.request.authority],
+                  'subject': re_subject(msg.subject), 
                   'body': render_to_string(email_template, {
                       'content': '', 'last_msg_created': msg.created,
                       'last_msg_email_from': msg.email_from,
@@ -792,6 +704,125 @@ def reply_to_thread(request, id=None, **kwargs):
             {'thread': thread, 'request_id': id, 'user_message': user_message,
             'form': form, 'page_title': page_title, 'mode': 'reply',
             'request_status': PIA_REQUEST_STATUS},
+            context_instance=RequestContext(request))
+
+    # Process the Reply form data.
+    elif request.method == 'POST':
+        form= ReplyDraftForm(request.POST)
+        try: # Collect it before validation.
+            draft_id= form.data['draft_id']
+        except:
+            draft_id= None
+
+        # SCENARIO 1
+        # User wants to discard the draft -> try to find the draft and
+        # delet it. Redirect to view_thread.
+        if request.POST.get('discard_reply_draft', None):
+            if draft_id:
+                try:
+                    PIARequestDraft.objects.get(id=int(draft_id)).delete()
+                except Exception as e:
+                    pass
+            return redirect(reverse('view_thread', args=(str(id),)))
+
+        # Before proceed to other scenarios the Draft must be saved.
+        if form.is_valid():
+            data= form.cleaned_data
+            data.update({'thread_message': msg,
+                'attachments': dict(request.FILES).get('attachments', []),
+                'attached': dict(request.POST).get(u'attached_id', [])})
+            if draft_id:
+                data.update({'id': draft_id})
+
+            result= save_draft(data)
+
+            # Report.
+            if result['errors']:
+                user_message= update_user_message(user_message,
+                                                  result['errors'], 'fail')
+            if result['draft']:
+                reply_draft= result['draft']
+                user_message= update_user_message(user_message,
+                    _(u'Draft saved successfully.'), 'success')
+                # Update number of allowed attachments.
+                request.session['attachments_allowed']= result['attachments_allowed']
+            else:
+                # Something went wrong while saving draft.
+                request.session['user_message']= user_message
+                return redirect('/request/%s/#form_reply' % id)
+            
+            # SCENARIO 2
+            # User only wants to save the draft -> redirect to the Thread view.
+            if request.POST.get('save_reply_draft', None):
+                request.session['user_message']= user_message
+                return redirect('/request/%s/#form_reply' % id)
+
+            # SCENARIO 3
+            # User wants to manually save a reply from Authority,
+            # all the data and attachments are already in the draft.
+            elif request.POST.get('save_reply', None):
+                # TO-DO: here goes process of manual saving the response
+                # from Authority.
+                # Need sthn like `swap_emails` to swap email_to and email_from.
+                # And flag it as 'manual'.
+                pass
+
+            # SCENARIO 4
+            # User wants to send the message -> get all the data and attachments
+            # from the saved draft, prepare message and send it.
+            elif request.POST.get('send_reply', None):
+                user_message= {} # Clean it, doesn't matter what was before.
+                email_to= msg.email_from if msg.is_response else msg.email_to
+                email_from= email_from_name(reply_draft.user.get_full_name(),
+                                            id=id, delimiter='.')
+                _email_from= DEFAULT_FROM_EMAIL if USE_DEFAULT_FROM_EMAIL else email_from
+
+                # Make and send email.
+                reply= EmailMessage(reply_draft.subject, reply_draft.body,
+                    _email_from, [email_to], headers = {'Reply-To': email_from})
+                reply= attach_files(reply, reply_draft) # Attachments from draft.
+
+                try: # to send the message.
+                    reply.send(fail_silently=False)
+                    user_message= update_user_message(user_message,
+                        _(u'Reply sent successfully.'), 'success')
+                except Exception as e:
+                    user_message= update_user_message(user_message,
+                        _(u'Error sending reply! System error:') + e, 'fail')
+                    # If unsuccessful, all the data stays in the Draft.
+                    request.session['user_message']= user_message
+                    return redirect('/request/%s/#form_reply' % id)
+
+                # If successful:
+                # Save a new message in the thread.
+                message_data= {'request': msg.request, 'is_response': False,
+                    'email_to': email_to, 'email_from': email_from,
+                    'subject': reply_draft.subject, 'body': reply_draft.body}
+                pia_msg= PIAThread(**message_data)
+                try:
+                    pia_msg.save()
+                except Exception as e:
+                    user_message= update_user_message(user_message,
+                        _(u'Error saving message in the thread! System error:')\
+                        + e, 'fail')
+                    request.session['user_message']= user_message
+                    return redirect('/request/%s/#form_reply' % id)
+
+                # Re-link the attachments and delete the draft.
+                if reply_draft.attachments.count() > 0:
+                    for attachment in reply_draft.attachments.all():
+                        attachment.message= pia_msg
+                        attachment.save()
+                reply_draft.delete()
+
+                request.session['user_message']= user_message
+                return redirect(reverse('view_thread', args=(str(id),)))
+
+        # Finally, if form is invalid and nobody wants to discard a draft.
+        return render_to_response(template, {'thread': thread,
+            'request_id': id, 'form': form, 'page_title': page_title,
+            'user_message': user_message, 'mode': 'reply',
+            'attachments_allowed': attachments_allowed,},
             context_instance=RequestContext(request))
 
 

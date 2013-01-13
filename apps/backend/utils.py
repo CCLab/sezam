@@ -366,3 +366,35 @@ def login(request, **kwargs):
     if request.POST.has_key('remember_me'):
         request.session.set_expiry(SESSION_EXPIRE_AFTER)
     return response
+
+
+def update_user_message(msg, notification, kind):
+    """
+    Updates session messages. The structure of the dict is:
+    {
+        'success': [<notifications>],
+        'warning': [<notifications>],
+        'fail': [<errors>]
+    }
+    Anything else is considered as 'info'.
+    """
+    kinds= ('success', 'warning', 'fail',)
+    if kind not in kinds:
+        kind= 'info'
+    notifications= msg.pop(kind, [])
+    if notifications is None:
+        notifications= []
+    if isinstance(notification, basestring):
+        try:
+            notifications.append(notification)
+        except:
+            pass
+    elif isinstance(notification, list):
+        try:
+            notifications.extend(notification)
+        except:
+            pass
+    else: # Ignore anything else.
+        pass
+    msg.update({kind: notifications})
+    return msg

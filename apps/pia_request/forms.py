@@ -80,7 +80,7 @@ class MakeRequestForm(forms.ModelForm):
                 'name': ' ', 'user_name': ' ', 'space3': SPACER*3, 'space1': SPACER}
 
         # Draft is a PIAMessage, so the e-mails should always be filled.
-        ctrl= DraftEmailControl().ensure_emails(self)
+        ctrl= DraftFormControl().ensure_emails(self)
         if ctrl == 'OK':
             pass
 
@@ -95,11 +95,10 @@ class ReplyDraftForm(forms.ModelForm):
     body= forms.CharField(label=_(u'Reply'),
         widget=forms.Textarea(attrs={'class': 'span7'}))
     user= forms.ModelChoiceField(label=_(u'User'),
-        queryset=User.objects.filter(is_active=True),
-        widget=forms.TextInput(attrs={'style': 'display:none'}))
-    authority= forms.ModelMultipleChoiceField(label=_(u'You are sending a request to'),
-        queryset=AuthorityProfile.objects.filter(active=True).order_by('name'),
-        widget=forms.SelectMultiple(attrs={'style': 'display:none'}))
+        queryset=User.objects.filter(is_active=True))
+    authority= forms.ModelMultipleChoiceField(
+        label=_(u'You are sending a request to'),
+        queryset=AuthorityProfile.objects.filter(active=True).order_by('name'))
 
     class Meta:
         model= PIARequestDraft
@@ -108,14 +107,17 @@ class ReplyDraftForm(forms.ModelForm):
         super(ReplyDraftForm, self).__init__(*args, **kwargs)
 
         initial= kwargs.pop('initial', None)
+            
         if initial:
-            for init_key, init_val in initial.iteritems():
-                self.fields[init_key].initial= init_val
+            for k, v in initial.iteritems():
+                self.fields[k].initial= v
 
         # Draft is a PIAMessage, so the e-mails should always be filled.
-        ctrl= DraftEmailControl().ensure_emails(self)
-        if ctrl == 'OK':
-            pass
+        ctrl= DraftFormControl().ensure_emails(self)
+
+        # All model choice fields in the form are hidden, no need to extract
+        # all data for a form, only those selected.
+        ctrl= DraftFormControl().update_querysets(self)
 
 
 class CommentForm(forms.Form):
@@ -150,11 +152,11 @@ class PIAFilterForm(forms.Form):
         initial= kwargs.pop('initial', None)
         super(PIAFilterForm, self).__init__(*args, **kwargs)
         if initial:
-            for init_key, init_val in initial.iteritems():
-                self.fields[init_key].initial= init_val
+            for k, v in initial.iteritems():
+                self.fields[k].initial= v
 
 
-class DraftEmailControl():
+class DraftFormControl():
     """
     """
     valid_form_classes= [MakeRequestForm, ReplyDraftForm]
@@ -189,8 +191,77 @@ class DraftEmailControl():
         _id= lambda x: x[0] if isinstance(x, list) else x
         return m.objects.get(id= int(_id(i)))
 
+    def __extract_id(self, d):
+        """
+        Returns list of ids (even if one).
+        """
+        try:
+            return [int(i.id) for i in d]
+        except:
+            return [int(d.id)]
+
+    def __get_data(self, fo, fi):
+        """
+        Extract data from a field, be it initial or bound data.
+        """
+        if fo.instance.id is not None:
+            try: # ManyRelatedManager?
+                return getattr(fo.instance, fi).all()
+            except: # RelatedManager?
+                return getattr(fo.instance, fi)
+        elif fo.initial:
+            return fo.fields[fi].initial
+        elif fo.data:
+            return fo.data[fi]
+
+    def __get_model(self, fo, fi):
+        """
+        Figure out the model from a field.
+        """
+        if fo.instance.id is not None:
+            m= getattr(fo.instance, fi)
+            try: # ModelMultipleChoiceField?
+                return m.model
+            except: pass
+            try: # ModelChoiceField?
+                return m.__class__
+            except: pass
+        elif fo.initial:
+            try: # Initial can be a list.
+                return fo.initial[fi][0].__class__
+            except:
+                return fo.initial[fi].__class__
+        # If none of the above worked.
+        return None
+
+    def update_querysets(self, form=None, **kwargs):
+        """
+        All model choice fields in the form are hidden -
+        no need to extract all data for a form, only those
+        that define initials.
+        """
+        # Check if form parameter is correct.
+        is_ok, response= self.__validate_form(form)
+        if not is_ok:
+            return response
+        f= response
+
+        fields= kwargs.get('fields', f.fields.keys())
+        for field in fields:
+            if f.fields[field].__class__ in [
+                    forms.ModelMultipleChoiceField, forms.ModelChoiceField]:                
+                model= self.__get_model(f, field)
+                if model:
+                    data= self.__get_data(f, field)
+                    if data:
+                        f.fields[field].queryset= model.objects.filter(
+                            id__in=self.__extract_id(data))
+        return 'OK'
+
     def ensure_emails(self, form=None):
         """
+        Ensures that `email_from` and `email_to` fields are filled with
+        data from Authority or User.
         """
         # Check if form parameter is correct.
         is_ok, response= self.__validate_form(form)
@@ -207,8 +278,6 @@ class DraftEmailControl():
 
         # Filling emails on form submit.
         if f.data:
-            data_dict= dict(f.data)
-
             try: # Check user's email.
                 email_from= f.data['email_from']
             except: pass
