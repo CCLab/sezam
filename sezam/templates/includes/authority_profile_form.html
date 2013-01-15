@@ -1,0 +1,100 @@
+{% load i18n %}
+<div class="span7">
+  {% include "includes/user_message.html" %}
+
+  <div class="row well">
+    <legend>{% trans 'Describe new authority' %}</legend>
+    <strong>{% trans "Please, do not enter untruthful data!" %}</strong>
+    <p>{% trans "Before going active and available for requests a new Authority will be checked by our personnel." %}
+    <br/>{% trans "We will notify you on our decision asap." %}</p>
+    <p>{% trans "Required fields are marked by the red star " %}<span class="required"> * </span>.</p>
+    <hr class="narrow">
+
+    <form class="form-horizontal" name="formAuthorityProfile" id="form_AuthorityProfile" enctype="multipart/form-data" action="/authority/add/{% if authority %}{{ authority.slug }}/{% endif %}" method="post">
+      {% csrf_token %}
+      <div class="control-group">
+        <div class="controls">
+          {% for error in form.non_field_errors %}
+          <span class="label label-important">{{ error|escape }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="control-group">
+        {% for error in form.name.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        {% if form.name.field.required %}<span class="required"> * </span>{% endif %}{{ form.name }}
+      </div>
+      <div class="control-group">
+        <small>{% trans "The Authority is represented by the official" %}</small>
+        <p>{% if form.official.field.required %}<span class="required"> * </span>{% endif %}{{ form.official }}{% for error in form.official.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}&nbsp;&nbsp;
+        {% if form.official_name.field.required %}<span class="required"> * </span>{% endif %}{{ form.official_name }}{% for error in form.official_name.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}&nbsp;&nbsp;
+        {% if form.official_lastname.field.required %}<span class="required"> * </span>{% endif %}{{ form.official_lastname }}{% for error in form.official_lastname.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}</p>
+      </div>
+      <div class="control-group">
+        <small>{% trans "In order to find an authority easy and fast" %},
+          <br/>{% trans "it should belong to one of the given categories" %}</small>&nbsp;
+        {% if form.category.field.required %}<span class="required"> * </span>{% endif %}{{ form.category }}
+        {% for error in form.category.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}</p>
+      </div>
+
+      <span class="label">{% trans "Authority address" %}</span>
+      <hr class="narrow"></hr>
+      <div class="control-group">
+        {% for error in form.address_street.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        {% if form.address_street.field.required %}<span class="required"> * </span>{% endif %}{{ form.address_street }}
+        {% for error in form.address_num.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        {% if form.address_num.field.required %}<span class="required"> * </span>{% endif %}{{ form.address_num }}
+        <p>{{ form.address_line1.label }}</p>
+        <p>{% if form.address_line1.field.required %}<span class="required"> * </span>{% endif %}{{ form.address_line1 }}</p>
+        <p>{% if form.address_line2.field.required %}<span class="required"> * </span>{% endif %}{{ form.address_line2 }}</p>
+        {% if form.address_city.field.required %}<span class="required"> * </span>{% endif %}{{ form.address_city }}&nbsp;&nbsp;
+        {% if form.address_postalcode.field.required %}<span class="required"> * </span>{% endif %}{{ form.address_postalcode }}
+        {% for error in form.address_postalcode.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        {% for error in form.address_city.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      </div>
+
+      <span class="label">{% trans "Authority telephones" %}</span>
+      <hr class="narrow"></hr>
+      <div class="control-group">
+        <small>{{ form.tel_number.label }}</small>
+        <p>{% for error in form.tel_code.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+          {% if form.tel_code.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel_code }} - 
+          {% for error in form.tel_number.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+          {% if form.tel_number.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel_number }} {% if form.tel_internal.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel_internal }}</p>
+        <p><small>{{ form.tel1_number.label }}</small></p>
+        <p>{% if form.tel1_code.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel1_code }} - {% if form.tel1_number.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel1_number }}</p>
+        <p>{% if form.tel2_code.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel2_code }} - {% if form.tel2_number.field.required %}<span class="required"> * </span>{% endif %}{{ form.tel2_number }}</p>
+        <small>{{ form.fax_number.label }}</small>
+        <p>{% if form.fax_code.field.required %}<span class="required"> * </span>{% endif %}{{ form.fax_code }} - {% if form.fax_number.field.required %}<span class="required"> * </span>{% endif %}{{ form.fax_number }}</p>
+      </div>
+
+      <hr class="narrow"></hr>
+      <div class="control-group">
+        <span class="label">{% trans "Emails" %}</span>&nbsp;&nbsp;
+        {% if form.email.field.required %}<span class="required"> * </span>{% endif %}{{ form.email }}{% for error in form.email.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        &nbsp;&nbsp;
+        {% if form.email_secretary.field.required %}<span class="required"> * </span>{% endif %}{{ form.email_secretary }}{% for error in form.email_secretary.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        &nbsp;&nbsp;
+        {% if form.email_info.field.required %}<span class="required"> * </span>{% endif %}{{ form.email_info }}{% for error in form.email_info.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      </div>
+      <div class="control-group">
+        <span class="label">{% trans "Web-sites" %}</span>&nbsp;&nbsp;
+        {% if form.web_site.field.required %}<span class="required"> * </span>{% endif %}{{ form.web_site }}{% for error in form.web_site.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}        
+        {% if form.web_site1.field.required %}<span class="required"> * </span>{% endif %}{{ form.web_site1 }}{% for error in form.web_site1.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      </div>
+      <div class="control-group">
+        {% for error in form.description.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+        {% if form.description.field.required %}<span class="required"> * </span>{% endif %}{{ form.description }}
+      </div>
+
+      <div style="display:none">
+        {{ form.slug }}
+        {{ form.order }}
+      </div>
+
+      <div class="form-actions">
+        <input class="btn btn-primary" name="submit" type="submit" value='{% trans "Submit" %}' />
+        <a href="{% if from %}{{ from }}{% else %}/{% endif %}" class="btn">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </div>
+</div>

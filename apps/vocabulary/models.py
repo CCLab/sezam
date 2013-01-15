@@ -26,8 +26,9 @@ class Vocabulary(Model):
 
 
 class SlugVocabulary(Model):
-    """ Abstract model for all vocabularies with slug.
-        """
+    """
+    Abstract model for all vocabularies with slug.
+    """
     slug= SlugField(max_length=100, unique=True, verbose_name=_(u'Slug'))
 
     class Meta:
@@ -46,7 +47,7 @@ class SlugVocabulary(Model):
 class TreeVocabulary(MPTTModel):
     """ Abstract class for tree-like vocabularies.
         """
-    name= CharField(max_length=1000, verbose_name=_(u'Name'))
+    name= CharField(max_length=1000, unique=True, verbose_name=_(u'Name'))
     parent= TreeForeignKey('self', null=True, blank=True,
                            related_name='children')
     order= IntegerField(default=100, null=True, verbose_name=_(u'Order'))

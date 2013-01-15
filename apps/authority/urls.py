@@ -20,10 +20,10 @@ urlpatterns = patterns('apps.authority.views',
         searchqueryset=SearchQuerySet().all(), form_class=ModelSearchForm),
         name='search_authority'),
 
-    url(r'^search/$', 'display_authority', {'template': 'authorities.html',
-        'search_only': True}, name='search_authority'),
-
     url(r'^tree/$', 'get_authority_tree'),
+
+    url(r'^add/$', 'add_authority', {'template': 'add_record.html'},
+        name='add_authority'),
 
     url(r'^list/$', 'get_authority_list',
         {'template': 'includes/authority_list.html'},

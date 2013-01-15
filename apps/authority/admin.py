@@ -14,9 +14,9 @@ class AuthorityCategoryAdmin(MPTTModelAdmin):
 
 
 class AuthorityProfileAdmin(admin.ModelAdmin):
-    list_display= ('name', 'created', 'address_city', 'category', 'tel_code',
-        'tel_number', 'tel_internal', 'email', 'official', 'official_name',
-        'official_lastname',)
+    list_display= ('name', 'active', 'created', 'address_city', 'category',
+                   'tel_code', 'tel_number', 'tel_internal', 'email',
+                   'official', 'official_name', 'official_lastname',)
 
     search_fields= ('description', 'notes', 'address_street',
         'address_postalcode', 'address_city', 'tel_number', 'tel1_number',
@@ -26,7 +26,8 @@ class AuthorityProfileAdmin(admin.ModelAdmin):
 
     list_filter= ('created', 'category',)
 
-    fields= (('name', 'category', 'parent',),
+    fields= ('active',
+        ('name', 'category', 'parent',),
         ('official', 'official_name', 'official_lastname',),
         'order', 'description',
         ('address_street', 'address_num',), ('address_line1', 'address_line2',),

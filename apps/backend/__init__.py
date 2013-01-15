@@ -543,6 +543,9 @@ APP_MESSAGES = {
         },        
     'AttachTooBig': {
         'message': _("Attachment %s exceeds maximum filesize!"),
+        },
+    'AuthSavedInactive': {
+        'message': _("Athority <strong>%s</strong> successfully saved in the db! <br/>It will remain inactive until our moderator finish reviewing and confirming the record. We will notify you upon this by email. <p>Thanks a lot for your participation!</p>"),
         }
     }
 

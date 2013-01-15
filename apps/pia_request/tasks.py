@@ -61,12 +61,12 @@ def check_mail(mailbox_settings=None):
             if new_message:
                 report_to_user_sent= send_report(new_message.request,
                     status='response_received',
-                    template='emails/response_received_email.txt')
+                    template='emails/response_received.txt')
     return AppMessage('CheckMailComplete', value=messages_total).message \
         % messages_total
 
 
-@periodic_task(run_every=crontab(day_of_week="*", day_of_month="*", month_of_year="*"))
+@periodic_task(run_every=crontab(day_of_week="*", day_of_month="*/1", month_of_year="*"))
 def check_overdue():
     """
     Check in the db for overdue requests.

@@ -41,23 +41,23 @@ hr.narrow {
     margin-bottom: 10px;
 }
 .index-unit h1 {
-  margin-bottom: 0;
-  font-size: 60px;
-  line-height: 1;
-  color: inherit;
-  letter-spacing: -1px;
+    margin-bottom: 0;
+    font-size: 60px;
+    line-height: 1;
+    color: inherit;
+    letter-spacing: -1px;
 }
 .index-unit h3 {
-  margin-bottom: 0px;
-  font-size: 24px;
-  line-height: 1;
-  color: inherit;
+    margin-bottom: 0px;
+    font-size: 24px;
+    line-height: 1;
+    color: inherit;
 }
 .index-unit p {
-  font-size: 18px;
-  font-weight: 200;
-  line-height: 30px;
-  color: inherit;
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 30px;
+    color: inherit;
 }
 .highlighted {
     background: none repeat scroll 0 0 #FFFF00;
@@ -67,8 +67,11 @@ hr.narrow {
 }
 /* Re-define accordion-heading accordion-toggle - should not include block */
 .accordion-heading-noblock {
-  border-bottom: 10;
+    border-bottom: 10;
 }
 .accordion-toggle-noblock {
-  padding: 8px 15px;
+    padding: 8px 15px;
+}
+.required {
+    color: #FF0000;
 }

@@ -1,0 +1,16 @@
+{% load humanize %}
+{% load i18n %}
+{% trans 'Dear manager of' %} {{ PROJECT_TITLE }},
+{% trans 'there is a new Authority in the database entered by the user. It is inactive at the moment, and waiting for your review. Please, give it a look' %}:
+http://{{ domain }}/admin/vocabulary/authorityprofile/{{ authority.id }}/
+
+{% trans "The details are below." %}
+{% trans "Id" %}: {{ authority.id }}
+{% trans "Name" %}: {{ authority.name }}
+{% trans "Categorized as" %}: {{ authority.category }}
+
+{% trans "You have to decide, whether new Authority can stay in the database or not. If it stays, you have to change its status to 'active'. In this case the user, who entered the record, will be notified automatically." %}
+
+{% trans "If you decide that the Authority shouldn't stay in the database, remote it and write a personal message to the User"%} {{ user.get_full_name }} {% trans "with explanations. To do this, simply reply to this email." %}
+
+{% trans "Please, react ASAP." %}

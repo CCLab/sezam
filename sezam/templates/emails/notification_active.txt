@@ -1,0 +1,10 @@
+{% load humanize %}
+{% load i18n %}
+{% trans 'Dear ' %} {% if notification.receiver %}{{ notification.receiver.first_name }}{% else %}{{ notification.receiver_email }}{% endif %},
+{{ notification.get_action_display }}: {{ notification.item.content_object.name }}
+{% trans 'Please, visit our page' %}: http://{{ domain }}/
+
+{% trans "You received this email because you performed an action at our service" %} {{ PROJECT_TITLE }}, {% trans "that requires notification" %}.
+
+{% trans "With best regards" %}
+{% trans "Management of" %} http://{{ domain }}

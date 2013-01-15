@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 # Django settings for sezam project.
+
 import os
 import sys
 from platform import platform
@@ -11,7 +14,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Denis Kolokol', 'dkolokol@gmail.com'),
+    ('Denis Kolokol', 'denis_kolokol@ukr.net'),
 )
 
 MANAGERS = ADMINS
@@ -261,6 +264,8 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = PAGINATE_BY
 # Django-celery
 import djcelery
 djcelery.setup_loader()
+
+# CELERYBEAT_SCHEDULER = djcelery.schedulers.DatabaseScheduler
 
 # Passwords, etc.
 from conf import *

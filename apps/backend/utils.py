@@ -4,6 +4,7 @@
 Functions used in other modules.
 """
 from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
+from django.core.mail.message import EmailMessage
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib.auth import views as auth_views
@@ -11,8 +12,8 @@ from django.template.defaultfilters import slugify
 from django.utils.encoding import force_unicode
 from django.contrib.sites.models import Site
 from django.utils.timezone import utc
+from django.conf import settings
 
-from sezam.settings import SESSION_EXPIRE_AFTER
 from apps.backend import AppMessage
 from apps.backend.html2text import html2text
 
@@ -364,7 +365,7 @@ def login(request, **kwargs):
     template_name= kwargs.get('template_name', 'registration/login.html')
     response= auth_views.login(request, template_name)
     if request.POST.has_key('remember_me'):
-        request.session.set_expiry(SESSION_EXPIRE_AFTER)
+        request.session.set_expiry(settings.SESSION_EXPIRE_AFTER)
     return response
 
 
@@ -398,3 +399,14 @@ def update_user_message(msg, notification, kind):
         pass
     msg.update({kind: notifications})
     return msg
+
+def send_mail_managers(subject, message, fail_silently=False,
+                       connection=None, headers=None):
+    """
+    Sends a message to the managers, as defined by the MANAGERS setting.
+    """
+    if not settings.MANAGERS:
+        return
+    mail= EmailMessage(subject, message, settings.SERVER_EMAIL,
+                       [a[1] for a in settings.MANAGERS], headers=headers)
+    mail.send(fail_silently=fail_silently)

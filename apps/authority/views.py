@@ -1,18 +1,22 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.core.paginator import Paginator, EmptyPage
-from django.http import HttpResponse, Http404
 from django.views.generic.simple import direct_to_template
-from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string
+from django.utils.translation import ugettext as _
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.template import RequestContext
+from django.conf import settings
 
+from apps.authority.forms import AuthorityProfileForm
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
-from apps.backend.utils import process_filter_request
+from apps.backend.utils import process_filter_request, update_user_message, send_mail_managers, get_domain_name
+from apps.backend import AppMessage
+from apps.backend.models import TaggedItem, EventNotification
 from apps.browser.forms import ModelSearchForm
-from sezam.settings import PAGINATE_BY
 
 
 def display_authority(request, **kwargs):
@@ -114,7 +118,7 @@ def get_authority_list(request, id=None, **kwargs):
         raise Http404
     items= result.count()
 
-    paginator= Paginator(result, PAGINATE_BY)
+    paginator= Paginator(result, settings.PAGINATE_BY)
     try:
         page= int(request.GET.get('page', '1'))
     except ValueError:
@@ -132,7 +136,7 @@ def get_authority_list(request, id=None, **kwargs):
 
     return render_to_response(template, {'page': results,
         'total_item': items, 'current': page,
-        'pageURI': pageURI, 'per_page': PAGINATE_BY},
+        'pageURI': pageURI, 'per_page': settings.PAGINATE_BY},
         context_instance=RequestContext(request))
     # TO-DO: Implement URI Generator for pageURI: http://www.djangosnippets.org/snippets/1734/
 
@@ -190,7 +194,7 @@ def get_authority_info(request, slug, **kwargs):
     except Exception as e:
         pia_requests= list()
 
-    paginator= Paginator(pia_requests, PAGINATE_BY)
+    paginator= Paginator(pia_requests, settings.PAGINATE_BY)
     try:
         page= int(request.GET.get('page', '1'))
     except ValueError:
@@ -213,4 +217,62 @@ def find_authority(request, **kwargs):
     template= kwargs.get('template', 'index.html')
     return render_to_response(template, {
         'page_title': _(u'Look for the authority')},
+        context_instance=RequestContext(request))
+
+
+def add_authority(request, slug=None, **kwargs):
+    """
+    Add new Authority in case if it can't be found in the database.
+    """
+    user_message= request.session.pop('user_message', {})
+    template= kwargs.get('template', 'add_record.html')
+    admin_mail_template= 'emails/authority_added.txt'
+    from_link= None
+
+    # Show the form to enter Authority data.
+    if request.method == 'GET':
+        from_link= request.GET.get('from', None)
+        initial= {'slug': 'slug', 'order': 100}
+        form= AuthorityProfileForm(initial=initial)
+
+    # Check if the form is correct, save Authority in the db.
+    elif request.method == 'POST':
+        form= AuthorityProfileForm(request.POST)
+        if form.is_valid():
+            data= form.cleaned_data
+            authority= AuthorityProfile(**data)
+            try:
+                authority.save()
+            except Exception as e:
+                user_message= update_user_message(user_message, e, 'fail')
+                form= AuthorityProfileForm(instance=authority)
+            if authority.id: # Added successfully.
+                user_message= update_user_message(user_message,
+                    AppMessage('AuthSavedInactive').message % authority.name,
+                    'success')
+
+                # Send notification to managers.
+                subject= _(u'New authority in the db: ') + authority.name
+                content= render_to_string(admin_mail_template, {
+                    'authority': authority, 'user': request.user,
+                    'domain': get_domain_name()})
+                try:
+                    send_mail_managers(subject, content, fail_silently=False,
+                                       headers={'Reply-To': request.user.email})
+                except Exception as e:
+                    print e
+
+                # Create notifier.
+                item= TaggedItem.objects.create(name=authority.name,
+                                                content_object=authority)
+                evnt= EventNotification.objects.create(
+                    item=item, action='active', receiver=request.user,
+                    summary='Authority %s becomes active' % authority.name)
+
+                request.session['user_message']= user_message
+                return redirect(reverse('display_authorities'))
+
+    return render_to_response(template, {'form': form, 'from': from_link,
+        'mode': 'authority', 'user_message': user_message,
+        'page_title': _(u'Add authority')},
         context_instance=RequestContext(request))
