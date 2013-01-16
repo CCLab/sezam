@@ -9,7 +9,7 @@ from django.http import Http404
 from apps.vocabulary.models import UserProfile
 from apps.pia_request.models import PIARequest, PIARequestDraft, PIA_REQUEST_STATUS
 from apps.pia_request.forms import PIAFilterForm
-from apps.backend.utils import process_filter_request, handle_image
+from apps.backend.utils import process_filter_request, handle_image, update_user_message
 from forms import UserProfileForm, UserpicForm
 
 from sezam.settings import MEDIA_ROOT, THUMBNAIL_SIZE, PAGINATE_BY
@@ -96,9 +96,11 @@ def user_profile_update(request, id=None, **kwargs):
                     user_profile= form.save()
                     return redirect(reverse('user_profile', args=(str(id),)))
                 except Exception as e: # Do nothing, simply return the form with errors
-                    user_message= {'fail': _('Failed to update user profile.')}
+                    user_message= update_user_message(user_message,
+                        _('Failed to update user profile.'), 'fail')
             else:
-                user_message= {'fail': _('Correct the errors: ')}
+                user_message= update_user_message(user_message,
+                    _('Correct the errors: '), 'fail')
         elif request.POST.get('cancel_changes', None):
             return redirect(reverse('user_profile', args=(str(id),)))
     elif request.method == 'GET':
@@ -131,10 +133,11 @@ def user_set_userpic(request, id=None, **kwargs):
                     user.profile.save()
                     return redirect(reverse('user_profile', args=(str(id),)))
                 except Exception as e:
-                    print e
-                    user_message= {'fail': _('Failed to update userpic.')}
+                    user_message= update_user_message(user_message,
+                        _('Failed to update userpic.'), 'fail')
             else:
-                user_message= {'fail': _('Correct the errors: ')}
+                user_message= update_user_message(user_message,
+                    _('Correct the errors: '), 'fail')
         else:
             return redirect(reverse('user_profile', args=(str(id),)))
     elif request.method == 'GET':

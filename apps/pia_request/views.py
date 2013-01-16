@@ -307,8 +307,11 @@ def save_request_draft(request, id=None, **kwargs):
             if id: # Report only if it's draft save, not the first preview.
                 user_message= update_user_message(user_message,
                     _(u'Draft saved successfully.'), 'success')
+            # Try to find similar items.
+            similar_items= retrieve_similar_items(result['draft'], 20)
     response.update({'request_id': draft_id, 'user_message': user_message,
-                 'attachments_allowed': attachments_allowed, 'form': form})
+        'form': form, 'attachments_allowed': attachments_allowed,
+        'similar_items': similar_items})
     return response
 
 
@@ -407,10 +410,10 @@ def send_request(request, id=None, **kwargs):
     # Discard the draft.
     if request.POST.get('discard_request_draft'):
         if id: # Saved draft (otherwise we just don't bother).
-            result= _do_discard_request_draft(int(id))
-            if result != 'success':
-                request.session['user_message']= AppMessage(
-                    'DraftDiscardFailed', value=(id,)).message % result
+            if _do_discard_request_draft(int(id)):
+                user_message= update_user_message({}, AppMessage(
+                    'DraftDiscardFailed', value=(id,)).message % result, 'fail')
+                request.session['user_message']= user_message
         # After discarding a draft redirect to User's Profile page.
         return redirect(reverse('user_profile', args=(request.user.id,)))
 
@@ -521,13 +524,12 @@ def send_request(request, id=None, **kwargs):
             context_instance=RequestContext(request))
 
     # Report the results (ignore `save_draft` user messages).
-    user_message= {'success': None, 'fail': None}
     if successful:
-        user_message= update_user_message(user_message,
+        user_message= update_user_message({},
             _(u'Successfully sent request(s) to: %s') % ', '.join(successful),
             'success')
     if failed:
-        user_message= update_user_message(user_message,
+        user_message= update_user_message({},
             _(u'Request(s) sending failed: %s') % ', '.join(failed), 'fail')
 
     # Report the results to the user session.
@@ -547,7 +549,7 @@ def send_request(request, id=None, **kwargs):
             'user_message': user_message},
             context_instance=RequestContext(request))
 
-def retrieve_similar_items(pia_request, limit=None):
+def retrieve_similar_items(obj, limit=None):
     """
     Retrieve items similar to the given one.
     """
@@ -555,20 +557,50 @@ def retrieve_similar_items(pia_request, limit=None):
     # This is a dirty way to get similar requests to the current one - via
     # search on its summary, but haystack's more_like_this doesn't work
     # properly.
-    # [0:11] means that the request, by whose summary we're looking is also
-    # somewhere in the result, so we have to exclude it, and to return
-    # the rest 10.
-    # text_for_search= downcode(clean_text_for_search(thread[0].request.summary))
-    # similar_items= []
-    # for res in sqs.raw_search(text_for_search)[0:11]:
-    #     if res.object.pk != thread[0].request.pk:
-    #         similar_items.append(res)
 
+    similar_items= []
+    text_for_search= None
+    try: # Draft?
+        text_for_search= obj.subject
+    except:
+        try: # Request?
+            text_for_search= obj.summary
+        except:
+            try: # Thread?
+                text_for_search= obj[0].request.summary
+            except: # Give up...
+                pass
+    if not text_for_search:
+        return similar_items
+
+    text_for_search= downcode(clean_text_for_search(text_for_search.lower()))
+    text_for_search= [d for d in text_for_search.split()]
+
+    similar_items= SearchQuerySet().filter(summary__in=text_for_search)
+
+    # If the search is performed on PIAThread, need to exclude this.
+    _exclude_pk= None
+    if isinstance(obj, PIARequest):
+        _exclude_pk= obj.pk
+    elif isinstance(obj, PIAThread):
+        _exclude_pk= obj.request.pk
+    if _exclude_pk:
+        similar_items= [o for o in similar_items if o.pk != _exclude_pk]
+ 
+    if limit:
+        try:
+            return similar_items[:int(limit)]
+        except: pass
+    return similar_items
+
+def more_like_this(pia_request, limit=None):
+    """
+    Retrieve items similar to the given one.
+    """
     # WARNING! Using `django_ct__exact` (haystack's internal foeld)
     # is a dirty trick, but the only working. Find better solution!
     similar_items= SearchQuerySet().more_like_this(pia_request).filter(
         django_ct__exact='pia_request.piarequest')
-
     if limit:
         try:
             return similar_items[:int(limit)]
@@ -594,17 +626,18 @@ def view_thread(request, id=None, **kwargs):
                                              ATTACHMENT_MAX_NUMBER)
     if thread[0].request.status == 'awaiting':
         if request.user.is_anonymous():
-            user_message.update({
-                'success': AppMessage('ClassifyRespAnonim').message \
-                % (thread[0].request.user.pk, \
-                   thread[0].request.user.get_full_name())})
+            user_message= update_user_message(user_message,
+                AppMessage('ClassifyRespAnonim').message % (
+                    thread[0].request.user.pk,
+                    thread[0].request.user.get_full_name()), 'success')
         else:
             if thread[0].request.user == request.user:
-                user_message.update({
-                    'success': AppMessage('ClassifyRespUser').message})
+                user_message= update_user_message(user_message,
+                    AppMessage('ClassifyRespUser').message, 'success')
             else:
-                user_message.update({
-                    'success': AppMessage('ClassifyRespAlien').message})
+                user_message= update_user_message(user_message,
+                    AppMessage('ClassifyRespAlien').message, 'success')
+    # similar_items= more_like_this(thread[0].request, 10)
     similar_items= retrieve_similar_items(thread[0].request, 10)
 
     # If there's a draft in the thread, make a form.
@@ -646,7 +679,7 @@ def similar_requests(request, id=None, **kwargs):
     initial, query, urlparams= process_filter_request(
         request, PIA_REQUEST_STATUS)
 
-    similar_items= retrieve_similar_items(rq)
+    similar_items= more_like_this(rq)
 
     paginator= Paginator(similar_items, PAGINATE_BY)
     try:
@@ -836,8 +869,8 @@ def set_request_status(request, id=None, status_id=None, **kwargs):
     try:
         PIARequest.objects.filter(id=int(id)).update(status=status_id)
     except Exception as e:
-        user_message= {'fail': _(u'Cannot update status!')}
-
+        user_message= update_user_message({}, _(u'Cannot update status!'),
+                                          'fail')
     return redirect(reverse('view_thread', args=(str(id),)))
 
 
@@ -871,9 +904,11 @@ def annotate_request(request, id=None, **kwargs):
                         thread_message= msg, body=form.cleaned_data['comment'])
                     return redirect(reverse('view_thread', args=(str(id),)))
                 except Exception as e:
-                    user_message= {'fail': _(u'Cannot save annotation!')}
+                    user_message= update_user_message({},
+                        _(u'Cannot save annotation!'), 'fail')
             else:
-                user_message= {'fail': _(u'Draft saving failed! See details below.')}
+                user_message= update_user_message({},
+                    _(u'Draft saving failed! See details below.'), 'fail')
 
         return render_to_response(template,
             {'thread': thread, 'request_id': id, 'user_message': user_message,
@@ -917,7 +952,7 @@ def _do_discard_request_draft(draft):
         draft.delete()
     except Exception as e:
         return e
-    return 'success'
+    return None # No news are good news
     
 
 @login_required
@@ -928,7 +963,7 @@ def discard_request_draft(request, id=None, **kwargs):
     """
     if request.method != 'POST':
         raise Http404
-    message= request.session.pop('user_message', {})
+    user_message= request.session.pop('user_message', {})
     draft_id_list= []
     if id:
         draft_id_list.append(id)
@@ -939,8 +974,8 @@ def discard_request_draft(request, id=None, **kwargs):
             pass # No reaction.
     if draft_id_list:
         for draft_id in draft_id_list:
-            result= _do_discard_request_draft(draft_id)
-            if result != 'success':
-                ex= AppMessage('DraftDiscardFailed', value=(draft_id,)).message % result
-                request.session['user_message']= ex
+            if _do_discard_request_draft(draft_id):
+                request.session['user_message']= update_user_message(
+                    user_message, AppMessage('DraftDiscardFailed',
+                    value=(draft_id,)).message % result, 'fail')
     return redirect(request.META.get('HTTP_REFERER'))

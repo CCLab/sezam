@@ -1,0 +1,17 @@
+{% load i18n %}
+
+{% if similar_items %}
+<div class="well well-white well-dotted span3">
+  <div class="nav nav-pills nav-stacked">
+    <h4>{% trans 'Requests that may already have your answer' %}</h4>
+    <div>
+      {% for rq in similar_items %}
+      <h5><a href="/request/{{ rq.pk }}/">{{ rq.summary }}</a></h5>
+      <small>
+        {% trans 'To' %} <a href="/authority/{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
+      </small>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}

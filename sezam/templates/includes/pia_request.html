@@ -1,77 +1,81 @@
 {% load i18n %}
 
-    <!-- Request -->
-      <div class="container">
-        <form class="form-vertical well span7" 
-              name="formRequest" id="request_preview_send" enctype="multipart/form-data"
-              action="/request/{% if request_id %}{{ request_id }}/send{% else %}preview{% endif %}/" method="post">
-          {% csrf_token %}
+<!-- Request -->
+<div class="container">
 
-          {{ form.user }}
+  <div class="span7">
+    {% include "includes/user_message.html" %}
+  </div>
 
-          <div class="control-group">{{ form.authority.label }}
-          {% if user.profile.trusted %}
-            {% for error in form.authority.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-            {{ form.authority }}
-          {% else %}
-            <div style="display:none"> {{ form.authority }} </div>
-            <span class="badge badge-info">{{ form.get_authority_label }}</span>
-          {% endif %}
-          </div>
+  <form class="form-vertical well span7" name="formRequest" id="request_preview_send" enctype="multipart/form-data" action="/request/{% if request_id %}{{ request_id }}/send{% else %}preview{% endif %}/" method="post">
+    {% csrf_token %}
 
-          <div class="control-group">
-            {{ form.subject.label }} {% for error in form.subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
-            {{ form.subject }}
-          </div>
-          <div class="control-group">
-            {% for error in form.body.errors %}<span class="label label-important"><span class="label label-important">{{ error }} </span>{% endfor %}
-            <div class="controls">
-              {{ form.body }}
-              <div class="span3 pull-right">
-                <p>{% trans "Write your request in <strong>simple, precise language</strong>." %}</p>
-                <p>{% trans "Ask for <strong>specific</strong> documents or information, this site is not suitable for general enquiries."%}</p>
-                <p>{% trans "Keep it <strong>focused</strong>, you'll be more likely to get what you want" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
-                {% if not request_id %}
-                <div class="form-actions">
-                  <input class="btn btn-primary" name="preview_request" type="submit" value='{% trans "Preview request" %}' />
-                </div>
-                {% endif %}
-              </div>
+    {{ form.user }}
+
+    <div class="control-group">{{ form.authority.label }}
+    {% if user.profile.trusted %}
+      {% for error in form.authority.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      {{ form.authority }}
+    {% else %}
+      <div style="display:none"> {{ form.authority }} </div>
+      <span class="badge badge-info">{{ form.get_authority_label }}</span>
+    {% endif %}
+    </div>
+
+    <div class="control-group">
+      {{ form.subject.label }} {% for error in form.subject.errors %}<span class="label label-important">{{ error }} </span>{% endfor %}
+      {{ form.subject }}
+    </div>
+    <div class="control-group">
+      {% for error in form.body.errors %}<span class="label label-important"><span class="label label-important">{{ error }} </span>{% endfor %}
+        <div class="controls">
+          {{ form.body }}
+          <div class="span3 pull-right">
+            <p>{% trans "Write your request in <strong>simple, precise language</strong>." %}</p>
+            <p>{% trans "Ask for <strong>specific</strong> documents or information, this site is not suitable for general enquiries."%}</p>
+            <p>{% trans "Keep it <strong>focused</strong>, you'll be more likely to get what you want" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
+            {% if not request_id %}
+            <div class="form-actions">
+              <input class="btn btn-primary" name="preview_request" type="submit" value='{% trans "Preview request" %}' />
             </div>
+            {% endif %}
           </div>
+        </div>
+    </div>
 
-        {% if form.non_field_errors %}
-          <div class="row">
-            {% for error in form.non_field_errors %}
-            <span class="label label-important">{{ error|escape }}</span>
-            {% endfor %}
-          </div>
-        {% endif %}
+    {% if form.non_field_errors %}
+    <div class="row">
+      {% for error in form.non_field_errors %}
+      <span class="label label-important">{{ error|escape }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
 
-        {% if request_id %}
-          <!-- data containers -->
-          <div class="row">
-            <div class="span2"><p class="lead"><strong>{% trans 'Preview request' %}:</strong></p></div>
-            <div class="span5 pull-right"><p id="request_subject_preview" class="lead">{{ form.subject.value }}</p></div>
-          </div>
-          <div id="request_body_preview" class="well well-yellow">{{ form.body.value|urlize|linebreaks }}</div>
-
-          {% include "includes/pia_request_attachment.html" %}
-
-          <div class="form-actions">
-            <input class="btn btn-primary" name="send_request" type="submit" value='{% trans "Send request" %}' />
-            <input class="btn" name="save_request_draft" type="submit" value='{% trans "Save draft" %}' />
-            <input class="btn" name="discard_request_draft" type="submit" value='{% trans "Discard" %}' />
-            <div class="span3 pull-right">
-              <p>{% trans "Check you haven't included any personal information." %}</p>
-              <p>{% trans "Your name, request and any responses will appear in search engines" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
-            </div>
-          </div>
+    {% if request_id %}
+    <!-- data containers -->
+    <div class="row">
+      <div class="span2"><p class="lead"><strong>{% trans 'Preview request' %}:</strong></p></div>
+      <div class="span5 pull-right"><p id="request_subject_preview" class="lead">{{ form.subject.value }}</p></div>
+    </div>
+    <div id="request_body_preview" class="well well-yellow">{{ form.body.value|urlize|linebreaks }}</div>
+    
+    {% include "includes/pia_request_attachment.html" %}
+    
+    <div class="form-actions">
+      <input class="btn btn-primary" name="send_request" type="submit" value='{% trans "Send request" %}' />
+      <input class="btn" name="save_request_draft" type="submit" value='{% trans "Save draft" %}' />
+      <input class="btn" name="discard_request_draft" type="submit" value='{% trans "Discard" %}' />
+      <div class="span3 pull-right">
+        <p>{% trans "Check you haven't included any personal information." %}</p>
+        <p>{% trans "Your name, request and any responses will appear in search engines" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
       </div>
-      </form>
+    </div>
+  </form>
+  {% include "includes/pia_request_similar_items.html" %}
 
-        {% else %}
-        </form>
 
-        {% endif %}
-      </div>
+  {% else %}
+  </form>
+
+  {% endif %}
+</div>
