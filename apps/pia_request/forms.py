@@ -107,7 +107,6 @@ class ReplyDraftForm(forms.ModelForm):
         super(ReplyDraftForm, self).__init__(*args, **kwargs)
 
         initial= kwargs.pop('initial', None)
-            
         if initial:
             for k, v in initial.iteritems():
                 self.fields[k].initial= v
@@ -182,10 +181,10 @@ class DraftFormControl():
             form_class= form.__class__
         except:
             return False, message['WrongObject']
-        if form_class in self.valid_form_classes:
-            return True, form
-        else:
+        if form_class not in self.valid_form_classes:
             return False, message['WrongClass']
+        
+        return True, form
 
     def __get_obj(self, m, i):
         _id= lambda x: x[0] if isinstance(x, list) else x
@@ -258,7 +257,7 @@ class DraftFormControl():
                             id__in=self.__extract_id(data))
         return 'OK'
 
-    def ensure_emails(self, form=None):
+    def ensure_emails(self, form=None, **kwargs):
         """
         Ensures that `email_from` and `email_to` fields are filled with
         data from Authority or User.
@@ -322,5 +321,9 @@ class DraftFormControl():
         self.form= f
         self.email_to= email_to
         self.email_from= email_from
+        if f.fields['is_response']:
+            # Swapping emails in case it's a manually entered reply.
+            self.email_to= email_from
+            self.email_from= email_to
 
         return 'OK'

@@ -1,0 +1,9 @@
+{% load humanize %}{% load i18n %}{% trans "The reply from" %} {{ authority_name }}:
+
+{{ content }}
+
+{{ last_msg_created }} {{ last_msg_email_from }}:
+>> {{ last_msg_content }}
+
+
+{% trans "This is a reply from Authority to the public information request, obtained other way than e-mail and entered manually." %}

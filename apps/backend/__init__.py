@@ -6,9 +6,12 @@ Classes used all accross the modules in the project.
 import re
 import os
 import sys
+import csv
 import email
+import codecs
 import base64
 import imaplib
+import cStringIO
 import mimetypes
 from datetime import datetime
 
@@ -546,7 +549,10 @@ APP_MESSAGES = {
         },
     'AuthSavedInactive': {
         'message': _("Athority <strong>%s</strong> successfully saved in the db! <br/>It will remain inactive until our moderator finish reviewing and confirming the record. We will notify you upon this by email. <p>Thanks a lot for your participation!</p>"),
-        }
+        },
+    'AddDetailsToThread': {
+        'message': _("<h5>Status was updated successfully.</h5><p>If you have any additional information concerning this request (for example, an answer sent via snail mail), and feel like adding something would help users to find the right answer to their requests in the future, please, use <a href=\"%(url)s\">this form</a>.<br/>Thank you!</p>"),
+        },
     }
 
 class AppMessage():
@@ -630,9 +636,35 @@ class StretchHighlighter(Highlighter):
 StretchHighlighter - end
 """
 
-# # test
-# my_text = 'Please could you provide me with any information the BBC holds on how it is prepared for the eventuality of a zombie apocalypse/invasion and the associated costs to the licence payer for such preparations. What training has been provided to BBC staff and its subcontractors to defend themselves from the undead? What weaponry does the BBC have access to and who are the appropriate licence holders for the arsenal? Thank you for your request for information under the Freedom of Information Act 2000, as detailed in your email below. Your request was received on 30th November 2012. We will provide the requested information as promptly as possible, and at the latest within 20 working days. If you have any queries about your request, please contact us at the address below. Information follows.'
-# my_query = 'provide information'
-# from apps.backend import StretchHighlighter
-# highlight= StretchHighlighter(my_query)
-# highlight.highlight(my_text)
+
+"""
+UnicodeWriter
+"""
+class UnicodeWriter:
+    """
+    A CSV writer. Writes rows to CSV file `f` encoded in the given encoding.
+    """
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwargs):
+        """
+        Redirect output to a queue
+        """
+        self.queue= cStringIO.StringIO()
+        self.writer= csv.writer(self.queue, dialect=dialect,
+                                delimiter=';', **kwargs)
+        self.stream= f
+        self.encoder= codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        data= self.queue.getvalue() # Fetch UTF-8 output from the queue.
+        data= data.decode("utf-8")
+        data= self.encoder.encode(data) # Re-encode it into the target encoding.
+        self.stream.write(data) # Write to the target stream
+        self.queue.truncate(0) # Clean the queue.
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)
+"""
+UnicodeWriter - end.
+"""

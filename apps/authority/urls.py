@@ -25,6 +25,9 @@ urlpatterns = patterns('apps.authority.views',
     url(r'^add/$', 'add_authority', {'template': 'add_record.html'},
         name='add_authority'),
 
+    url(r'^download/(?P<ext>[-\w]+)/$', 'download_authority_list',
+        name='download_authority_list'),
+
     url(r'^list/$', 'get_authority_list',
         {'template': 'includes/authority_list.html'},
         name='get_authority_list'),

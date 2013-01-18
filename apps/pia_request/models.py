@@ -113,7 +113,8 @@ class PIARequestDraft(PIAMessage):
 
     * A draft that is a response to the message from Authority (or a draft
     of the reply from Authority, received by snail mail, and being entered
-    to the system by User manually).
+    to the system by User manually - `is_response` is True in this case).
+
     In those drafts `thread_message` should point to the message in the Thread,
     on which it is a reply, and should _always_ have a link to the specified
     Authority - the one from the message the Draft is pointing to.
@@ -124,6 +125,8 @@ class PIARequestDraft(PIAMessage):
     lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
     thread_message= OneToOneField(PIAThread, null=True, blank=True,
         default=None, related_name='draft', verbose_name=_(u'Message'))
+    is_response= BooleanField(default=True,
+        verbose_name=_(u'Is it a response from authority?'))
 
     def fill_authority(self, authority=None, **kwargs):
         """

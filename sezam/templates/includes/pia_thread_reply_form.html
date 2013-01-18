@@ -34,6 +34,7 @@
     <div style="display:none">
       {{ form.authority }}
       {{ form.user }}
+      {{ form.is_response }}
       {% if form.instance.id %}
       <input type="text" name="draft_id" value="{{ form.instance.id }}">
       {% endif %}
@@ -42,7 +43,11 @@
     {% include "includes/pia_request_attachment.html" %}
 
     <div class="form-actions">
+      {% if form.is_response %}
+      <input class="btn btn-primary" name="save_reply" type="submit" value='{% trans "Save reply" %}' />
+      {% else %}
       <input class="btn btn-primary" name="send_reply" type="submit" value='{% trans "Reply" %}' />
+      {% endif %}
       <input class="btn" name="save_reply_draft" type="submit" value='{% trans "Save draft" %}' />
       <input class="btn" name="discard_reply_draft" type="submit" value='{% trans "Discard" %}' />
     </div>

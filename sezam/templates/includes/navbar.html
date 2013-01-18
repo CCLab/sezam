@@ -27,7 +27,6 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="/user/{{user.id}}/profile/">{% trans 'My profile' %}</a></li>
-                  <li><a href="/user/{{user.id}}/requests/">{% trans 'My requests' %}</a></li>
                   <li><a href="/authority/find/">{% trans 'Make a request' %}</a></li>
                   <li><a href="/accounts/password/change">{% trans 'Password change' %}</a></li>
                   <li><a href="/help">{% trans 'Help' %}</a></li>

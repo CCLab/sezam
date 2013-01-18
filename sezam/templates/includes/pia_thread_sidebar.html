@@ -43,6 +43,10 @@
             {% for rq in similar_items %}
               {% if rq.object.id = thread.0.request.id %}
 
+          <ul class="nav nav-list">
+            <li>{% trans "We couldn't find any request similar to this one, sorry..." %}</li>
+          </ul>
+
               {% else %}
             <h4><a href="/request/{{ rq.pk }}/">{{ rq.summary }}</a></h4>
             <small>
@@ -57,7 +61,6 @@
         <p>&nbsp;</p>
         <div class="nav nav-pills nav-stacked">
           <ul class="nav nav-list">
-            <!-- <li><a href="/search/?q={{ thread.0.request.summary }}&piarequest=requests">{% trans "More similar requests" %}</a></li> -->
             <li><a href="/request/{{ thread.0.request.id }}/similar/">{% trans "More similar requests" %}</a></li>
           </ul>
         </div>

@@ -243,6 +243,14 @@ ATTACHMENT_MAX_NUMBER = 5
 # Days before unanswered request becomes overdue.
 OVERDUE_DAYS = 16
 
+# Download folder
+DOWNLOAD_ROOT = os.path.join(MEDIA_ROOT, 'download/')
+
+# Allowed download extensions and corresponding MIME types
+DOWNLOAD_FORMATS = {
+    'csv': 'text/csv'
+    }
+
 # Is session expires when a user exits the browser.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_EXPIRE_AFTER = 1209600 # 2 weeks
@@ -264,8 +272,6 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = PAGINATE_BY
 # Django-celery
 import djcelery
 djcelery.setup_loader()
-
-# CELERYBEAT_SCHEDULER = djcelery.schedulers.DatabaseScheduler
 
 # Passwords, etc.
 from conf import *

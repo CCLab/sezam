@@ -53,7 +53,7 @@ class TreeVocabulary(MPTTModel):
     order= IntegerField(default=100, null=True, verbose_name=_(u'Order'))
 
     class MPTTMeta:
-        order_insertion_by= ('name',)
+        order_insertion_by= ('order', 'lft',)
 
     class Meta:
         abstract= True

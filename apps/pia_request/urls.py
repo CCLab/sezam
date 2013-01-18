@@ -47,8 +47,7 @@ urlpatterns = patterns('apps.pia_request.views',
         {'template': 'request.html', 'email_template': 'emails/request_to_authority.txt'},
         name='send_request_id'),
 
-    url(r'^(?P<id>\d+)/reply/$', 'reply_to_thread',
-        {'template': 'thread.html', 'email_template': 'emails/user_reply.txt'},
+    url(r'^(?P<id>\d+)/reply/$', 'reply_to_thread', {'template': 'thread.html'},
         name='reply_to_thread'),
 
    url(r'^(?P<id>\d+)/status/(?P<status_id>[-\w]+)/$', 'set_request_status',

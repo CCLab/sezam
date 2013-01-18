@@ -11,6 +11,7 @@ class TerritoryTypeAdmin(admin.ModelAdmin):
 class AuthorityCategoryAdmin(MPTTModelAdmin):
     list_display= ('name', 'slug',)
     fields= ('name', 'parent', 'order',)
+    ordering= ('order', 'lft', 'name',)
 
 
 class AuthorityProfileAdmin(admin.ModelAdmin):

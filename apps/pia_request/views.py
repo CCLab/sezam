@@ -704,9 +704,16 @@ def reply_to_thread(request, id=None, **kwargs):
     POST vs. GET processing.
     """
     template= kwargs.get('template', 'thread.html')
-    email_template= kwargs.get('email_template', 'emails/user_reply.txt')
     user_message= request.session.pop('user_message', {})
     attachments_allowed= ATTACHMENT_MAX_NUMBER
+    is_response= request.GET.get('response', '')
+
+    if is_response.lower() in ['1', 'yes', 'y', 'tak', 'true']:
+        is_response= True
+        email_template= 'emails/authority_reply.txt'
+    else:
+        is_response= False
+        email_template= 'emails/user_reply.txt'
 
     # Get the whole thread of messages.
     thread= PIAThread.objects.filter(
@@ -722,12 +729,17 @@ def reply_to_thread(request, id=None, **kwargs):
             raise Http404
         initial= {'thread_message': msg,
                   'user': request.user, 'authority': [msg.request.authority],
-                  'subject': re_subject(msg.subject), 
+                  'subject': re_subject(msg.subject),
                   'body': render_to_string(email_template, {
+                      'authority_name': msg.request.authority.name,
                       'content': '', 'last_msg_created': msg.created,
                       'last_msg_email_from': msg.email_from,
                       'last_msg_content': msg.body.replace('\n', '\n>> '),
-                      'info_email': 'info@%s' % get_domain_name()})}
+                      'info_email': 'info@%s' % get_domain_name()}),
+                  'is_response': is_response,} # This one is special!!!
+                                               # It tells if e-mails should be
+                                               # swapped in case User manually
+                                               # enters reply from Authority.
         form= ReplyDraftForm(initial=initial)
 
         return render_to_response(template,
@@ -746,7 +758,7 @@ def reply_to_thread(request, id=None, **kwargs):
 
         # SCENARIO 1
         # User wants to discard the draft -> try to find the draft and
-        # delet it. Redirect to view_thread.
+        # delete it. Redirect to view_thread.
         if request.POST.get('discard_reply_draft', None):
             if draft_id:
                 try:
@@ -791,11 +803,34 @@ def reply_to_thread(request, id=None, **kwargs):
             # User wants to manually save a reply from Authority,
             # all the data and attachments are already in the draft.
             elif request.POST.get('save_reply', None):
-                # TO-DO: here goes process of manual saving the response
-                # from Authority.
-                # Need sthn like `swap_emails` to swap email_to and email_from.
-                # And flag it as 'manual'.
-                pass
+                # Swapping emails. Take `email_from` from AuthorityProfile,
+                # since there were no real email.
+                email_to= email_from_name(reply_draft.user.get_full_name(),
+                                          id=id, delimiter='.')
+                email_from= msg.request.authority.email
+                message_data= {'request': msg.request, 'is_response': True,
+                    'email_to': email_to, 'email_from': email_from,
+                    'subject': reply_draft.subject, 'body': reply_draft.body}
+                pia_msg= PIAThread(**message_data)
+                try:
+                    pia_msg.save()
+                except Exception as e:
+                    user_message= update_user_message(user_message,
+                        _(u'Error saving message in the thread! System error:')\
+                        + e, 'fail')
+                    request.session['user_message']= user_message
+                    return redirect('/request/%s/#form_reply' % id)
+
+                # Re-link the attachments and delete the draft.
+                if reply_draft.attachments.count() > 0:
+                    for attachment in reply_draft.attachments.all():
+                        attachment.message= pia_msg
+                        attachment.save()
+                reply_draft.delete()
+
+                request.session['user_message']= user_message
+                return redirect(reverse('view_thread', args=(str(id),)))
+
 
             # SCENARIO 4
             # User wants to send the message -> get all the data and attachments
@@ -866,11 +901,28 @@ def set_request_status(request, id=None, status_id=None, **kwargs):
     if (status_id is None) or status_id not in [k[0] for k in PIA_REQUEST_STATUS]:
         raise Http404
 
-    try:
-        PIARequest.objects.filter(id=int(id)).update(status=status_id)
-    except Exception as e:
-        user_message= update_user_message({}, _(u'Cannot update status!'),
-                                          'fail')
+    user_message= request.session.pop('user_message', {})
+    pia_request= PIARequest.objects.get(id=int(id))
+
+    if request.user != pia_request.user:
+        user_message= update_user_message({},
+            _(u'You cannot update status of the request made by other user!'),
+            'fail')
+    else:
+        pia_request.status=status_id
+        try:
+            pia_request.save()
+        except Exception as e:
+            user_message= update_user_message({},
+                _(u'Error updating status!'), 'fail')
+        else:
+            if status_id in ['successful', 'part_successful']:
+                # Ask user if he/she wants to provide any additional details.
+                user_message= update_user_message({},
+                    AppMessage('AddDetailsToThread').message % {
+                        'url': '/request/%s/reply/?response=true#form_reply' % id},
+                    'success')
+    request.session['user_message']= user_message
     return redirect(reverse('view_thread', args=(str(id),)))
 
 

@@ -1,12 +1,10 @@
 {% load humanize %}
 {% load i18n %}
-
 {{ content }}
-
 
 {{ last_msg_created }} {{ last_msg_email_from }}:
 >> {{ last_msg_content }}
 
-
-{% trans "This is a user's reply to the public information request. The user who sent it, has agreed with the terms of Public Information Access. You have 14 days to answer this request." %}
+{% trans "This is a user's reply to the public information request to" %} {{ authority_name }}. 
+{% trans "The user who sent it, has agreed with the terms of Public Information Access. You have 14 days to answer this request." %}
 {% trans "Please, send all your questions to " %} {{ info_email }}

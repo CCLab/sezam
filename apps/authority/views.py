@@ -8,13 +8,15 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.template import RequestContext
 from django.conf import settings
+from datetime import datetime
+import os, time
 
 from apps.authority.forms import AuthorityProfileForm
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
 from apps.backend.utils import process_filter_request, update_user_message, send_mail_managers, get_domain_name
-from apps.backend import AppMessage
+from apps.backend import AppMessage, UnicodeWriter
 from apps.backend.models import TaggedItem, EventNotification
 from apps.browser.forms import ModelSearchForm
 
@@ -276,3 +278,115 @@ def add_authority(request, slug=None, **kwargs):
         'mode': 'authority', 'user_message': user_message,
         'page_title': _(u'Add authority')},
         context_instance=RequestContext(request))
+
+
+def download_authority_list(request, ext=None, **kwargs):
+    """
+    Download Authority vocabulary in a given format.
+
+    The csv isn't created on each request, but taken from site_media.
+    It is created new only in one case - if the file was created before
+    the last change in the vocabulary.
+    """
+    if ext is None:
+        return redirect(request.META.get('HTTP_REFERER'))
+    if ext not in settings.DOWNLOAD_FORMATS.keys():
+        raise Http404
+
+    filename= '.'.join(['authorities', ext])
+    response = HttpResponse()
+    response['Content-Type']= settings.DOWNLOAD_FORMATS[ext]
+    response['Content-Disposition']= 'attachment; filename=%s' % filename
+    file_exist= True
+    try:
+        f= open(settings.DOWNLOAD_ROOT + filename).read()
+    except IOError:
+        file_exist= False
+        f= authority2csv(filename)
+
+    if file_exist:
+        # Update if it's older than the newest record.
+        lastupdated_f= os.path.getmtime(settings.DOWNLOAD_ROOT + filename)
+        lastupdated_a= AuthorityProfile.objects.all().order_by('-created')[0].created
+        # Convert datetimefield to number of seconds since epoch.
+        lastupdated_a= time.mktime(lastupdated_a.timetuple())
+        if lastupdated_f < lastupdated_a:
+            f= authority2csv(filename)
+
+    response.write(f)
+    return response
+
+def authority2csv(filename):
+    """
+    Writes a queryset of AuthorityProfile to csv file.
+
+    Returns open file descriptor.
+    """
+    def _get_category_field(field, category):
+        if field == 'category_id':
+            return str(category.id)
+        elif field == 'category':
+            return category.name
+        elif field == 'category_parent':
+            try:
+                return str(category.parent.id)
+            except AttributeError:
+                return ''
+
+    report_fields= authority_extract_fields()
+    authority_list= [list(report_fields[:])] # Injecting header.
+
+    categories= AuthorityCategory.objects.all().order_by('order', 'lft')
+
+    for category in categories:
+
+        # Ordering Authorities by slug, because it is a downcoded name.
+        # If ordered by name, those records whose name start with
+        # national symbols appear at the end of the list.
+        category_authorities= AuthorityProfile.objects.filter(active=True,
+            category=category).order_by('slug').values()
+        if category_authorities:
+            # Fill a line of Authority.
+            for auth in category_authorities:
+                line= []
+                for field in report_fields:
+                    if 'category' in field:
+                        # Fill category.
+                        line.append(_get_category_field(field, category))
+                    elif field == 'created':
+                        # Convert from date to readable string.
+                        line.append(datetime.strftime(auth[field], '%d.%m.%Y'))
+                    else:
+                        if auth[field] is None:
+                            # There should not be NoneFields.
+                            line.append('')
+                        else:
+                            line.append(auth[field])
+                authority_list.append(line)
+        else:
+            # Fill category data and leave the rest of fields blank.
+            line= []
+            for field in report_fields:
+                if 'category' in field:
+                    # Fill category.
+                    line.append(_get_category_field(field, category))
+                else:
+                    line.append('')
+            authority_list.append(line)
+
+    f= open(settings.DOWNLOAD_ROOT + filename, 'w')
+    writer= UnicodeWriter(f)
+    for row in authority_list:
+        writer.writerow(row)
+    f.close()
+    f= open(settings.DOWNLOAD_ROOT + filename).read()
+    return f
+
+def authority_extract_fields():
+    return ('category_id', 'category_parent', 'category', 'name', 'created',
+            'official', 'official_name', 'official_lastname', 'address_street',
+            'address_num', 'address_line1', 'address_line2',
+            'address_postalcode', 'address_city', 'tel_code', 'tel_number',
+            'tel_internal', 'tel1_code', 'tel1_number', 'tel2_code',
+            'tel2_number', 'fax_code', 'fax_number', 'web_site', 'web_site1',
+            'description', 'notes')
