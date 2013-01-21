@@ -269,9 +269,9 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_CUSTOM_HIGHLIGHTER = 'apps.backend.StretchHighlighter'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = PAGINATE_BY
 
+# Passwords, etc.
+from conf import *
+
 # Django-celery
 import djcelery
 djcelery.setup_loader()
-
-# Passwords, etc.
-from conf import *

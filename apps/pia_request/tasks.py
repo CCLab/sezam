@@ -1,5 +1,5 @@
 from celery.task.schedules import crontab
-from celery.decorators import periodic_task
+from celery.decorators import task, periodic_task
 from django.utils.timezone import utc
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
@@ -66,10 +66,12 @@ def check_mail(mailbox_settings=None):
         % messages_total
 
 
-@periodic_task(run_every=crontab(day_of_week="*", day_of_month="*/1", month_of_year="*"))
+@periodic_task(run_every=crontab(minute=0, hour=0))
 def check_overdue():
     """
     Check in the db for overdue requests.
+    Executed daily at midnight.
+    Returns status of completion.
     """
     when= datetime.utcnow().replace(tzinfo=utc) - timedelta(days=OVERDUE_DAYS)
     total_overdue_requests= 0
