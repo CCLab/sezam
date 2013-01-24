@@ -248,7 +248,8 @@ DOWNLOAD_ROOT = os.path.join(MEDIA_ROOT, 'download/')
 
 # Allowed download extensions and corresponding MIME types
 DOWNLOAD_FORMATS = {
-    'csv': 'text/csv'
+    'csv': 'text/csv',
+    'pdf': 'application/pdf',
     }
 
 # Is session expires when a user exits the browser.

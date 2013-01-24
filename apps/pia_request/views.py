@@ -279,6 +279,7 @@ def save_request_draft(request, id=None, **kwargs):
     Saving a draft whether it is a new request or an updated one.
     """
     draft_id= id
+    similar_items= None
     template= kwargs.get('template', 'request.html')
     user_message= request.session.pop('user_message', {})
     form= MakeRequestForm(request.POST)
@@ -555,8 +556,8 @@ def retrieve_similar_items(obj, limit=None):
     """
     # WARNING!
     # This is a dirty way to get similar requests to the current one - via
-    # search on its summary, but haystack's more_like_this doesn't work
-    # properly.
+    # search on its summary, but haystack doesn't process elasticsearch's
+    # `more_like_this` properly.
 
     similar_items= []
     text_for_search= None
@@ -585,7 +586,7 @@ def retrieve_similar_items(obj, limit=None):
     elif isinstance(obj, PIAThread):
         _exclude_pk= obj.request.pk
     if _exclude_pk:
-        similar_items= [o for o in similar_items if o.pk != _exclude_pk]
+        similar_items= [o for o in similar_items if o.object.pk != _exclude_pk]
  
     if limit:
         try:
@@ -742,8 +743,8 @@ def reply_to_thread(request, id=None, **kwargs):
                                                # enters reply from Authority.
         form= ReplyDraftForm(initial=initial)
 
-        return render_to_response(template,
-            {'thread': thread, 'request_id': id, 'user_message': user_message,
+        return render_to_response(template, {'thread': thread,
+            'request_id': id, 'user_message': user_message,
             'form': form, 'page_title': page_title, 'mode': 'reply',
             'request_status': PIA_REQUEST_STATUS},
             context_instance=RequestContext(request))
@@ -767,76 +768,53 @@ def reply_to_thread(request, id=None, **kwargs):
                     pass
             return redirect(reverse('view_thread', args=(str(id),)))
 
-        # Before proceed to other scenarios the Draft must be saved.
-        if form.is_valid():
-            data= form.cleaned_data
-            data.update({'thread_message': msg,
-                'attachments': dict(request.FILES).get('attachments', []),
-                'attached': dict(request.POST).get(u'attached_id', [])})
-            if draft_id:
-                data.update({'id': draft_id})
+        if not form.is_valid():
+            # If form is invalid and user doesn't want to discard a draft.
+            return render_to_response(template, {'thread': thread,
+                'request_id': id, 'form': form, 'page_title': page_title,
+                'user_message': user_message, 'mode': 'reply',
+                'attachments_allowed': attachments_allowed,},
+                context_instance=RequestContext(request))
 
-            result= save_draft(data)
+        # Form is valid, prcess scenarios.
+        # In case of any scenario the Draft must be saved first.
+        data= form.cleaned_data
+        data.update({'thread_message': msg,
+            'attachments': dict(request.FILES).get('attachments', []),
+            'attached': dict(request.POST).get(u'attached_id', [])})
+        if draft_id:
+            data.update({'id': draft_id})
 
-            # Report.
-            if result['errors']:
-                user_message= update_user_message(user_message,
-                                                  result['errors'], 'fail')
-            if result['draft']:
-                reply_draft= result['draft']
-                user_message= update_user_message(user_message,
-                    _(u'Draft saved successfully.'), 'success')
-                # Update number of allowed attachments.
-                request.session['attachments_allowed']= result['attachments_allowed']
-            else:
-                # Something went wrong while saving draft.
-                request.session['user_message']= user_message
-                return redirect('/request/%s/#form_reply' % id)
-            
-            # SCENARIO 2
-            # User only wants to save the draft -> redirect to the Thread view.
-            if request.POST.get('save_reply_draft', None):
-                request.session['user_message']= user_message
-                return redirect('/request/%s/#form_reply' % id)
+        result= save_draft(data)
+
+        # Report.
+        if result['errors']:
+            user_message= update_user_message(user_message,
+                                              result['errors'], 'fail')
+        if result['draft']:
+            reply_draft= result['draft']
+            user_message= update_user_message(user_message,
+                _(u'Draft saved successfully.'), 'success')
+            # Update number of allowed attachments.
+            request.session['attachments_allowed']= result['attachments_allowed']
+        else:
+            # Something went wrong while saving draft.
+            request.session['user_message']= user_message
+            return redirect('/request/%s/#form_reply' % id)
+
+        # SCENARIO 2
+        # User only wants to save the draft -> redirect to the Thread view.
+        if request.POST.get('save_reply_draft', None):
+            request.session['user_message']= user_message
+            return redirect('/request/%s/#form_reply' % id)
+
+        else:
+            user_message= {} # Ignore anything said so far.
 
             # SCENARIO 3
-            # User wants to manually save a reply from Authority,
-            # all the data and attachments are already in the draft.
-            elif request.POST.get('save_reply', None):
-                # Swapping emails. Take `email_from` from AuthorityProfile,
-                # since there were no real email.
-                email_to= email_from_name(reply_draft.user.get_full_name(),
-                                          id=id, delimiter='.')
-                email_from= msg.request.authority.email
-                message_data= {'request': msg.request, 'is_response': True,
-                    'email_to': email_to, 'email_from': email_from,
-                    'subject': reply_draft.subject, 'body': reply_draft.body}
-                pia_msg= PIAThread(**message_data)
-                try:
-                    pia_msg.save()
-                except Exception as e:
-                    user_message= update_user_message(user_message,
-                        _(u'Error saving message in the thread! System error:')\
-                        + e, 'fail')
-                    request.session['user_message']= user_message
-                    return redirect('/request/%s/#form_reply' % id)
-
-                # Re-link the attachments and delete the draft.
-                if reply_draft.attachments.count() > 0:
-                    for attachment in reply_draft.attachments.all():
-                        attachment.message= pia_msg
-                        attachment.save()
-                reply_draft.delete()
-
-                request.session['user_message']= user_message
-                return redirect(reverse('view_thread', args=(str(id),)))
-
-
-            # SCENARIO 4
-            # User wants to send the message -> get all the data and attachments
+            # User wants to send the message -> collect data and attachments
             # from the saved draft, prepare message and send it.
-            elif request.POST.get('send_reply', None):
-                user_message= {} # Clean it, doesn't matter what was before.
+            if request.POST.get('send_reply', None):
                 email_to= msg.email_from if msg.is_response else msg.email_to
                 email_from= email_from_name(reply_draft.user.get_full_name(),
                                             id=id, delimiter='.')
@@ -853,42 +831,53 @@ def reply_to_thread(request, id=None, **kwargs):
                         _(u'Reply sent successfully.'), 'success')
                 except Exception as e:
                     user_message= update_user_message(user_message,
-                        _(u'Error sending reply! System error:') + e, 'fail')
+                        _(u'Error sending reply! System error: %s' % e), 'fail')
                     # If unsuccessful, all the data stays in the Draft.
                     request.session['user_message']= user_message
                     return redirect('/request/%s/#form_reply' % id)
 
-                # If successful:
-                # Save a new message in the thread.
+                # If successful, collect data for saving
+                # the message in the thread.
                 message_data= {'request': msg.request, 'is_response': False,
                     'email_to': email_to, 'email_from': email_from,
                     'subject': reply_draft.subject, 'body': reply_draft.body}
-                pia_msg= PIAThread(**message_data)
-                try:
-                    pia_msg.save()
-                except Exception as e:
-                    user_message= update_user_message(user_message,
-                        _(u'Error saving message in the thread! System error:')\
-                        + e, 'fail')
-                    request.session['user_message']= user_message
-                    return redirect('/request/%s/#form_reply' % id)
 
-                # Re-link the attachments and delete the draft.
-                if reply_draft.attachments.count() > 0:
-                    for attachment in reply_draft.attachments.all():
-                        attachment.message= pia_msg
-                        attachment.save()
-                reply_draft.delete()
+            # SCENARIO 4
+            # User wants to save a reply from Authority manually.
+            # All the data and attachments are already in the draft.
+            elif request.POST.get('save_reply', None):
+                # Swapping emails. Take `email_from` from AuthorityProfile,
+                # since there were no real email, but PIAMessage requires one.
+                email_to= email_from_name(reply_draft.user.get_full_name(),
+                                          id=id, delimiter='.')
+                email_from= msg.request.authority.email
+                message_data= {'request': msg.request, 'is_response': True,
+                    'email_to': email_to, 'email_from': email_from,
+                    'subject': reply_draft.subject, 'body': reply_draft.body}
 
+            # Common part of SCENARIOS 3 and 4
+            # Save the message in the thread, re-link attachments, remove draft.
+            pia_msg= PIAThread(**message_data)
+            try:
+                pia_msg.save()
+                user_message= update_user_message(user_message,
+                    _(u'Reply saved successfully.'), 'success')
+            except Exception as e:
+                user_message= update_user_message(user_message,
+                    _(u'Error saving message in the thread! System error:')\
+                    + e, 'fail')
                 request.session['user_message']= user_message
-                return redirect(reverse('view_thread', args=(str(id),)))
+                return redirect('/request/%s/#form_reply' % id)
 
-        # Finally, if form is invalid and nobody wants to discard a draft.
-        return render_to_response(template, {'thread': thread,
-            'request_id': id, 'form': form, 'page_title': page_title,
-            'user_message': user_message, 'mode': 'reply',
-            'attachments_allowed': attachments_allowed,},
-            context_instance=RequestContext(request))
+            # Re-link the attachments and delete the draft.
+            if reply_draft.attachments.count() > 0:
+                for attachment in reply_draft.attachments.all():
+                    attachment.message= pia_msg
+                    attachment.save()
+            reply_draft.delete()
+
+            request.session['user_message']= user_message
+            return redirect(reverse('view_thread', args=(str(id),)))
 
 
 @login_required

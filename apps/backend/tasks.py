@@ -5,6 +5,9 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.conf import settings
 
+# from haystack.management.commands import update_index
+import subprocess
+
 from apps.backend.utils import get_domain_name
 from apps.backend.models import EventNotification
 from apps.backend import AppMessage
@@ -61,3 +64,14 @@ def send_notification(notification):
         return False
     return True
     
+
+
+@periodic_task(run_every=crontab(day_of_week="*", hour="*/2", minute=0))
+def haystack_update_index():
+    """"""
+    try:
+        p= subprocess.Popen(['python', 'manage.py', 'update_index'])
+    except Exception as e:
+        return "ERROR! Subprocess can't be started, system message is:\n%s" % (
+            ' '.join(params), e)
+    return "Index updated successfully."

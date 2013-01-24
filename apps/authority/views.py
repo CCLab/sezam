@@ -302,7 +302,6 @@ def download_authority_list(request, ext=None, **kwargs):
         f= open(settings.DOWNLOAD_ROOT + filename).read()
     except IOError:
         file_exist= False
-        f= authority2csv(filename)
 
     if file_exist:
         # Update if it's older than the newest record.
@@ -311,10 +310,28 @@ def download_authority_list(request, ext=None, **kwargs):
         # Convert datetimefield to number of seconds since epoch.
         lastupdated_a= time.mktime(lastupdated_a.timetuple())
         if lastupdated_f < lastupdated_a:
+            # If the file is updated last time earlier than the newest Authority
+            # is enetered in the system, it is considered as if it didn't exist.
+            file_exist= False
+
+    if not file_exist:
+        if ext == 'csv':
             f= authority2csv(filename)
+        elif ext == 'pdf':
+            f= authority2pdf(filename)
 
     response.write(f)
     return response
+
+
+def authority2pdf(filename):
+    """
+    Writes a queryset of AuthorityProfile to PDF file.
+
+    Returns open file descriptor.
+    """
+    return None
+
 
 def authority2csv(filename):
     """

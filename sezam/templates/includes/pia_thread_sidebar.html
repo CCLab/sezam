@@ -39,24 +39,14 @@
 
         <h3>{% trans 'Similar requests' %}</h3>
         <div>
-          {% if similar_items %}
-            {% for rq in similar_items %}
-              {% if rq.object.id = thread.0.request.id %}
-
-          <ul class="nav nav-list">
-            <li>{% trans "We couldn't find any request similar to this one, sorry..." %}</li>
-          </ul>
-
-              {% else %}
+          {% for rq in similar_items %}
             <h4><a href="/request/{{ rq.pk }}/">{{ rq.summary }}</a></h4>
             <small>
               {% trans 'To' %} <a href="/authority/{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
               {% trans 'by' %} <a href="/user/rq.object.user.pk">{{ rq.object.user.get_full_name }}</a><br/>
               {{ rq.object.latest_thread_post.created|date:"j E Y" }}
             </small>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
+            {% if forloop.last %}
         </div>
         <p>&nbsp;</p>
         <div class="nav nav-pills nav-stacked">
@@ -64,4 +54,9 @@
             <li><a href="/request/{{ thread.0.request.id }}/similar/">{% trans "More similar requests" %}</a></li>
           </ul>
         </div>
+            {% endif %}
+          {% empty %}
+        </div>
+          <p>{% trans "We couldn't find any request similar to this one, sorry..." %}</p>
+          {% endfor %}
       </div>
