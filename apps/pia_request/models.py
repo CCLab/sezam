@@ -1,15 +1,18 @@
-""" PIA - Public Information Access.
-    """
+"""
+PIA - Public Information Access.
+"""
 
 from django.db.models import *
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from apps.vocabulary.models import AuthorityProfile
-from apps.backend.models import GenericText, GenericPost, GenericMessage, GenericFile, GenericEvent
-from apps.backend.utils import increment_id
+from apps.backend.models import GenericText, GenericPost, GenericMessage,\
+    GenericFile, GenericEvent, TaggedItem
+from apps.backend.utils import increment_id, notify_followers
 
 PIA_REQUEST_STATUS= (
     ('in_progress', _(u'In progress')),
@@ -74,7 +77,23 @@ class PIARequest(GenericEvent):
         default=PIA_REQUEST_STATUS[0][0], verbose_name=_(u'Request status'))
     latest_thread_post= ForeignKey('PIAThread', null=True, blank=True,
         related_name='latest_thread_post', verbose_name=_(u'latest message'))
-    
+
+    def is_followed_by(self, usr):
+        """
+        Returns True if `usr` is subscribed to the PIARequest instance updates.
+        """
+        following= False
+        if not usr.is_anonymous():
+            content_type_id= ContentType.objects.get_for_model(self.__class__).id
+            try:
+                item= TaggedItem.objects.get(object_id=self.id,
+                                             content_type_id=content_type_id)
+            except TaggedItem.DoesNotExist:
+                pass
+            else:
+                following= item.is_followed_by(usr)
+        return following
+
     def __unicode__(self):
         return "%d: %s" % (self.id, self.summary[:30])
 
@@ -149,8 +168,16 @@ def clear_latest_flag(sender, **kwargs):
     Filling the latest message in the Thread (see the note on 
     de-normalization in the PIARequest description).
     """
+    instance= kwargs.get('instance')
+
     if sender == PIAThread:
+        # Update `latest_thread_post` in PIARequest only
+        # if it's not the first message in Thread.
         if kwargs.get('created', False):
-            instance= kwargs.get('instance')
             instance.request.latest_thread_post= instance
             instance.request.save()
+
+    elif sender == PIARequest:
+        # Manage subscriptions to PIARequest and
+        # Authority when a Request is updated.
+        notify_followers(instance)

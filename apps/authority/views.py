@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.core.paginator import Paginator, EmptyPage
 from django.views.generic.simple import direct_to_template
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, Http404
@@ -11,14 +13,15 @@ from django.conf import settings
 from datetime import datetime
 import os, time
 
+from apps.browser.forms import ModelSearchForm
 from apps.authority.forms import AuthorityProfileForm
 from apps.vocabulary.models import AuthorityCategory, Territory, AuthorityProfile
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm
 from apps.pia_request.models import PIARequest, PIAThread, PIA_REQUEST_STATUS
-from apps.backend.utils import process_filter_request, update_user_message, send_mail_managers, get_domain_name
 from apps.backend import AppMessage, UnicodeWriter
 from apps.backend.models import TaggedItem, EventNotification
-from apps.browser.forms import ModelSearchForm
+from apps.backend.utils import process_filter_request, update_user_message,\
+    send_mail_managers, get_domain_name
 
 
 def display_authority(request, **kwargs):
@@ -185,12 +188,14 @@ def get_authority_info(request, slug, **kwargs):
             categories= []
         categories.append(category)
 
+    # Check if the user is following the authority.
+    following= authority.is_followed_by(request.user)
+
     # Fill requests list.
     initial, query, urlparams= process_filter_request(
         request, PIA_REQUEST_STATUS)
 
     query.update({'authority': authority})
-
     try: # Query db.
         pia_requests= PIARequest.objects.filter(**query)
     except Exception as e:
@@ -207,7 +212,7 @@ def get_authority_info(request, slug, **kwargs):
         results= paginator.page(paginator.num_pages)
 
     return render_to_response(template, {'authority': authority,
-        'page': results, 'categories': categories,
+        'following': following, 'page': results, 'categories': categories,
         'form': PIAFilterForm(initial=initial), 'user_message': user_message,
         'page_title': authority.name, 'urlparams': urlparams},
         context_instance=RequestContext(request))
@@ -278,6 +283,72 @@ def add_authority(request, slug=None, **kwargs):
         'mode': 'authority', 'user_message': user_message,
         'page_title': _(u'Add authority')},
         context_instance=RequestContext(request))
+
+
+@login_required
+def follow_authority(request, slug=None, **kwargs):
+    """
+    Add an item for a notification - any activity of the Authority:
+    *PIA request to
+    *response from.
+    """
+    # Show the form to enter Authority data.
+    if request.method == 'POST':
+        raise Http404
+    try:
+        authority= AuthorityProfile.objects.get(slug=slug)
+    except:
+        raise Http404
+
+    # Create notifier.
+    try:
+        item= TaggedItem.objects.get(object_id=authority.id, name=authority.name,
+            content_type_id=ContentType.objects.get_for_model(authority.__class__).id)
+    except TaggedItem.DoesNotExist:
+        item= TaggedItem.objects.create(name=authority.name,
+                                        content_object=authority)
+    for k, v in authority_events(authority).iteritems():
+        try:
+            evnt, created= EventNotification.objects.get_or_create(
+                item=item, action=k, receiver=request.user, summary=v)
+        except:
+            pass # TO-DO: Log it!
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required
+def unfollow_authority(request, slug=None, **kwargs):
+    """
+    Removes any activity of the Authority from a notification list
+    """
+    # Show the form to enter Authority data.
+    if request.method == 'POST':
+        raise Http404
+    try:
+        authority= AuthorityProfile.objects.get(slug=slug)
+    except:
+        raise Http404
+
+    try: # to get notifier.
+        item= TaggedItem.objects.get(object_id=authority.id, name=authority.name,
+            content_type_id=ContentType.objects.get_for_model(authority.__class__).id)
+    except TaggedItem.DoesNotExist:
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    for k, v in authority_events(authority).iteritems():
+        try:
+            evnt= EventNotification.objects.get(item=item, action=k,
+                                                receiver=request.user, summary=v)
+            evnt.delete()
+        except:
+            continue
+
+    # Check if there is any notification connected to this item.
+    if not EventNotification.objects.filter(item=item):
+        try: # to wipe it out.
+            item.delete()
+        except: pass
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def download_authority_list(request, ext=None, **kwargs):
@@ -407,3 +478,7 @@ def authority_extract_fields():
             'tel_internal', 'tel1_code', 'tel1_number', 'tel2_code',
             'tel2_number', 'fax_code', 'fax_number', 'web_site', 'web_site1',
             'description', 'notes')
+
+def authority_events(authority):
+    return {'request_to': 'Request to the Authority %s' % authority.name,
+            'response_from': 'Response from the Authority %s' % authority.name}

@@ -16,6 +16,12 @@ urlpatterns = patterns('apps.authority.views',
     url(r'^find/$', 'display_authority', {'template': 'authorities.html',
         'search_only': True}, name='search_authority_blank'),
 
+    url(r'^(?P<slug>[-\w]+)/follow/$', 'follow_authority',
+        name='follow_authority'),
+
+    url(r'^(?P<slug>[-\w]+)/unfollow/$', 'unfollow_authority',
+        name='unfollow_authority'),
+
     url(r'^search/$', SearchView(template='authorities.html',
         searchqueryset=SearchQuerySet().all(), form_class=ModelSearchForm),
         name='search_authority'),

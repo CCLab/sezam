@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
@@ -8,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.core.mail import EmailMessage
 from django.http import Http404
+from django.conf import settings
 from haystack.query import SearchQuerySet
 
 import re
@@ -16,11 +18,13 @@ from time import struct_time, strptime
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIAAttachment, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
-from apps.backend.utils import re_subject, process_filter_request, get_domain_name, email_from_name, clean_text_for_search, downcode, save_attached_file, update_user_message
-from apps.backend import AppMessage
 from apps.browser.forms import ModelSearchForm
 from apps.vocabulary.models import AuthorityProfile
-from sezam.settings import DEFAULT_FROM_EMAIL, USE_DEFAULT_FROM_EMAIL, PAGINATE_BY, MEDIA_ROOT, ATTACHMENT_MAX_FILESIZE, ATTACHMENT_MAX_NUMBER
+from apps.backend import AppMessage
+from apps.backend.models import TaggedItem, EventNotification
+from apps.backend.utils import re_subject, process_filter_request,\
+    downcode, save_attached_file, update_user_message,\
+    get_domain_name, email_from_name, clean_text_for_search
 
 def request_list(request, status=None, **kwargs):
     """
@@ -40,7 +44,7 @@ def request_list(request, status=None, **kwargs):
     else:
         pia_requests= PIARequest.objects.all()
 
-    paginator= Paginator(pia_requests, PAGINATE_BY)
+    paginator= Paginator(pia_requests, settings.PAGINATE_BY)
     try:
         page= int(request.GET.get('page', '1'))
     except ValueError:
@@ -139,8 +143,9 @@ def process_attachments(msg, attachments, **kwargs):
                     saved_path= saved_path.split('/')
                     dir_name, dir_id= saved_path[:2]
 
-        f= save_attached_file(attachment, MEDIA_ROOT,
-            max_size=ATTACHMENT_MAX_FILESIZE, dir_name=dir_name, dir_id=dir_id)
+        f= save_attached_file(attachment, settings.MEDIA_ROOT,
+            max_size=settings.ATTACHMENT_MAX_FILESIZE,
+            dir_name=dir_name, dir_id=dir_id)
         if f['errors']:
             attachment_failed.append(f.name)
             continue
@@ -168,7 +173,7 @@ def _do_remove_attachment(id_attachment):
     """
     attachment_obj= PIAAttachment.objects.get(id=int(id_attachment))
     full_path= ('%s/attachments/%s' % (
-        MEDIA_ROOT, attachment_obj.path)).replace('//', '/')
+        settings.MEDIA_ROOT, attachment_obj.path)).replace('//', '/')
     try:
         os.remove(full_path)
     except Exception as e:
@@ -199,7 +204,7 @@ def remove_attachments(draft, id_list_remain=[], count_new=0):
     # Number of allowed attachments is the difference
     # between what is allowed in settings and summary of new
     # and remained in the db.
-    num_allowed= ATTACHMENT_MAX_NUMBER - (count_new + count_remain)
+    num_allowed= settings.ATTACHMENT_MAX_NUMBER - (count_new + count_remain)
 
     # Processing the only case when some attachments removed.
     # `count_remain == count_sofar` leaves everything as is.
@@ -283,7 +288,7 @@ def save_request_draft(request, id=None, **kwargs):
     template= kwargs.get('template', 'request.html')
     user_message= request.session.pop('user_message', {})
     form= MakeRequestForm(request.POST)
-    attachments_allowed= ATTACHMENT_MAX_NUMBER
+    attachments_allowed= settings.ATTACHMENT_MAX_NUMBER
     response= {'request_id': draft_id, 'template': template,
                'attachments_allowed': attachments_allowed,
                'user_message': user_message}
@@ -363,7 +368,8 @@ def attach_files(message, draft):
     Attaching files to EmailMessage from those specified in the Draft.
     """
     for attachment in draft.attachments.all():
-        path= ('%s/attachments/%s' % (MEDIA_ROOT, attachment.path)).replace('//', '/')
+        path= ('%s/attachments/%s' % (settings.MEDIA_ROOT,
+                                      attachment.path)).replace('//', '/')
         try:
             message.attach_file(path)
         except Exception as e:
@@ -474,7 +480,7 @@ def send_request(request, id=None, **kwargs):
                 authority=authority, user=request.user)
             reply_to= email_from_name(request.user.get_full_name(),
                                       id=pia_request.id, delimiter='.')
-            email_from= DEFAULT_FROM_EMAIL if USE_DEFAULT_FROM_EMAIL else reply_to
+            email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else reply_to
             message_data= {'request': pia_request, 'is_response': False,
                            'email_to': email_to, 'email_from': reply_to,
                            'subject': message_subject, 'body': message_content}
@@ -624,7 +630,7 @@ def view_thread(request, id=None, **kwargs):
     # Turning public attention to those 'awaiting classification'.
     user_message= request.session.pop('user_message', {})
     attachments_allowed= request.session.pop('attachments_allowed',
-                                             ATTACHMENT_MAX_NUMBER)
+                                             settings.ATTACHMENT_MAX_NUMBER)
     if thread[0].request.status == 'awaiting':
         if request.user.is_anonymous():
             user_message= update_user_message(user_message,
@@ -653,10 +659,13 @@ def view_thread(request, id=None, **kwargs):
             mode= 'draft'
             break # Only one draft in Thread.
 
+    # Check if the user is following the request.
+    following= thread[0].request.is_followed_by(request.user)
+
     return render_to_response(template, {'thread': thread, 'form': form,
         'similar_items': similar_items, 'user_message': user_message,
         'request_status': PIA_REQUEST_STATUS, 'request_id': id, 'mode': mode,
-        'attachments_allowed': attachments_allowed,
+        'following': following, 'attachments_allowed': attachments_allowed,
         'page_title': thread[0].request.summary[:50]},
         context_instance=RequestContext(request))
 
@@ -682,7 +691,7 @@ def similar_requests(request, id=None, **kwargs):
 
     similar_items= more_like_this(rq)
 
-    paginator= Paginator(similar_items, PAGINATE_BY)
+    paginator= Paginator(similar_items, settings.PAGINATE_BY)
     try:
         page= int(request.GET.get('page', '1'))
     except ValueError:
@@ -706,7 +715,7 @@ def reply_to_thread(request, id=None, **kwargs):
     """
     template= kwargs.get('template', 'thread.html')
     user_message= request.session.pop('user_message', {})
-    attachments_allowed= ATTACHMENT_MAX_NUMBER
+    attachments_allowed= settings.ATTACHMENT_MAX_NUMBER
     is_response= request.GET.get('response', '')
 
     if is_response.lower() in ['1', 'yes', 'y', 'tak', 'true']:
@@ -776,7 +785,7 @@ def reply_to_thread(request, id=None, **kwargs):
                 'attachments_allowed': attachments_allowed,},
                 context_instance=RequestContext(request))
 
-        # Form is valid, prcess scenarios.
+        # Form is valid, process scenarios.
         # In case of any scenario the Draft must be saved first.
         data= form.cleaned_data
         data.update({'thread_message': msg,
@@ -818,7 +827,7 @@ def reply_to_thread(request, id=None, **kwargs):
                 email_to= msg.email_from if msg.is_response else msg.email_to
                 email_from= email_from_name(reply_draft.user.get_full_name(),
                                             id=id, delimiter='.')
-                _email_from= DEFAULT_FROM_EMAIL if USE_DEFAULT_FROM_EMAIL else email_from
+                _email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else email_from
 
                 # Make and send email.
                 reply= EmailMessage(reply_draft.subject, reply_draft.body,
@@ -827,8 +836,6 @@ def reply_to_thread(request, id=None, **kwargs):
 
                 try: # to send the message.
                     reply.send(fail_silently=False)
-                    user_message= update_user_message(user_message,
-                        _(u'Reply sent successfully.'), 'success')
                 except Exception as e:
                     user_message= update_user_message(user_message,
                         _(u'Error sending reply! System error: %s' % e), 'fail')
@@ -842,6 +849,9 @@ def reply_to_thread(request, id=None, **kwargs):
                     'email_to': email_to, 'email_from': email_from,
                     'subject': reply_draft.subject, 'body': reply_draft.body}
 
+                # What will be reported if all operations done successfully.
+                success_message= _(u'Reply sent successfully.')
+
             # SCENARIO 4
             # User wants to save a reply from Authority manually.
             # All the data and attachments are already in the draft.
@@ -854,28 +864,28 @@ def reply_to_thread(request, id=None, **kwargs):
                 message_data= {'request': msg.request, 'is_response': True,
                     'email_to': email_to, 'email_from': email_from,
                     'subject': reply_draft.subject, 'body': reply_draft.body}
+                success_message= _(u'Reply saved successfully.')
 
             # Common part of SCENARIOS 3 and 4
             # Save the message in the thread, re-link attachments, remove draft.
             pia_msg= PIAThread(**message_data)
             try:
                 pia_msg.save()
-                user_message= update_user_message(user_message,
-                    _(u'Reply saved successfully.'), 'success')
             except Exception as e:
                 user_message= update_user_message(user_message,
                     _(u'Error saving message in the thread! System error:')\
                     + e, 'fail')
                 request.session['user_message']= user_message
                 return redirect('/request/%s/#form_reply' % id)
-
             # Re-link the attachments and delete the draft.
             if reply_draft.attachments.count() > 0:
                 for attachment in reply_draft.attachments.all():
                     attachment.message= pia_msg
                     attachment.save()
             reply_draft.delete()
-
+            # Report.
+            user_message= update_user_message(user_message,
+                                              success_message, 'success')
             request.session['user_message']= user_message
             return redirect(reverse('view_thread', args=(str(id),)))
 
@@ -983,7 +993,7 @@ def _do_discard_request_draft(draft):
     if draft.attachments.count() > 0:
         for attachment in draft.attachments.all():
             full_path= ('%s/attachments/%s' % (
-                MEDIA_ROOT, attachment.path)).replace('//', '/')
+                settings.MEDIA_ROOT, attachment.path)).replace('//', '/')
             try:
                 os.remove(full_path)
             except Exception as e:
@@ -1020,3 +1030,41 @@ def discard_request_draft(request, id=None, **kwargs):
                     user_message, AppMessage('DraftDiscardFailed',
                     value=(draft_id,)).message % result, 'fail')
     return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required
+def follow_request(request, id=None, **kwargs):
+    """
+    Follow request.
+    """
+    if request.method == 'POST':
+        return redirect(request.META.get('HTTP_REFERER'))
+    if not id:
+        raise Http404
+    user_message= request.session.pop('user_message', {})
+    
+    piarequest= get_object_or_404(PIARequest, id=int(id))
+    if request.user == piarequest.user:
+        request.session['user_message']= update_user_message(
+            user_message, AppMessage('AuthorCantFollow').message, 'warning')
+    else:
+        # Create notifier.
+        try:
+            item= TaggedItem.objects.get(object_id=piarequest.id,
+                name=piarequest.summary[:50],
+                content_type_id=ContentType.objects.get_for_model(
+                    piarequest.__class__).id)
+        except TaggedItem.DoesNotExist:
+            item= TaggedItem.objects.create(name=piarequest.summary[:50],
+                                            content_object=piarequest)
+        for k, v in request_events(piarequest).iteritems():
+            try:
+                evnt, created= EventNotification.objects.get_or_create(
+                    item=item, action=k, receiver=request.user, summary=v)
+            except:
+                pass # TO-DO: Log it!        
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def request_events(piarequest):
+    return {'new_message': 'New message in the Thread of request %s' % piarequest,
+            'annotation': 'Annotation to the message in the Thread of request %s' % piarequest}

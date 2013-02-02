@@ -2,8 +2,13 @@
     <div class="row well well-lightgray well-shadowed">
         <legend>{{ authority.name }}
             <div class="btn-group pull-right">
-                <a class="btn btn-small btn-info" href="#"> {% trans 'Follow this authority' %}</a>
-                <a class="btn btn-small btn-primary" href="/request/{{ authority.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Send request' %}</a>
+              {{following}}
+              {% if following %}
+              <a class="btn btn-small btn-info" href="/authority/{{ authority.slug }}/unfollow/"> {% trans 'Unfollow this authority' %}</a>
+              {% else %}
+              <a class="btn btn-small btn-info" href="/authority/{{ authority.slug }}/follow/"> {% trans 'Follow this authority' %}</a>
+              {% endif %}
+              <a class="btn btn-small btn-primary" href="/request/{{ authority.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Send request' %}</a>
             </div>
         </legend>
 

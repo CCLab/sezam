@@ -11,10 +11,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from apps.vocabulary.models import Vocabulary, SlugVocabulary
 
+
 ACTION= (
     ('active', _(u'Record has become active')),
-    ('save', _(u'Record saved')),
-    ('delete', _(u'Record deleted')),
+    ('request_to', _(u'Request to the Authority')),
+    ('response_from', _(u'Response from the Authority')),
     ('update', _(u'Record updated')),
     )
 
@@ -92,6 +93,14 @@ class TaggedItem(Vocabulary, SlugVocabulary):
     content_type= ForeignKey(ContentType)
     object_id= PositiveIntegerField()
     content_object= generic.GenericForeignKey('content_type', 'object_id')
+
+    def is_followed_by(self, usr):
+        """
+        Returns True if `usr` is subscribed to the updates of the Item.
+        """
+        if self.notification.filter(receiver=usr).count() > 0:
+            return True
+        return False
 
     def __unicode__(self):
         return self.slug

@@ -19,13 +19,15 @@ def process_notifications():
     """
     notification_processed= 0
     for notification in EventNotification.objects.filter(awaiting=True):
-        if notification.action == 'save':
+        # Different cases possible.
+        if notification.action == 'request_to':
             pass
-        elif notification.action == 'delete':
+        elif notification.action == 'response_from':
             pass
         elif notification.action == 'update':
             pass
         elif notification.action == 'active':
+            # Process the notification of an element become 'active'.
             is_active= False
             try:
                 is_active= notification.item.content_object.active

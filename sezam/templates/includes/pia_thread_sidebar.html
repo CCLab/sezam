@@ -5,9 +5,15 @@
         <div class="nav nav-pills nav-stacked">
           <ul class="nav nav-list">
             <li class="nav-header">{% trans 'Anyone' %}</li>
-            <li class="active"><a href="/request/{{ thread.0.request.id }}/follow/">Follow this request</a></li>
-            <li><a href="/request/{{ thread.0.request.id }}/annotate/#form_annotate">Add an annotation</a></li>
-            <li><a href="/request/{{ thread.0.request.id }}/download/">Download a zip file of all correspondence</a></li>
+            {% if user.is_authenticated %}
+              {% if following %}
+            <li class="active"><a href="/request/{{ thread.0.request.id }}/unfollow/">{% trans 'Un-follow this request' %}</a></li>
+              {% else %}
+            <li class="active"><a href="/request/{{ thread.0.request.id }}/follow/">{% trans 'Follow this request' %}</a></li>
+              {% endif %}
+            {% endif %}
+            <li><a href="/request/{{ thread.0.request.id }}/annotate/#form_annotate">{% trans 'Add an annotation '%}</a></li>
+            <li><a href="/request/{{ thread.0.request.id }}/download/">{% trans 'Download a zip file of all correspondence' %}</a></li>
             {% if user.is_authenticated %}
               {% ifequal user thread.0.request.user %}
             <li class="nav-header">{% trans 'Only' %} {{ thread.0.request.user.get_full_name }}</li>

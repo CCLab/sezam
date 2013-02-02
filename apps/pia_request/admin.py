@@ -1,11 +1,19 @@
 from django.contrib import admin
-from apps.pia_request.models import PIAMessage, PIARequest, PIAThread
+from apps.pia_request.models import PIAMessage, PIARequest, PIARequestDraft, PIAThread
+
+
+class PIARequestDraftAdmin(admin.ModelAdmin):
+    list_display= ('user', 'subject')
+    search_fields= ('subject', 'user')
+    list_filter= ('authority', 'user', 'created',)
+    fields= (('user', 'authority',), 'subject',)
+    ordering= ('-created',)
 
 
 class PIARequestAdmin(admin.ModelAdmin):
     list_display= ('user', 'authority', 'summary', 'status',
         'latest_thread_post')
-    search_fields= ('summary',)
+    search_fields= ('summary', 'authority', 'user')
     list_filter= ('authority', 'user', 'created',)
     fields= ('status', ('user', 'authority',), 'summary',)
     ordering= ('-created',)
@@ -28,9 +36,7 @@ class PIAMessageAdmin(admin.ModelAdmin):
     fields= ('email_from', 'email_to', 'subject', 'body',)
     ordering= ('-created',)
 
-
+admin.site.register(PIARequestDraft, PIARequestDraftAdmin)
 admin.site.register(PIARequest, PIARequestAdmin)
-
 admin.site.register(PIAThread, PIAThreadAdmin)
-
 admin.site.register(PIAMessage, PIAMessageAdmin)

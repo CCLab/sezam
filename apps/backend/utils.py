@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.core.mail.message import EmailMessage
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import views as auth_views
 from django.template.defaultfilters import slugify
 from django.utils.encoding import force_unicode
@@ -410,3 +411,10 @@ def send_mail_managers(subject, message, fail_silently=False,
     mail= EmailMessage(subject, message, settings.SERVER_EMAIL,
                        [a[1] for a in settings.MANAGERS], headers=headers)
     mail.send(fail_silently=fail_silently)
+
+
+def notify_followers(piarequest, **kwargs):
+    """
+    Notify followers of Request or Authprity about update.
+    """
+    return 

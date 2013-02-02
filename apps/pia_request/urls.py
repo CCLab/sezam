@@ -38,6 +38,9 @@ urlpatterns = patterns('apps.pia_request.views',
     url(r'^(?P<id>\d+)/preview/$', 'preview_request',
         {'template': 'request.html'}, name='preview_request_id'),
 
+    # Preview already created draft.
+    url(r'^(?P<id>\d+)/follow/$', 'follow_request', name='follow_request'),
+
     # Similar requests.
     url(r'^(?P<id>\d+)/similar/$', 'similar_requests',
         {'template': 'search/search.html'}, name='similar_requests'),
