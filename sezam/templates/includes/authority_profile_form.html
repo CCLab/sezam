@@ -1,6 +1,5 @@
 {% load i18n %}
 <div class="span7">
-  {% include "includes/user_message.html" %}
 
   <div class="row well">
     <legend>{% trans 'Describe new authority' %}</legend>
@@ -87,6 +86,7 @@
       </div>
 
       <div style="display:none">
+        {{ form.parent }}
         {{ form.slug }}
         {{ form.order }}
       </div>

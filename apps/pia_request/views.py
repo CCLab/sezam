@@ -12,9 +12,9 @@ from django.http import Http404
 from django.conf import settings
 from haystack.query import SearchQuerySet
 
-import re
-import os
+import re, os, sys
 from time import struct_time, strptime
+from datetime import datetime
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIAAttachment, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
@@ -158,7 +158,7 @@ def process_attachments(msg, attachments, **kwargs):
             pia_attachment.filesize= f['size']
             pia_attachment.save()
         except Exception as e:
-            print e
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
 
     if attachment_failed:
         return AppMessage('AttachSaveFailed').message % ', '.join(
@@ -243,22 +243,24 @@ def save_draft(data, **kwargs):
         try:
             draft= PIARequestDraft.objects.get(id=int(_id))
         except:
-            pass
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
     # All following exceptions are fatal, return with draft: None.
     else:
         try:
-            draft, created= PIARequestDraft.objects.get_or_create(
-                **lookup_fields)
+            draft= PIARequestDraft(**lookup_fields)
         except Exception as e:
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
             return {'draft': None, 'errors': e}
     try:
         for k, v in update_fields.iteritems():
             setattr(draft, k, v)
     except Exception as e:
+        print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
         return {'draft': None, 'errors': e}
     try:
         draft.save()
     except Exception as e:
+        print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
         return {'draft': None, 'errors': e}
 
     # Maintain many-to-many link with Authority.
@@ -565,7 +567,6 @@ def retrieve_similar_items(obj, limit=None):
     # search on its summary, but haystack doesn't process elasticsearch's
     # `more_like_this` properly.
 
-    similar_items= []
     text_for_search= None
     try: # Draft?
         text_for_search= obj.subject
@@ -578,12 +579,15 @@ def retrieve_similar_items(obj, limit=None):
             except: # Give up...
                 pass
     if not text_for_search:
-        return similar_items
+        return []
 
     text_for_search= downcode(clean_text_for_search(text_for_search.lower()))
     text_for_search= [d for d in text_for_search.split()]
 
-    similar_items= SearchQuerySet().filter(summary__in=text_for_search)
+    try:
+        similar_items= SearchQuerySet().filter(summary__in=text_for_search)
+    except:
+        return []
 
     # If the search is performed on PIAThread, need to exclude this.
     _exclude_pk= None
@@ -660,7 +664,17 @@ def view_thread(request, id=None, **kwargs):
             break # Only one draft in Thread.
 
     # Check if the user is following the request.
-    following= thread[0].request.is_followed_by(request.user)
+    following= False
+    if not request.user.is_anonymous():
+        content_type_id= ContentType.objects.get_for_model(
+            thread[0].request.__class__).id
+        try:
+            item= TaggedItem.objects.get(object_id=thread[0].request.id,
+                                         content_type_id=content_type_id)
+        except TaggedItem.DoesNotExist:
+            pass
+        else:
+            following= item.is_followed_by(request.user)
 
     return render_to_response(template, {'thread': thread, 'form': form,
         'similar_items': similar_items, 'user_message': user_message,
@@ -873,8 +887,7 @@ def reply_to_thread(request, id=None, **kwargs):
                 pia_msg.save()
             except Exception as e:
                 user_message= update_user_message(user_message,
-                    _(u'Error saving message in the thread! System error:')\
-                    + e, 'fail')
+                    _(u'Error saving message in the thread!'), 'fail')
                 request.session['user_message']= user_message
                 return redirect('/request/%s/#form_reply' % id)
             # Re-link the attachments and delete the draft.
@@ -1045,7 +1058,7 @@ def follow_request(request, id=None, **kwargs):
     piarequest= get_object_or_404(PIARequest, id=int(id))
     if request.user == piarequest.user:
         request.session['user_message']= update_user_message(
-            user_message, AppMessage('AuthorCantFollow').message, 'warning')
+            user_message, AppMessage('AuthorCantFollow').message, 'info')
     else:
         # Create notifier.
         try:
@@ -1062,6 +1075,38 @@ def follow_request(request, id=None, **kwargs):
                     item=item, action=k, receiver=request.user, summary=v)
             except:
                 pass # TO-DO: Log it!        
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required
+def unfollow_request(request, id=None, **kwargs):
+    """
+    Removes any activity of the Request from a notification list.
+    """
+    if request.method == 'POST':
+        raise Http404
+    piarequest= get_object_or_404(PIARequest, id=int(id))
+
+    try: # to get notifier.
+        item= TaggedItem.objects.get(object_id=piarequest.id,
+            content_type_id=ContentType.objects.get_for_model(
+                piarequest.__class__).id)
+    except TaggedItem.DoesNotExist:
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    for k, v in request_events(piarequest).iteritems():
+        try:
+            evnt= EventNotification.objects.get(item=item, action=k,
+                                                receiver=request.user, summary=v)
+        except EventNotification.DoesNotExist:
+            continue
+        evnt.delete()
+
+    # Check if there is any notification connected to this item.
+    if not EventNotification.objects.filter(item=item):
+        try: # to wipe it out.
+            item.delete()
+        except: pass
     return redirect(request.META.get('HTTP_REFERER'))
 
 

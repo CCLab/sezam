@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.core.mail.message import EmailMessage
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import views as auth_views
 from django.template.defaultfilters import slugify
@@ -24,8 +25,7 @@ from PIL import Image
 
 import random
 import string
-import re
-import os
+import re, os, sys
 
 """
 Creating a unique slug depending on the model.
@@ -336,9 +336,9 @@ def save_attached_file(f, store_root, **kwargs):
             path= default_storage.save(path_full, ContentFile(f.read()))
             f_info['path']= path_report # Returns relative (to MEDIA_ROOT) path.
         except Exception as e:
-            print AppMessage('CantSaveAttachmnt').message % f.name, e
-            f_info['errors'].append(
-                AppMessage('CantSaveAttachmnt').message % f.name)
+            err= AppMessage('CantSaveAttachmnt').message % (filename, e)
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), err)
+            f_info['errors'].append(err)
     return f_info
 
 
@@ -413,8 +413,32 @@ def send_mail_managers(subject, message, fail_silently=False,
     mail.send(fail_silently=fail_silently)
 
 
-def notify_followers(piarequest, **kwargs):
+def send_notification(notification):
     """
-    Notify followers of Request or Authprity about update.
+    Sending user a notification about the event
+    as described in EventNotification.
+
+    Returns True if message successfully sent.
     """
-    return 
+    template= 'emails/notification_%s.txt' % notification.action
+    subj_name= None
+    for attr in ['name', 'summary', 'subject']:
+        try:
+            subj_name= getattr(notification.item.content_object, attr)
+        except:
+            pass
+        else:
+            break
+    message_subject= '%s: %s' % (notification.get_action_display(), subj_name)
+    message_subject= force_unicode(message_subject)
+    message_content= render_to_string(template, {'notification': notification,
+                                                 'domain': get_domain_name()})
+    message_notification= EmailMessage(message_subject, message_content,
+        settings.SERVER_EMAIL, [notification.receiver_email])
+    try: # sending the message to the receiver, check if it doesn't fail.
+        message_notification.send(fail_silently=False)
+    except Exception as e:
+        print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(),
+            AppMessage('MailSendFailed').message % e)
+        return False
+    return True

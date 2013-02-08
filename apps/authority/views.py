@@ -11,7 +11,7 @@ from django.utils import simplejson as json
 from django.template import RequestContext
 from django.conf import settings
 from datetime import datetime
-import os, time
+import os, time, sys
 
 from apps.browser.forms import ModelSearchForm
 from apps.authority.forms import AuthorityProfileForm
@@ -189,7 +189,16 @@ def get_authority_info(request, slug, **kwargs):
         categories.append(category)
 
     # Check if the user is following the authority.
-    following= authority.is_followed_by(request.user)
+    following= False
+    if not request.user.is_anonymous():
+        content_type_id= ContentType.objects.get_for_model(authority.__class__).id
+        try:
+            item= TaggedItem.objects.get(object_id=authority.id,
+                                         content_type_id=content_type_id)
+        except TaggedItem.DoesNotExist:
+            pass
+        else:
+            following= item.is_followed_by(request.user)
 
     # Fill requests list.
     initial, query, urlparams= process_filter_request(
@@ -249,9 +258,10 @@ def add_authority(request, slug=None, **kwargs):
             data= form.cleaned_data
             authority= AuthorityProfile(**data)
             try:
-                authority.save()
+                authority= AuthorityProfile.objects.create(**data)
             except Exception as e:
-                user_message= update_user_message(user_message, e, 'fail')
+                print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
+                user_message= update_user_message({}, e.args[0], 'fail')
                 form= AuthorityProfileForm(instance=authority)
             if authority.id: # Added successfully.
                 user_message= update_user_message(user_message,
@@ -267,7 +277,7 @@ def add_authority(request, slug=None, **kwargs):
                     send_mail_managers(subject, content, fail_silently=False,
                                        headers={'Reply-To': request.user.email})
                 except Exception as e:
-                    print e
+                    print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
 
                 # Create notifier.
                 item= TaggedItem.objects.create(name=authority.name,
@@ -321,7 +331,6 @@ def unfollow_authority(request, slug=None, **kwargs):
     """
     Removes any activity of the Authority from a notification list
     """
-    # Show the form to enter Authority data.
     if request.method == 'POST':
         raise Http404
     try:
@@ -339,9 +348,9 @@ def unfollow_authority(request, slug=None, **kwargs):
         try:
             evnt= EventNotification.objects.get(item=item, action=k,
                                                 receiver=request.user, summary=v)
-            evnt.delete()
-        except:
+        except EventNotification.DoesNotExist:
             continue
+        evnt.delete()
 
     # Check if there is any notification connected to this item.
     if not EventNotification.objects.filter(item=item):

@@ -10,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 
 from apps.backend.utils import slugify_unique
-# from apps.backend.models import TaggedItem
 from apps.backend import CountryField
 from sezam.settings import MEDIA_URL
 
@@ -201,22 +200,6 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         self.fax_code= re.sub('[^0-9]+', '', self.fax_code)
         self.fax_number= re.sub('[^0-9]+', '', self.fax_number)
         super(AuthorityProfile, self).save(*args, **kwargs)
-
-    def is_followed_by(self, usr):
-        """
-        Returns True if `usr` is subscribed to the Authority updates.
-        """
-        following= False
-        # if not usr.is_anonymous():
-        #     content_type_id= ContentType.objects.get_for_model(self.__class__).id
-        #     try:
-        #         item= TaggedItem.objects.get(object_id=self.id,
-        #                                      content_type_id=content_type_id)
-        #     except TaggedItem.DoesNotExist:
-        #         pass
-        #     else:
-        #         following= item.is_followed_by(usr)
-        return following
 
 
 class UserProfile(Model):

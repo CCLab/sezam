@@ -41,6 +41,10 @@ urlpatterns = patterns('apps.pia_request.views',
     # Preview already created draft.
     url(r'^(?P<id>\d+)/follow/$', 'follow_request', name='follow_request'),
 
+    # Preview already created draft.
+    url(r'^(?P<id>\d+)/unfollow/$', 'unfollow_request',
+        name='unfollow_request'),
+
     # Similar requests.
     url(r'^(?P<id>\d+)/similar/$', 'similar_requests',
         {'template': 'search/search.html'}, name='similar_requests'),

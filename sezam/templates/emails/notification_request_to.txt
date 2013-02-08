@@ -1,0 +1,10 @@
+{% load humanize %}
+{% load i18n %}
+{% trans 'Dear ' %} {% if notification.receiver %}{{ notification.receiver.first_name }}{% else %}{{ notification.receiver_email }}{% endif %},
+
+There is a new request or a message to the authority, that you are following on our service. Please, have a look at http://{{ domain }}/authority/{{ notification.item.content_object.slug }}/
+
+{% trans "You received this email because you are subscribed to the updates in our service" %} {{ PROJECT_TITLE }}, {% trans "that require notification" %}.
+
+{% trans "With best regards" %}
+{% trans "Management of" %} http://{{ domain }}

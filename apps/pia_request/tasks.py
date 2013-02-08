@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from datetime import datetime, timedelta
-import re
+import re, sys
 
 from sezam.settings import MAILBOXES, ATTACHMENT_DIR, OVERDUE_DAYS,\
     DEFAULT_FROM_EMAIL
@@ -19,10 +19,9 @@ from apps.backend.utils import get_domain_name, email_from_name
 def check_mail(mailbox_settings=None):
     """
     Checks mail for responses.
-    If there is any response, creates a Message
-    and adds it to the Thread.
-    Also processes attachments in the emails
-    and adds them to newly created messages.
+    If there is any response, creates a Message and adds it to the Thread.
+    Also processes attachments in the emails and adds them to newly
+    created messages.
     """
 
     # Pattern to look for in `to` fields: delimiters include dash and dot.
@@ -193,7 +192,8 @@ def send_reminder(pia_request, overdue_date=None, **kwargs):
     try: # sending the message to the Authority, check if it doesn't fail.
         message_request.send(fail_silently=False)
     except Exception as e:
-        print AppMessage('MailSendFailed', value=('reminder', pia_request.pk,)).message
+        print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(),
+            AppMessage('MailSendFailed').message)
         return None
     return True # Success. 
 

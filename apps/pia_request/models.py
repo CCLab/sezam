@@ -1,6 +1,7 @@
 """
 PIA - Public Information Access.
 """
+import sys
 
 from django.db.models import *
 from django.contrib.auth.models import User
@@ -8,11 +9,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from datetime import datetime
 
 from apps.vocabulary.models import AuthorityProfile
 from apps.backend.models import GenericText, GenericPost, GenericMessage,\
     GenericFile, GenericEvent, TaggedItem
-from apps.backend.utils import increment_id, notify_followers
+from apps.backend.utils import increment_id, send_notification
 
 PIA_REQUEST_STATUS= (
     ('in_progress', _(u'In progress')),
@@ -77,22 +79,6 @@ class PIARequest(GenericEvent):
         default=PIA_REQUEST_STATUS[0][0], verbose_name=_(u'Request status'))
     latest_thread_post= ForeignKey('PIAThread', null=True, blank=True,
         related_name='latest_thread_post', verbose_name=_(u'latest message'))
-
-    def is_followed_by(self, usr):
-        """
-        Returns True if `usr` is subscribed to the PIARequest instance updates.
-        """
-        following= False
-        if not usr.is_anonymous():
-            content_type_id= ContentType.objects.get_for_model(self.__class__).id
-            try:
-                item= TaggedItem.objects.get(object_id=self.id,
-                                             content_type_id=content_type_id)
-            except TaggedItem.DoesNotExist:
-                pass
-            else:
-                following= item.is_followed_by(usr)
-        return following
 
     def __unicode__(self):
         return "%d: %s" % (self.id, self.summary[:30])
@@ -163,13 +149,44 @@ class PIARequestDraft(PIAMessage):
 
 
 @receiver(post_save)
-def clear_latest_flag(sender, **kwargs):
+def _post_save(sender, **kwargs):
     """
-    Filling the latest message in the Thread (see the note on 
+    PIAThread:
+    * Filling the latest message in the Thread (see the note on
     de-normalization in the PIARequest description).
+    PIAThread & PIAAnnotation:
+    * Processing subscriptions to PIARequest and AuthorityProfile
     """
-    instance= kwargs.get('instance')
 
+    def __notify_followers(act, **kwargs):
+        """
+        Call a function that sends notifications to the Users, following
+        given Request or Authority, to which this request is made.
+        """
+        p= kwargs.get('piarequest', None)
+        a= kwargs.get('authority', None)
+        if (p is None) and (a is None):
+            return
+        g= ContentType.objects.get_for_model
+
+        # bookmark
+        # TO-DO: make a query more elastic: real OR, so, if a or p is absent, don't query on it!
+        items= TaggedItem.objects.filter(
+            Q(object_id=p.id, content_type_id=g(p.__class__).id)|\
+            Q(object_id=a.id, content_type_id=g(a.__class__).id))
+        if not items:
+            return
+        for item in items:
+            notifications= item.notification.filter(**act)
+            if notifications:
+                for notification in notifications:
+                    if send_notification(notification):
+                        pass
+                    else:
+                        print "Cannot send notification:\n %s" %\
+                            notification.__unicode__()
+
+    instance= kwargs.get('instance')
     if sender == PIAThread:
         # Update `latest_thread_post` in PIARequest only
         # if it's not the first message in Thread.
@@ -177,7 +194,19 @@ def clear_latest_flag(sender, **kwargs):
             instance.request.latest_thread_post= instance
             instance.request.save()
 
-    elif sender == PIARequest:
-        # Manage subscriptions to PIARequest and
-        # Authority when a Request is updated.
-        notify_followers(instance)
+        # Manage subscriptions to PIARequest and Authority after update.
+        act= {'action__in': ['new_message']}
+        if instance.is_response:
+            act['action__in'].append('response_from')
+        else:
+            act['action__in'].append('request_to')
+        __notify_followers(act, piarequest=inst.request,
+                           authority=inst.request.authority)
+    elif sender == PIAAnnotation:
+        # Manage subscriptions to PIARequest and Authority after update.
+        try:
+            __notify_followers({'action__in': ['annotation']},
+                               piarequest=instance.thread_message.request,
+                authority=instance.thread_message.request.authority)
+        except Exception as e:
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)

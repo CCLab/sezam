@@ -13,10 +13,11 @@ from apps.vocabulary.models import Vocabulary, SlugVocabulary
 
 
 ACTION= (
-    ('active', _(u'Record has become active')),
+    ('new_message', _(u'New message in thread')),
+    ('annotation', _(u'Message was annotated')),
     ('request_to', _(u'Request to the Authority')),
     ('response_from', _(u'Response from the Authority')),
-    ('update', _(u'Record updated')),
+    ('active', _(u'Record has become active')),
     )
 
 
@@ -130,3 +131,6 @@ class EventNotification(GenericEvent):
             self.receiver_email= self.receiver.email
 
         super(GenericEvent, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return '%s: %s' % (self.item.slug, self.action)

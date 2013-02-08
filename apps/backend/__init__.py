@@ -23,7 +23,6 @@ from django.utils.translation import ugettext as _
 
 from apps.backend.html2text import html2text
 
-
 """
 CountryField
 """
@@ -359,8 +358,8 @@ class MailImporter():
                         continue
                 if not header_only:
                     dir_name= _get_message_dirname(header['to']) + '/'
-                    content, attachments= self.extract_mail_content(
-                        msg_data, dir_name=dir_name)
+                    content, attachments= self.extract_mail_content(msg_data,
+                        dir_name=dir_name)
                 self.messages.append({'header': header, 'content': content,
                                       'attachments': attachments})
         return self.messages
@@ -439,8 +438,8 @@ class MailImporter():
             # constructed with use of MEDIA_ROOT
             return dir_name + now + '/' + filename
         except Exception as e:
-            print AppMessage('CantSaveAttachmnt', value=(
-                filename, e,)).message % filename
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(),
+                AppMessage('CantSaveAttachmnt').message % (filename, e))
             return None
 
 
@@ -488,37 +487,40 @@ message_code: {
 """
 APP_MESSAGES = {
     'MailboxNotFound': {
-        'message': _('Mailbox with the specified name not found! Check MAILBOXES dict in the main project settings!')
+        'message': _(u'Mailbox with the specified name not found! Check MAILBOXES dict in the main project settings!')
         },
     'ResponseNotFound': {
-        'message': _('Message with no proper recipient e-mail address! Possible spam? Please, check the inbox.')
+        'message': _(u'Message with no proper recipient e-mail address! Possible spam? Please, check the inbox.')
         },
     'RequestNotFound': {
-        'message': _('Cannot find in the database the Request with given ID!')
+        'message': _(u'Cannot find in the database the Request with given ID!')
         },
     'NewMsgFailed': {
-        'message': _('Cannot create new Message in the Thread for the Request with given ID!')
+        'message': _(u'Cannot create new Message in the Thread for the Request with given ID!')
         },
     'AuthEmailNotFound': {
-        'message': _('We do not have an e-mail of this authority in our database')
+        'message': _(u'We do not have an e-mail of this authority in our database')
         },
     'UserEmailNotFound': {
-        'message': _('Cannot find e-mail address of this user in our database')
+        'message': _(u'Cannot find e-mail address of this user in our database')
         },
     'MailSendFailed': {
-        'message': _('Sending e-mail message failed')
+        'message': _(u'Sending e-mail message failed: %s')
+        },
+    'MsgCreateFailed': {
+        'message': _(u'Creating e-mail message failed')
         },
     'CantSaveAttachmnt': {
-        'message': _('Cannot save attachment %s')
+        'message': _(u'Cannot save attachment %s: %s')
         },
     'CheckMailComplete': {
-        'message': _('Complete checking e-mail. Total number of messages: %s')
+        'message': _(u'Email check complete, received %s messages')
         },
     'CheckOverdueComplete': {
-        'message': _('Complete checking overdue requests. Total number of overdue requests: ')
+        'message': _(u'Complete checking overdue requests. Total number of overdue requests: ')
         },
     'ClassifyRespUser': {
-        'message': _('The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, please, check appropriate status.')
+        'message': _(u'The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, please, check appropriate status.')
         },
     'ClassifyRespAnonim': {
         'message': _("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%s/\">%s</a>, please sign in and let everyone know."),
@@ -539,22 +541,25 @@ APP_MESSAGES = {
         'message': _("Failed to save a Request draft, while sending PIA Request. System error is: %s"),
         },
     'AttachFailed': {
-        'message': _('Cannot process attachment! See the original message!')
+        'message': _(u'Cannot process attachment! See the original message!')
         },
     'AttachSaveFailed': {
-        'message': _('Failed to save attachments: %s')
+        'message': _(u'Failed to save attachments: %s')
         },        
     'AttachTooBig': {
-        'message': _("Attachment %s exceeds maximum filesize!"),
+        'message': _(u'Attachment %s exceeds maximum filesize!'),
         },
+    'NotificFailed': {
+        'message': _(u'Error sending notification: %s')
+        },        
     'AuthSavedInactive': {
-        'message': _("Athority <strong>%s</strong> successfully saved in the db! <br/>It will remain inactive until our moderator finish reviewing and confirming the record. We will notify you upon this by email. <p>Thanks a lot for your participation!</p>"),
+        'message': _(u'Athority <strong>%s</strong> successfully saved in the db! <br/>It will remain inactive until our moderator finish reviewing and confirming the record. We will notify you upon this by email. <p>Thanks a lot for your participation!</p>'),
         },
     'AddDetailsToThread': {
-        'message': _("<h5>Status was updated successfully.</h5><p>If you have any additional information concerning this request (for example, an answer sent via snail mail), and feel like adding something would help users to find the right answer to their requests in the future, please, use <a href=\"%(url)s\">this form</a>.<br/>Thank you!</p>"),
+        'message': _(u"<h5>Status was updated successfully.</h5><p>If you have any additional information concerning this request (for example, an answer sent via snail mail), and feel like adding something would help users to find the right answer to their requests in the future, please, use <a href=\"%(url)s\">this form</a>.<br/>Thank you!</p>"),
         },
     'AuthorCantFollow': {
-        'message': _("You cannot follow your own request. As its author you are getting all updates anyway."),
+        'message': _(u'You cannot follow your own request. As its author you are getting all updates anyway.'),
         },
     }
 
