@@ -6,6 +6,7 @@ from registration import signals
 from registration.forms import RegistrationForm, RegistrationFormUniqueEmail
 from registration.models import RegistrationProfile
 
+import smtplib
 
 class DefaultBackend(object):
     """
@@ -76,12 +77,13 @@ class DefaultBackend(object):
             site = Site.objects.get_current()
         else:
             site = RequestSite(request)
-        new_user = RegistrationProfile.objects.create_inactive_user(username, email,
-                                                                    password, site,
-                                                                    first_name, last_name) #  DK change
+        try:
+            new_user = RegistrationProfile.objects.create_inactive_user(
+                username, email, password, site, first_name, last_name) #  DK change
+        except smtplib.SMTPRecipientsRefused as e:
+            return None
         signals.user_registered.send(sender=self.__class__,
-                                     user=new_user,
-                                     request=request)
+                                     user=new_user, request=request)
         return new_user
 
     def activate(self, request, activation_key):

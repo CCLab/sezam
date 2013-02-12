@@ -7,6 +7,7 @@ Views which allow users to create and activate accounts.
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.utils.translation import ugettext_lazy as _
 
 from registration.backends import get_backend
 
@@ -185,6 +186,12 @@ def register(request, backend, success_url=None, form_class=None,
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
             new_user = backend.register(request, **form.cleaned_data)
+            if new_user is None:
+                fake_msg=_("This email is fake! Please, type a true one.")
+                form._errors['email']= form.error_class([fake_msg])
+                return render_to_response(template_name, {'form': form},
+                    context_instance=RequestContext(request))
+
             if success_url is None:
                 to, args, kwargs = backend.post_registration_redirect(request, new_user)
                 return redirect(to, *args, **kwargs)

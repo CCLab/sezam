@@ -29,16 +29,21 @@ class RegistrationForm(forms.Form):
     registration backend.
     
     """
-    username = forms.RegexField(required=False, regex=r'^\w+$', # DK change
-                                max_length=30,
-                                widget=forms.TextInput(attrs={'style': 'display: none;'}), # DK change (don't show username, it will be substituted with email)
+    username = forms.RegexField(required=False, # DK change
+                                regex=r'^\w+$',
+                                max_length=200,
+                                # DK change (don't show username, it will be substituted with email)
+                                widget=forms.TextInput(attrs={'style': 'display: none;'}),
                                 label=_("Username"),
                                 error_messages={'invalid': _("This value must contain only letters, numbers and underscores.")})
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
-                                                               maxlength=75)),
-                             label=_("Email address"))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_("Password"))
+    email = forms.EmailField(widget=forms.TextInput(
+        attrs=dict(attrs_dict, maxlength=75)), label=_("Email address"))
+
+    # DK change - complex passwords.
+    password1 = forms.RegexField(regex=r'[A-Za-z0-9@#$%^&+={8,}]',
+        widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
+        label=_("Password"),
+        error_messages={'invalid': _("Too weak! Password must include special characters and numbers and be at least 8 symbols long.")})
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_("Password (again)"))
     
@@ -88,16 +93,12 @@ class RegistrationFormUniqueEmail(RegistrationForm):
     
     """
     # DK change - add first and last name, tos
-    first_name = forms.RegexField(regex=r'^\w+$',
-                                  max_length=30,
+    first_name = forms.CharField(max_length=200,
                                   widget=forms.TextInput(attrs=attrs_dict),
-                                  label=_("First name"),
-        error_messages={'invalid': _("This value must contain only letters, numbers and underscores.")})
-    last_name = forms.RegexField(regex=r'^\w+$',
-                                  max_length=30,
-                                  widget=forms.TextInput(attrs=attrs_dict),
-                                  label=_("Last name"),
-        error_messages={'invalid': _("This value must contain only letters, numbers and underscores.")})
+                                  label=_("First name"))
+    last_name = forms.CharField(max_length=200,
+                                 widget=forms.TextInput(attrs=attrs_dict),
+                                 label=_("Last name"))
     tos = forms.BooleanField(widget=forms.CheckboxInput(attrs=attrs_dict),
                              label=_(u'I have read and agree to the Terms of Service'),
                              error_messages={'required': _("You must agree to the terms to register")})
