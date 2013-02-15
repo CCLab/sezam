@@ -2,19 +2,21 @@ from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
+from django.template import Context, RequestContext
 from django.template.defaultfilters import slugify
+from django.utils.translation import ugettext as _
+from django.http import HttpResponse, Http404
 from django.core.urlresolvers import reverse
-from django.template import RequestContext
 from django.core.mail import EmailMessage
-from django.http import Http404
 from django.conf import settings
 from haystack.query import SearchQuerySet
 
-import re, os, sys
 from time import struct_time, strptime
 from datetime import datetime
+import cStringIO as StringIO
+from shutil import rmtree
+import zipfile, cgi, re, os, sys
 
 from apps.pia_request.models import PIARequestDraft, PIARequest, PIAThread, PIAAnnotation, PIAAttachment, PIA_REQUEST_STATUS
 from apps.pia_request.forms import MakeRequestForm, PIAFilterForm, ReplyDraftForm, CommentForm
@@ -23,8 +25,8 @@ from apps.vocabulary.models import AuthorityProfile
 from apps.backend import AppMessage
 from apps.backend.models import TaggedItem, EventNotification
 from apps.backend.utils import re_subject, process_filter_request,\
-    downcode, save_attached_file, update_user_message,\
-    get_domain_name, email_from_name, clean_text_for_search
+    downcode, save_attached_file, update_user_message, id_generator,\
+    get_domain_name, email_from_name, clean_text_for_search, render_to_pdf
 
 def request_list(request, status=None, **kwargs):
     """
@@ -619,11 +621,26 @@ def more_like_this(pia_request, limit=None):
     return similar_items
 
 
+def awaiting_message(curr_user, request_user):
+    """
+    In case of 'awaiting classification' status, return a proper user_message.
+    """
+    if curr_user.is_anonymous():
+        return AppMessage('ClassifyRespAnonim').message % (
+            request_user.pk, request_user.get_full_name())
+    else:
+        if request_user == curr_user:
+            return AppMessage('ClassifyRespUser').message
+        else:
+            return AppMessage('ClassifyRespAlien').message
+
+
 def view_thread(request, id=None, **kwargs):
     """
     View request thread by given ID.
     """
     template= kwargs.get('template', 'thread.html')
+    form, mode= None, None
     if request.method == 'POST':
         raise Http404
     try:
@@ -631,28 +648,31 @@ def view_thread(request, id=None, **kwargs):
             id=int(id))).order_by('created')
     except (PIAThread.DoesNotExist, PIARequest.DoesNotExist):
         raise Http404
+
     # Turning public attention to those 'awaiting classification'.
     user_message= request.session.pop('user_message', {})
+    if thread[0].request.status == 'awaiting':
+        update_user_message(user_message,
+            awaiting_message(request.user, thread[0].request.user), 'success')
+
+    # In case it is for print, we don't need any further details.
+    is_print= request.GET.get('print', '')
+    if is_print.lower() in settings.URL_PARAM_TRUE:
+        mode= 'print'
+        template= template.replace('.html', '_print.html')
+        return render_to_response(template, {
+            'request_id': id, 'mode': mode, 'thread': thread, 'form': form,
+            'user_message': user_message,
+            'page_title': thread[0].request.summary[:50]},
+            context_instance=RequestContext(request))
+
     attachments_allowed= request.session.pop('attachments_allowed',
                                              settings.ATTACHMENT_MAX_NUMBER)
-    if thread[0].request.status == 'awaiting':
-        if request.user.is_anonymous():
-            user_message= update_user_message(user_message,
-                AppMessage('ClassifyRespAnonim').message % (
-                    thread[0].request.user.pk,
-                    thread[0].request.user.get_full_name()), 'success')
-        else:
-            if thread[0].request.user == request.user:
-                user_message= update_user_message(user_message,
-                    AppMessage('ClassifyRespUser').message, 'success')
-            else:
-                user_message= update_user_message(user_message,
-                    AppMessage('ClassifyRespAlien').message, 'success')
+    # Extract similar requests.
     # similar_items= more_like_this(thread[0].request, 10)
     similar_items= retrieve_similar_items(thread[0].request, 10)
 
     # If there's a draft in the thread, make a form.
-    form, mode= None, None
     for msg in thread:
         try:
             draft= msg.draft
@@ -682,6 +702,82 @@ def view_thread(request, id=None, **kwargs):
         'following': following, 'attachments_allowed': attachments_allowed,
         'page_title': thread[0].request.summary[:50]},
         context_instance=RequestContext(request))
+
+def download_thread(request, id=None, **kwargs):
+    """
+    Create a PDF from the print form of the thread, pack it into ZIP
+    together with all the attached files, and return the archive.
+    """
+    template= kwargs.get('template', 'thread_print.html')
+    if request.method == 'POST':
+        raise Http404
+    try:
+        thread= PIAThread.objects.filter(request=PIARequest.objects.get(
+            id=int(id))).order_by('created')
+    except (PIAThread.DoesNotExist, PIARequest.DoesNotExist):
+        raise Http404
+
+    # Turning public attention to those 'awaiting classification'.
+    user_message= request.session.pop('user_message', {})
+    if thread[0].request.status == 'awaiting':
+        update_user_message(user_message,
+            awaiting_message(request.user, thread[0].request.user), 'success')
+
+    data= {'request_id': id, 'thread': thread,
+           'mode': 'print', 'form': None, 'user_message': user_message,
+           'pagesize':'A4', 'title': thread[0].request.summary[:50]}
+    pdf, pdf_content= render_to_pdf(template, data)
+
+    if not pdf.err:
+        basename= downcode(
+            thread[0].request.summary[:40].strip().replace(' ','_').lower())
+        zip_file= zip_thread(thread, pdf_content, basename)
+        response = HttpResponse()
+        response['Content-Type'] = 'application/zip'
+        response['Content-Disposition'] = 'attachment; filename=%s.zip' % basename
+        response.write(zip_file)
+        return response
+    return HttpResponse(_(u'There are errors in the template <pre>%s</pre>') %\
+                        cgi.escape(html))
+
+
+def zip_thread(thread, pdf_content, basename):
+    """
+    Create a directory, copy there all attachments in the thread,
+    name them uniquely, pack it all into Zip and serve as a file.
+    """
+    # Create a temp directory.
+    a, d= settings.ATTACHMENT_DIR, settings.DOWNLOAD_ROOT
+    save_to_path= d + id_generator()
+    os.makedirs(save_to_path)
+    # Save PDF there.
+    filename= '%s/%s.pdf' % (save_to_path, basename)
+    with open(filename, 'wb+') as destination:
+        destination.write(pdf_content.getvalue())
+    # Create zip file and add PDF there.
+    in_memory= StringIO.StringIO()
+    zip= zipfile.ZipFile(in_memory, 'a')
+    zip.write(filename, arcname=basename+'.pdf')
+    # Iterate through the thread's messages, copy attachments to `save_to_path`
+    file_count= 1
+    for msg in thread:
+        if msg.attachments.count() == 0:
+            continue
+        for attachment in msg.attachments.all():
+            re_name= '%d-%s' % (file_count, attachment.filename)
+            try:
+                zip.write(a + attachment.path, arcname=re_name)
+            except Exception as e:
+                print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
+            file_count += 1
+    # Fix for Linux zip files read in Windows.
+    for file in zip.filelist:
+        file.create_system= 0
+    zip.close()
+    # Clean temp dir.
+    rmtree(save_to_path, ignore_errors=True)
+    in_memory.seek(0)
+    return in_memory.read()
 
 
 def similar_requests(request, id=None, **kwargs):
@@ -732,7 +828,7 @@ def reply_to_thread(request, id=None, **kwargs):
     attachments_allowed= settings.ATTACHMENT_MAX_NUMBER
     is_response= request.GET.get('response', '')
 
-    if is_response.lower() in ['1', 'yes', 'y', 'tak', 'true']:
+    if is_response.lower() in settings.URL_PARAM_TRUE:
         is_response= True
         email_template= 'emails/authority_reply.txt'
     else:
@@ -988,7 +1084,7 @@ def annotate_request(request, id=None, **kwargs):
         {'thread': thread, 'request_id': id, 'user_message': user_message,
         'form': CommentForm(), 'page_title': page_title, 'mode': 'annotate',
         'request_status': PIA_REQUEST_STATUS},
-        context_instance=RequestContext(request))    
+        context_instance=RequestContext(request))
 
 
 def _do_discard_request_draft(draft):

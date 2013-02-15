@@ -1,11 +1,14 @@
   {% load i18n %}
 
-      <div class="span7">
-      {% include "includes/user_message.html" %}
-      </div>
+      <!-- <div class="span7"> -->
+      
+      <!-- </div> -->
 
       <!-- Thread -->
       <div class="span7">
+        <div class="row">
+          {% include "includes/user_message.html" %}
+        </div>
         {% for msg in thread %}
            <div class="row">
               {% if forloop.first %}
@@ -55,12 +58,13 @@
               </div>
                 {% endfor %}
               {% endif %}
-              
-              {% if forloop.last %}
-              {% if not form %}
+
+              {% ifnotequal mode 'print' %}
+                {% if forloop.last %}
+                  {% if not form %}
               <div class="row btn-group pull-right">
                   <a class="btn btn-small" href="/request/{{ msg.request.id }}/annotate/#form_annotate">Add an annotation</a>
-                  {% ifequal user msg.request.user %}
+                    {% ifequal user msg.request.user %}
                   <a class="btn btn-small" href="/request/{{ request_id }}/reply#form_reply">Write a reply</a>
                   <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">Update status <span class="caret"></span></button>
                   <ul class="dropdown-menu">
@@ -68,10 +72,11 @@
                       <li><a href="/request/{{ msg.request.id }}/status/{{ status.0 }}">{{ status.1 }}</a></li>
                       {% endfor %}
                   </ul>
-                  {% endifequal %}
+                    {% endifequal %}
               </div>
-              {% endif%}
-              {% endif %}
+                  {% endif%}
+                {% endif %}
+              {% endifnotequal %}
           </div>
         {% endfor %}
         {% if mode == 'reply' or mode == 'draft' %}
@@ -79,8 +84,8 @@
         {% elif mode = 'annotate' %}
           {% include "includes/pia_thread_annotate_form.html" %}
         {% else %}
-          <div class="span7">&nbsp;</div>
-          <div class="span7">
+          <div class="row">&nbsp;</div>
+          <div class="row">
             {% include "includes/user_message.html" %}
           </div>
         {% endif %}

@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, Page, EmptyPage, PageNotAnInteger
 from django.core.mail.message import EmailMessage
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.template.loader import render_to_string
+from django.template.loader import render_to_string, get_template
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import views as auth_views
 from django.template.defaultfilters import slugify
@@ -23,9 +23,9 @@ from datetime import datetime
 from time import strptime, strftime
 from PIL import Image
 
-import random
-import string
-import re, os, sys
+import xhtml2pdf.pisa as pisa
+import cStringIO as StringIO
+import random, string, re, os, sys
 
 """
 Creating a unique slug depending on the model.
@@ -442,3 +442,18 @@ def send_notification(notification):
             AppMessage('MailSendFailed').message % e)
         return False
     return True
+
+
+def render_to_pdf(template_src, context_dict, **kwargs):
+    """
+    Renders html template to PDF.
+    Returns a response of MIME type 'application/pdf'
+    """
+    # template= get_template(template_src)
+    # context= Context(context_dict)
+    # html= force_unicode(template.render(context))
+    context_instanse= kwargs.get('context', None)
+    html= render_to_string(template_src, context_dict, context_instanse)
+    result= StringIO.StringIO()
+    pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result)
+    return pdf, result

@@ -520,7 +520,7 @@ APP_MESSAGES = {
         'message': _(u'Complete checking overdue requests. Total number of overdue requests: ')
         },
     'ClassifyRespUser': {
-        'message': _(u'The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, please, check appropriate status.')
+        'message': _(u'The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, set the appropriate status, please.')
         },
     'ClassifyRespAnonim': {
         'message': _("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%s/\">%s</a>, please sign in and let everyone know."),

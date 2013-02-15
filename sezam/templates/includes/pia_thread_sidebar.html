@@ -13,6 +13,7 @@
               {% endif %}
             {% endif %}
             <li><a href="/request/{{ thread.0.request.id }}/annotate/#form_annotate">{% trans 'Add an annotation '%}</a></li>
+            <li><a href="/request/{{ thread.0.request.id }}/?print=true">{% trans 'Print current thread' %}</a></li>
             <li><a href="/request/{{ thread.0.request.id }}/download/">{% trans 'Download a zip file of all correspondence' %}</a></li>
             {% if user.is_authenticated %}
               {% ifequal user thread.0.request.user %}

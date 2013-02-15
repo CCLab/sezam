@@ -7,8 +7,8 @@ urlpatterns = patterns('apps.pia_request.views',
         name='request_list'),
 
     # Preview request with no id (create draft).
-    url(r'^preview/$', 'preview_request',
-        {'template': 'request.html'}, name='preview_request'),
+    url(r'^preview/$', 'preview_request', {'template': 'request.html'},
+        name='preview_request'),
 
     # Bulk discard of the request drafts.
     url(r'^discard/$', 'discard_request_draft',
@@ -19,16 +19,16 @@ urlpatterns = patterns('apps.pia_request.views',
         name='discard_request_draft'),
 
     # View request message thread.
-    url(r'^(?P<id>\d+)/$', 'view_thread',
-        {'template': 'thread.html'}, name='view_thread'),
+    url(r'^(?P<id>\d+)/$', 'view_thread', {'template': 'thread.html'},
+        name='view_thread'),
 
     # GET request with the list of Authority list (slugs).
-    url(r'^(?P<slug>[-\w]+)/$', 'new_request',
-        {'template': 'request.html'}, name='new_request'),
+    url(r'^(?P<slug>[-\w]+)/$', 'new_request', {'template': 'request.html'},
+        name='new_request'),
 
     # Or POST with no slug (Authority to be selected in the form).
-    url(r'^multiple/$', 'new_request',
-        {'template': 'request.html'}, name='new_request_multiple'),
+    url(r'^multiple/$', 'new_request', {'template': 'request.html'},
+        name='new_request_multiple'),
 
    # View/filter requests.
    url(r'^(?P<status>[-\w]+)/$', 'request_list', {'template': 'requests.html'},
@@ -51,7 +51,8 @@ urlpatterns = patterns('apps.pia_request.views',
 
     # Send the request.
     url(r'^(?P<id>\d+)/send/$', 'send_request',
-        {'template': 'request.html', 'email_template': 'emails/request_to_authority.txt'},
+        {'template': 'request.html',
+         'email_template': 'emails/request_to_authority.txt'},
         name='send_request_id'),
 
     url(r'^(?P<id>\d+)/reply/$', 'reply_to_thread', {'template': 'thread.html'},
@@ -62,4 +63,7 @@ urlpatterns = patterns('apps.pia_request.views',
                        
    url(r'^(?P<id>\d+)/annotate/$', 'annotate_request',
        {'template': 'thread.html'}, name='annotate_request'),
+
+   url(r'^(?P<id>\d+)/download/$', 'download_thread',
+       {'template': 'thread_print.html'}, name='download_thread'),
 )

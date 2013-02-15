@@ -214,6 +214,9 @@ MPTT_ADMIN_LEVEL_INDENT = 20
 # Pagination settings
 PAGINATE_BY = 20
 
+# The indicator of the 'true' in URL (something like ?response=true)
+URL_PARAM_TRUE = ('1', 'yes', 'y', 'tak', 'true')
+
 # Thumbnail size
 THUMBNAIL_SIZE = (70, 70)
 
