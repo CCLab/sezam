@@ -145,20 +145,21 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+    # 3rd party
+    'kombu.transport.django',
+    'registration',
+    'djcelery',
+    'haystack',
+    'mptt',
+
+    # Sezam
     'apps.authority',
     'apps.pia_request',
     'apps.browser',
     'apps.backend',
     'apps.vocabulary',
     'apps.userprofile',
-
-    # 3rd party
-    'kombu.transport.django',
-    'registration',
-    'xpaginate',
-    'djcelery',
-    'haystack',
-    'mptt',
 )
 
 # A sample logging configuration. The only tangible logging

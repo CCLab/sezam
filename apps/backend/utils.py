@@ -449,9 +449,6 @@ def render_to_pdf(template_src, context_dict, **kwargs):
     Renders html template to PDF.
     Returns a response of MIME type 'application/pdf'
     """
-    # template= get_template(template_src)
-    # context= Context(context_dict)
-    # html= force_unicode(template.render(context))
     context_instanse= kwargs.get('context', None)
     html= render_to_string(template_src, context_dict, context_instanse)
     result= StringIO.StringIO()

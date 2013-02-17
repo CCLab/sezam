@@ -1,0 +1,24 @@
+Django
+celery
+gunicorn
+psycopg2
+xhtml2pdf
+django-celery
+django-registration
+django-xhtml2pdf
+PIL
+amqp
+anyjson
+billiard
+html5lib
+kombu
+lxml
+pyPdf
+pyelasticsearch
+python-dateutil
+pytz
+reportlab
+requests
+simplejson
+wsgiref
+-e git+https://github.com/toastdriven/django-haystack.git@0e95d8696f8ba770f9c60152136aba32f5591fd6#egg=django_haystack-dev
