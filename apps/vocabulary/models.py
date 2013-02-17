@@ -187,8 +187,10 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
             self.address_city)
 
     def save(self, *args, **kwargs):
-	""" Override save: get rid of non-digits in postalcode, telephone numbers
-        and codes.
+	"""
+        Override save:
+        * get rid of non-digits in postalcode, telephone numbers and codes.
+        * defaults for mptt model.
         """
         self.address_postalcode= re.sub('[^0-9]+', '', self.address_postalcode)
         self.tel_code= re.sub('[^0-9]+', '', self.tel_code)
@@ -199,6 +201,18 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
         self.tel2_number= re.sub('[^0-9]+', '', self.tel2_number)
         self.fax_code= re.sub('[^0-9]+', '', self.fax_code)
         self.fax_number= re.sub('[^0-9]+', '', self.fax_number)
+
+        # Update data to meet mptt requirements.
+        if self.lft is None:
+            self.lft= 1
+        if self.rght is None:
+            self.rght= 2
+        if self.level is None:
+            self.level= 0
+        if self.tree_id is None:
+            last_tree_id= self.__class__.objects.all().aggregate(Max('tree_id'))
+            self.tree_id= int(last_tree_id['tree_id__max']) + 1
+
         super(AuthorityProfile, self).save(*args, **kwargs)
 
 

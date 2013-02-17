@@ -1,20 +1,22 @@
 {% load i18n %}
     <div id="authority_pagination" class="pagination pagination-mini">
+      {% with obj_id=id|default:"" %}
       {% if page.has_previous or page.has_next %}
       <div>
         <ul class="pagination">
           {% if page.has_previous %}
-          <li><a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">&larr; {% trans ' Previous ' %}</a></li>
+          <li><a href="{{ obj_id }}?q={{ query }}&amp;page={{ page.previous_page_number }}">&larr; {% trans ' Previous ' %}</a></li>
           {% else %}
           <li class="disabled"><a href="#">&larr; {% trans ' Previous ' %}</a></li>
           {% endif %}
           <li class="active"><a href="#">{% trans 'Page' %} {{ page.number }} {% trans 'of' %} {{ page.paginator.num_pages }}</a></li>
           {% if page.has_next %}
-          <li><a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% trans ' Next ' %} &rarr;</a></li>
+          <li><a href="{{ obj_id }}?q={{ query }}&amp;page={{ page.next_page_number }}">{% trans ' Next ' %} &rarr;</a></li>
           {% else %}
           <li class="disabled"><a href="#">{% trans ' Next ' %} &rarr;</a></li>
           {% endif %}
         </ul>
       </div>
       {% endif %}
+      {% endwith %}
     </div>

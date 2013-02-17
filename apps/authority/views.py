@@ -88,17 +88,11 @@ def retrieve_authority_list(id=None):
         """
     if id:
         try:
-            id= int(id)
-        except:
-            return None
-
-        try:
             category= AuthorityCategory.objects.get(id=id)
         except AuthorityCategory.MultipleObjectsReturned:
             category= AuthorityCategory.objects.filter(id=id)[0]
         except AuthorityCategory.DoesNotExist:
             return None
-
         category= [category]
         if not category[0].is_leaf_node():
             try:
@@ -112,11 +106,18 @@ def retrieve_authority_list(id=None):
 
 
 def get_authority_list(request, id=None, **kwargs):
-    """ Display the list of authority, filtered.
-        """
+    """
+    Display the list of authority, filtered.
+    """
     template= kwargs.get('template', 'includes/authority_list')
     if request.method == 'POST':
         raise Http404
+
+    if id: # `id` is a node id here.
+        try: # And it can only be int!
+            id= int(id)
+        except:
+            raise Http404
 
     result= retrieve_authority_list(id)
     if result is None:
@@ -134,14 +135,13 @@ def get_authority_list(request, id=None, **kwargs):
         results= paginator.page(paginator.num_pages)
 
     # Pagination depends on the current node.
+    pageURI= '?page=%d' % page
     if id:
-        pageURI= '%s/?page=' % str(id)
-    else:
-        pageURI= '?page='
+        pageURI= '/'.join([str(id), pageURI])        
 
-    return render_to_response(template, {'page': results,
-        'total_item': items, 'current': page,
-        'pageURI': pageURI, 'per_page': settings.PAGINATE_BY},
+    return render_to_response(template,
+        {'page': results, 'total_item': items, 'current': page, 'id': id,
+         'pageURI': pageURI, 'per_page': settings.PAGINATE_BY},
         context_instance=RequestContext(request))
     # TO-DO: Implement URI Generator for pageURI: http://www.djangosnippets.org/snippets/1734/
 
@@ -258,7 +258,7 @@ def add_authority(request, slug=None, **kwargs):
             data= form.cleaned_data
             authority= AuthorityProfile(**data)
             try:
-                authority= AuthorityProfile.objects.create(**data)
+                authority.save()
             except Exception as e:
                 print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
                 user_message= update_user_message({}, e.args[0], 'fail')
