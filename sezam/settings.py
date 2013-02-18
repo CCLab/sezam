@@ -6,11 +6,11 @@ import os
 import sys
 from platform import platform
 
-PROJECT_TITLE = 'sezam.pl'
+PROJECT_TITLE = 'zapytajpanstwo.pl'
 
 ROOT_PATH = os.path.dirname(__file__)
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
