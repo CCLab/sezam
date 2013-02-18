@@ -11,7 +11,7 @@ All the project's applications are in `apps` directory:
 ### Key points in processing data
 Before the request is sent it will always be stored in a draft (model PIARequestDraft). This goes not only to the requests, but also to the users' answers in the Thread of correspondence between a User and Authority.
 
-There is a special type of Users - Trusted users. They differ from ordinary ones by possessing the ability to select several Authorities and send them one unified request. There will anyway be as many requests sent, as many Authorities picked up, but only one draft saved. That is why there is one-to-many relation between PIARequest and AuthorityProfile, but many-to-many relation between PIARequestDraft and AuthorityProfile.
+There is a special type of Users - Trusted users. They differ from ordinary ones by having the ability to select several Authorities and send them one unified request. There will anyway be as many requests sent, as many Authorities picked up, but only one draft saved. That is why there is one-to-many relation between PIARequest and AuthorityProfile, but many-to-many relation between PIARequestDraft and AuthorityProfile.
 
 ### Subscriptions
 Subscriptions are realized with the mechanism of "following" a particular entity: only Authority and Requests can be followed. In the current version only a registered user can follow an entity. A user can follow a particular Authority Profile and Request to this Authority, but in this case she/he will be receiving email notifications only in case of events connected to Authority (a new message in the Thread of particular Request is being considered as such event, thus the messages aren't being duplicated).

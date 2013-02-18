@@ -3,8 +3,9 @@
 
 Sezam (code-name) is a web platform for extracting public information from the Authorities. Initiative of Centrum Cyfrowe from Poland, a think & do tank focused on open government in Poland.
 
-## Main contributors
+### Contributors
 Project manager: Łukasz Jachowicz
+
 Developer: Denis Kolokol
 
 ## Requirements
@@ -12,20 +13,21 @@ Prerequisites
   - Python 2.6 + 
   - virtualenv
   - pip
-  - PostgreSQL 8 + *
-  - elasticsearch 2.0 + **
+  - PostgreSQL 8 + (1)
+  - elasticsearch 2.0 + (2)
   - web-server of your choice
 
-* Warning! The system is written for PosgreSQL, but no db-specific features were used. Potentitally any other relational(!) database management system can be used, such as MySQL. However the system hasn't been tested on anything except PosgreSQL, so, if you use anything else, do it on your own risk.
+(1) Warning! The system is written for PosgreSQL, but no db-specific features were used. Potentitally any other relational(!) database management system can be used, such as MySQL. However the system hasn't been tested on anything except PosgreSQL, so, if you use anything else, do it on your own risk.
 
-** Elasticsearch requires Java 6 +, see official documentation http://www.elasticsearch.org/guide/reference/setup/installation.html
+(2) Elasticsearch requires Java 6 +, see official documentation http://www.elasticsearch.org/guide/reference/setup/installation.html
 
-## Setting up development environment
+## Setting up
+### Development environment
 Warning! This guide is for Linux and OS X 10.6 + only! Windows isn't supported in the current version.
 
 Install everything listed above.
 
-NB: For installation and default setup of elasticsearch, use this blog post (it is written for OS X, but works fine on Linux, too):
+NB: For installation and default setup of elasticsearch, use this blog post (it is written for OS X, but should work on Linux just fine):
 http://tshawkins.blogspot.com/2011/03/installing-elasticsearch-on-mac-os-x.html
 
 Clone this repo:
@@ -106,10 +108,10 @@ TypeError: index_queryset() got an unexpected keyword argument 'using'
 ```
 it is necessary to overwrite the directory django-haystack (in sezam-env/src/) with the contents of archive sezam/sezam/subst/django-haystack.tar.gz
 
-### General guidelines
+## General guidelines
 The short guide in how the data and the logic of the project are organized, see docs/ GUIDELINES.md
 
-### To-do in future versions
+## To-do in future versions
 - move models for Authorities and Userprofiles to the corresponding apps.
 - re-factor code for pia_requests and authorities (class-based views for Authorities, move notification system to the level of models of Authority Profiles and PIARequests).
 - the possibility of following a User.
@@ -120,3 +122,4 @@ The short guide in how the data and the logic of the project are organized, see 
 - javascript module for multiple Authorities check for trusted users.
 - reqistration via Facebook and OpenID.
 - complete unittests.
+- separate CMS for moderators.
