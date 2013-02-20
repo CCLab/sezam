@@ -319,6 +319,7 @@ def save_request_draft(request, id=None, **kwargs):
                     _(u'Draft saved successfully.'), 'success')
             # Try to find similar items.
             similar_items= retrieve_similar_items(result['draft'], 20)
+            # similar_items= more_like_this(result['draft'], 20)
     response.update({'request_id': draft_id, 'user_message': user_message,
         'form': form, 'attachments_allowed': attachments_allowed,
         'similar_items': similar_items})
@@ -377,7 +378,8 @@ def attach_files(message, draft):
         try:
             message.attach_file(path)
         except Exception as e:
-            print AppMessage('AttachFailed', value=(attachment.path, draft.id,)).message
+            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
+            # TO-DO: register AppMessage('AttachFailed', value=(attachment.path, draft.id,).message
     return message
 
 def ensure_attachments(message, draft):
@@ -392,7 +394,8 @@ def ensure_attachments(message, draft):
             try:
                 msg_attachmemnt.save()
             except Exception as e:
-                print AppMessage('AttachFailed', value=(attachment.path, draft.id,)).message
+                print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
+                # TO-DO: register AppMessage('AttachFailed', value=(attachment.path, draft.id,)).message
     return message
 
 
@@ -566,10 +569,9 @@ def retrieve_similar_items(obj, limit=None):
     """
     # WARNING!
     # This is a dirty way to get similar requests to the current one - via
-    # search on its summary, but haystack doesn't process elasticsearch's
-    # `more_like_this` properly.
+    # search on its summary, but haystack doesn't properly process
+    # elasticsearch `more_like_this` request.
 
-    text_for_search= None
     try: # Draft?
         text_for_search= obj.subject
     except:
@@ -579,9 +581,7 @@ def retrieve_similar_items(obj, limit=None):
             try: # Thread?
                 text_for_search= obj[0].request.summary
             except: # Give up...
-                pass
-    if not text_for_search:
-        return []
+                return []        
 
     text_for_search= downcode(clean_text_for_search(text_for_search.lower()))
     text_for_search= [d for d in text_for_search.split()]
@@ -591,7 +591,7 @@ def retrieve_similar_items(obj, limit=None):
     except:
         return []
 
-    # If the search is performed on PIAThread, need to exclude this.
+    # If the search is performed on PIAThread, need to exclude the originator.
     _exclude_pk= None
     if isinstance(obj, PIARequest):
         _exclude_pk= obj.pk
@@ -610,7 +610,7 @@ def more_like_this(pia_request, limit=None):
     """
     Retrieve items similar to the given one.
     """
-    # WARNING! Using `django_ct__exact` (haystack's internal foeld)
+    # WARNING! Using `django_ct__exact` (haystack's internal field)
     # is a dirty trick, but the only working. Find better solution!
     similar_items= SearchQuerySet().more_like_this(pia_request).filter(
         django_ct__exact='pia_request.piarequest')
@@ -669,8 +669,8 @@ def view_thread(request, id=None, **kwargs):
     attachments_allowed= request.session.pop('attachments_allowed',
                                              settings.ATTACHMENT_MAX_NUMBER)
     # Extract similar requests.
-    # similar_items= more_like_this(thread[0].request, 10)
-    similar_items= retrieve_similar_items(thread[0].request, 10)
+    similar_items= more_like_this(thread[0].request, 10)
+    # similar_items= retrieve_similar_items(thread[0].request, 10)
 
     # If there's a draft in the thread, make a form.
     for msg in thread:
