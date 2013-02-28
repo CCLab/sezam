@@ -19,6 +19,7 @@ class AuthorityProfileIndex(indexes.SearchIndex, indexes.Indexable):
     address_full= indexes.CharField(model_attr='address_full')
     official_full_name= indexes.CharField(model_attr='official_full_name')
     report_text= indexes.CharField(null=True, model_attr='description')
+    content_auto= indexes.EdgeNgramField(model_attr='name')
 
     def get_model(self):
         return AuthorityProfile

@@ -64,5 +64,16 @@
 
     <!-- Scripts -->
     <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
+    <script src="{{ STATIC_URL }}js/sz.autocomplete.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+      window.autocomplete = new Autocomplete({
+        form_selector: '.form-inline'
+      })
+      window.autocomplete.setup()
+    })
+    </script>
+      
   </body>
 </html>

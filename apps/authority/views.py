@@ -10,6 +10,9 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.template import RequestContext
 from django.conf import settings
+
+from haystack.query import SearchQuerySet
+
 from datetime import datetime
 import os, time, sys
 
@@ -22,6 +25,17 @@ from apps.backend import AppMessage, UnicodeWriter
 from apps.backend.models import TaggedItem, EventNotification
 from apps.backend.utils import process_filter_request, update_user_message,\
     send_mail_managers, get_domain_name
+
+
+def autocomplete(request):
+    """
+    Autocomplete Authority names.
+    """
+    query= request.GET.get('q', '')
+    sqs= SearchQuerySet().autocomplete(content_auto=query)[:5]
+    suggestions= [result.name for result in sqs]
+    the_data = json.dumps({'results': suggestions})
+    return HttpResponse(the_data, content_type='application/json')
 
 
 def display_authority(request, **kwargs):

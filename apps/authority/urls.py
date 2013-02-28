@@ -5,6 +5,7 @@ from haystack.views import SearchView
 from apps.browser.forms import ModelSearchForm
 
 urlpatterns = patterns('apps.authority.views',
+    url(r'^search/autocomplete/$', 'autocomplete', name='autocomplete'),
 
     # Both `display_authorities` and `search_authority` launch the same process.
     # `display_authorities` is for the Authorities page with the tree and list.

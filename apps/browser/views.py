@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
+from django.http import HttpResponse
 # from haystack.forms import HighlightedSearchForm
 from haystack.query import SearchQuerySet
+import simplejson as json
 
 from apps.browser.forms import ModelSearchForm
 from apps.pia_request.models import PIARequest
@@ -23,7 +25,6 @@ def display_index(request, **kwargs):
     return render_to_response(template, {'data': data, 'form': form,
         'page_title': _(u'Home')},
         context_instance=RequestContext(request))
-
 
 # WARNING! Might be unnecessary!
 def search_all(request, **kwargs):
