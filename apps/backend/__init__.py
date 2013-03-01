@@ -438,8 +438,12 @@ class MailImporter():
             # constructed with use of MEDIA_ROOT
             return dir_name + now + '/' + filename
         except Exception as e:
-            print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(),
-                AppMessage('CantSaveAttachmnt').message % (filename, e))
+            print >> sys.stderr, '[%s] %s' % (
+                datetime.now().isoformat(),
+                AppMessage('CantSaveAttachmnt').message % {
+                    'filename': filename, 'error': e
+                    }
+                )
             return None
 
 
@@ -511,7 +515,7 @@ APP_MESSAGES = {
         'message': _(u'Creating e-mail message failed')
         },
     'CantSaveAttachmnt': {
-        'message': _(u'Cannot save attachment %s: %s')
+        'message': _(u'Cannot save attachment %(filename)s: %(error)s')
         },
     'CheckMailComplete': {
         'message': _(u'Email check complete, received %s messages')
@@ -523,7 +527,7 @@ APP_MESSAGES = {
         'message': _(u'The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, set the appropriate status, please.')
         },
     'ClassifyRespAnonim': {
-        'message': _("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%s/\">%s</a>, please sign in and let everyone know."),
+        'message': _("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%(user_id)s/\">%(user_name)s</a>, please sign in and let everyone know."),
         },
     'ClassifyRespAlien': {
         'message': _("We don't know whether the most recent response to this request contains information or not."),

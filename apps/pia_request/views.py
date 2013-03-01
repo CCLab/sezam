@@ -626,8 +626,10 @@ def awaiting_message(curr_user, request_user):
     In case of 'awaiting classification' status, return a proper user_message.
     """
     if curr_user.is_anonymous():
-        return AppMessage('ClassifyRespAnonim').message % (
-            request_user.pk, request_user.get_full_name())
+        return AppMessage('ClassifyRespAnonim').message % {
+            'user_id': request_user.pk,
+            'user_name': request_user.get_full_name()
+            }
     else:
         if request_user == curr_user:
             return AppMessage('ClassifyRespUser').message

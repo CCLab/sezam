@@ -336,7 +336,8 @@ def save_attached_file(f, store_root, **kwargs):
             path= default_storage.save(path_full, ContentFile(f.read()))
             f_info['path']= path_report # Returns relative (to MEDIA_ROOT) path.
         except Exception as e:
-            err= AppMessage('CantSaveAttachmnt').message % (filename, e)
+            err= AppMessage('CantSaveAttachmnt').message % {
+                'filename': filename, 'error': e}
             print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), err)
             f_info['errors'].append(err)
     return f_info
