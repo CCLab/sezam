@@ -488,9 +488,12 @@ def send_request(request, id=None, **kwargs):
             reply_to= email_from_name(request.user.get_full_name(),
                                       id=pia_request.id, delimiter='.')
             email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else reply_to
-            message_data= {'request': pia_request, 'is_response': False,
-                           'email_to': email_to, 'email_from': reply_to,
-                           'subject': message_subject, 'body': message_content}
+            message_data= {'request': pia_request,
+                           'is_response': False,
+                           'email_to': email_to,
+                           'email_from': reply_to,
+                           'subject': message_subject,
+                           'body': message_content}
             message_request= EmailMessage(message_subject, message_content,
                 email_from, [email_to], headers={'Reply-To': reply_to})
 
@@ -532,9 +535,11 @@ def send_request(request, id=None, **kwargs):
             # Update the form with updated instance of the Draft.
             form= MakeRequestForm(instance=message_draft)
     else:
-        return render_to_response(template, {'request_id': id, 'form': form,
-            'attachments_allowed': attachments_allowed,
-            'user_message': user_message},
+        return render_to_response(template,
+                                  {'request_id': id,
+                                   'form': form,
+                                   'attachments_allowed': attachments_allowed,
+                                   'user_message': user_message},
             context_instance=RequestContext(request))
 
     # Report the results (ignore `save_draft` user messages).
@@ -558,9 +563,11 @@ def send_request(request, id=None, **kwargs):
             return redirect(reverse('display_authorities'))
     else:
         # Some are not good - return to the draft page.
-        return render_to_response(template, {'request_id': id, 'form': form,
-            'attachments_allowed': attachments_allowed,
-            'user_message': user_message},
+        return render_to_response(template,
+                                  {'request_id': id,
+                                   'form': form,
+                                   'attachments_allowed': attachments_allowed,
+                                   'user_message': user_message},
             context_instance=RequestContext(request))
 
 def retrieve_similar_items(obj, limit=None):

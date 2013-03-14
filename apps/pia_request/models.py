@@ -200,8 +200,8 @@ def _post_save(sender, **kwargs):
             act['action__in'].append('response_from')
         else:
             act['action__in'].append('request_to')
-        __notify_followers(act, piarequest=inst.request,
-                           authority=inst.request.authority)
+        __notify_followers(act, piarequest=instance.request,
+                           authority=instance.request.authority)
     elif sender == PIAAnnotation:
         # Manage subscriptions to PIARequest and Authority after update.
         try:
