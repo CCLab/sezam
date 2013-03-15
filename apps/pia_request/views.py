@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from django.template import Context, RequestContext
+from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, Http404
+from django.core.paginator import Paginator, EmptyPage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.conf import settings
