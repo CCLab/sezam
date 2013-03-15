@@ -551,7 +551,7 @@ APP_MESSAGES = {
         'message': _(u'Failed to save attachments: %s')
         },        
     'AttachTooBig': {
-        'message': _(u'Attachment %s exceeds maximum filesize!'),
+        'message': _(u'Attachment %(filename)s exceeds maximum filesize %(maxsize)s!'),
         },
     'NotificFailed': {
         'message': _(u'Error sending notification: %s')

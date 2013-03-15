@@ -8,11 +8,12 @@ from django.core.mail.message import EmailMessage
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string, get_template
+from django.template.defaultfilters import filesizeformat
+from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import views as auth_views
-from django.template.defaultfilters import slugify
-from django.utils.encoding import force_unicode
 from django.contrib.sites.models import Site
+from django.utils.encoding import force_unicode
 from django.utils.timezone import utc
 from django.conf import settings
 
@@ -306,7 +307,7 @@ def save_attached_file(f, store_root, **kwargs):
     Check if attachments are ok, save files,
     return what is needed to save attachment in the db.
     """
-    max_size= kwargs.get('max_size', 104857600) # Limit 100MB, if not limited
+    max_size= kwargs.get('max_size', 104857600) # Default limit is 100MB
     dir_name= kwargs.get('dir_name', id_generator()) # Random name, if not given
     dir_id= kwargs.get('dir_id', None)
     if dir_id is None: # Now, if not given
@@ -315,7 +316,9 @@ def save_attached_file(f, store_root, **kwargs):
 
     f_info= {'size': len(f), 'path': None, 'errors': []} # Object to return
     if f_info['size'] > max_size:
-        f_info['errors'].append(AppMessage('AttachTooBig').message % f.name)
+        f_info['errors'].append(AppMessage('AttachTooBig').message %
+                                {'filename': f.name,
+                                 'maxsize': filesizeformat(max_size)})
 
     # TO-DO: 'Sniff' the file before saving
 
