@@ -186,6 +186,21 @@ class AuthorityProfile(TreeVocabulary, SlugVocabulary):
             str(self.address_postalcode[:3]), str(self.address_postalcode[3:]),
             self.address_city)
 
+    def get_authority_email(self):
+        """
+        Try Authority emails in order by priority,
+        return the first existing email or None
+        """
+        if self.email is not None:
+            return self.email
+        elif self.email_secretary is not None:
+            return self.email_secretary
+        elif self.email_info is not None:
+            return self.email_info
+        else:
+            return None
+
+
     def save(self, *args, **kwargs):
 	"""
         Override save:

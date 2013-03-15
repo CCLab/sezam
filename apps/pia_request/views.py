@@ -149,7 +149,7 @@ def process_attachments(msg, attachments, **kwargs):
             max_size=settings.ATTACHMENT_MAX_FILESIZE,
             dir_name=dir_name, dir_id=dir_id)
         if f['errors']:
-            attachment_failed.append(f.name)
+            attachment_failed.extend(f['errors'])
             continue
 
         filename= f['path'].rsplit('/')[-1]
@@ -279,6 +279,8 @@ def save_draft(data, **kwargs):
             'upload')
     attach_errors= process_attachments(draft, d['attachments'],
                                        dir_name=dir_name)
+    if attach_errors:
+        return {'draft': None, 'errors': attach_errors}
     return {'draft': draft, 'errors': attach_errors,
             'attachments_allowed': attachments_allowed}
 
@@ -288,12 +290,14 @@ def save_request_draft(request, id=None, **kwargs):
     Saving a draft whether it is a new request or an updated one.
     """
     draft_id= id
+    draft= None
     similar_items= None
     template= kwargs.get('template', 'request.html')
     user_message= request.session.pop('user_message', {})
     form= MakeRequestForm(request.POST)
     attachments_allowed= settings.ATTACHMENT_MAX_NUMBER
-    response= {'request_id': draft_id, 'template': template,
+    response= {'request_id': draft_id,
+               'template': template,
                'attachments_allowed': attachments_allowed,
                'user_message': user_message}
 
@@ -311,18 +315,22 @@ def save_request_draft(request, id=None, **kwargs):
             user_message= update_user_message(user_message,
                                               result['errors'], 'fail')
         if result['draft']:
-            draft_id= result['draft'].id
-            form= MakeRequestForm(instance=result['draft'])
+            draft= result['draft']
+            draft_id= draft.id
+            form= MakeRequestForm(instance=draft)
             attachments_allowed= result['attachments_allowed']
             if id: # Report only if it's draft save, not the first preview.
                 user_message= update_user_message(user_message,
                     _(u'Draft saved successfully.'), 'success')
             # Try to find similar items.
-            similar_items= retrieve_similar_items(result['draft'], 20)
+            similar_items= retrieve_similar_items(draft, 20)
             # similar_items= more_like_this(result['draft'], 20)
-    response.update({'request_id': draft_id, 'user_message': user_message,
-        'form': form, 'attachments_allowed': attachments_allowed,
-        'similar_items': similar_items})
+    response.update({'form': form,
+                     'draft': draft,
+                     'request_id': draft_id,
+                     'user_message': user_message,
+                     'similar_items': similar_items,
+                     'attachments_allowed': attachments_allowed})
     return response
 
 
@@ -420,6 +428,8 @@ def send_request(request, id=None, **kwargs):
     if request.method != 'POST':
         raise Http404
 
+    template= kwargs.get('template', 'request.html')
+
     # SCENARIO 1.
     # Discard the draft.
     if request.POST.get('discard_request_draft'):
@@ -431,144 +441,132 @@ def send_request(request, id=None, **kwargs):
         # After discarding a draft redirect to User's Profile page.
         return redirect(reverse('user_profile', args=(request.user.id,)))
 
-    template= kwargs.get('email_template', 'emails/request_to_authority.txt')
-    successful, failed= list(), list()
+    # All the following scenarios require saving the draft first.
+    data= save_request_draft(request, id, **kwargs)
+    template= data.pop('template', 'request.html')
 
     # SCENARIO 2.
-    # Only save the draft.
-    if request.POST.get('save_request_draft'):
-        response_data= save_request_draft(request, id, **kwargs)
-        return render_to_response(response_data.pop('template'), response_data,
+    # Only save the draft - it is in fact saved already, return the response.
+    if request.POST.get('save_request_draft', None):
+        return render_to_response(template, data,
                                   context_instance=RequestContext(request))
 
     # SCENARIO 3.
-    # Send the message(s).
-    form= MakeRequestForm(request.POST)
-    if form.is_valid():
-        # Saving it for the purpose of processing the results.
-        selected_authority= form.cleaned_data['authority']
-        
-        data= form.cleaned_data
-        data.update({'attachments': dict(request.FILES).get('attachments', []),
-                     'attached': dict(request.POST).get(u'attached_id', [])})
-        if id:
-            data.update({'id': id})
+    # Send the message(s):
+    # But first check if everything correct (data['draft'] is filled only
+    # if the form is valid, and there are no other critical errors).
+    if data['draft'] is None:
+        return render_to_response(template, data,
+                                  context_instance=RequestContext(request))
 
-        result= save_draft(data)
+    # Initial list of authorities (can be changed after processing the draft).
+    authorities= list(data['draft'].authority.all())
 
-        # Report.
-        if result['errors']:
-            user_message= update_user_message(user_message,
-                                              result['errors'], 'fail')
-        if result['draft']:
-            message_draft= result['draft']
-            # Update number of allowed attachments.
-            request.session['attachments_allowed']= result['attachments_allowed']
-        else:
-            # Something went wrong while saving draft.
-            request.session['user_message']= user_message
-            return redirect(reverse('preview_request', args=(id,)))
+    # The process of sending a Request is looooong...
 
-        # No newlines in Email subject!
-        message_subject = ''.join(message_draft.subject.splitlines())
-        message_content= render_to_string(template,
-            {'content': message_draft.body,
-             'info_email': 'info@%s' % get_domain_name()})
+    # Prepare the message.
+    # No newlines in Email subject!
+    message_subject = ''.join(data['draft'].subject.splitlines())
+    email_template= kwargs.get('email_template', 'emails/request_to_authority.txt')
+    message_content= render_to_string(email_template,
+        {'content': data['draft'].body,
+         'info_email': 'info@%s' % get_domain_name()})
 
-        # Process draft - try to send message to every Authority in the Draft.
-        for authority in message_draft.authority.all():
-            try:
-                email_to= authority.email
+    # Process draft - try to send message to every Authority in the Draft.
+    successful, failed= list(), list()
+    for authority in data['draft'].authority.all():
+        email_to= authority.get_authority_email()
+        if email_to is None:
+            failed.append('%s: <a href="/authority/%s">%s</a>' % (
+                AppMessage('AuthEmailNotFound').message, authority.name))
+            continue
+
+        pia_request= PIARequest.objects.create(
+            summary=message_subject,
+            authority=authority,
+            user=request.user)
+        reply_to= email_from_name(request.user.get_full_name(),
+                                  id=pia_request.id,
+                                  delimiter='.')
+        email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else reply_to
+        message_data= {'request': pia_request,
+                       'is_response': False,
+                       'email_to': email_to,
+                       'email_from': reply_to,
+                       'subject': message_subject,
+                       'body': message_content}
+        message_request= EmailMessage(
+            message_subject,
+            message_content,
+            email_from,
+            [email_to],
+            headers={'Reply-To': reply_to})
+
+        # Attach files, if any.
+        message_request= attach_files(message_request, data['draft'])
+
+        try: # sending the message to the Authority, check if it doesn't fail.
+            message_request.send(fail_silently=False)
+        except Exception as e:
+            try: # Wipe from the db, if it cannot be send.
+                pia_request.delete()
             except:
-                failed.append('%s: <a href="/authority/%s">%s</a>' % (
-                    AppMessage('AuthEmailNotFound').message, authority.name))
-                continue
-            pia_request= PIARequest.objects.create(summary=message_subject,
-                authority=authority, user=request.user)
-            reply_to= email_from_name(request.user.get_full_name(),
-                                      id=pia_request.id, delimiter='.')
-            email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else reply_to
-            message_data= {'request': pia_request,
-                           'is_response': False,
-                           'email_to': email_to,
-                           'email_from': reply_to,
-                           'subject': message_subject,
-                           'body': message_content}
-            message_request= EmailMessage(message_subject, message_content,
-                email_from, [email_to], headers={'Reply-To': reply_to})
+                pass
+            failed.append('<a href="/authority/%s">%s</a> (%s)' % (
+                authority.slug, authority.name, e))
+            continue
+        # Creating the 1st message in the thread.
+        pia_msg= PIAThread.objects.create(**message_data)
 
-            # Attach files, if any.
-            message_request= attach_files(message_request, message_draft)
+        # Link the attachments from draft to the message created.
+        pia_msg= ensure_attachments(pia_msg, data['draft'])
 
-            try: # sending the message to the Authority, check if it doesn't fail.
-                message_request.send(fail_silently=False)
-            except Exception as e:
-                try: # Wipe from the db, if it cannot be send.
-                    pia_request.delete()
-                except:
-                    pass
-                failed.append('<a href="/authority/%s">%s</a> (%s)' % (
-                    authority.slug, authority.name, e))
-                continue
-            # Creating the 1st message in the thread.
-            pia_msg= PIAThread.objects.create(**message_data)
+        successful.append('<a href="/authority/%s">%s</a>' % (
+            authority.slug, authority.name))
+        data['draft'].authority.remove(authority)
 
-            # Link the attachments from draft to the message created.
-            pia_msg= ensure_attachments(pia_msg, message_draft)
-
-            successful.append('<a href="/authority/%s">%s</a>' % (
-                authority.slug, authority.name))
-            message_draft.authority.remove(authority)
-
-        # Update authorities - remove those that were successful,
-        # or delete the draft if all successful.
-        if len(failed) == 0:
-            try: # Remove draft if nothing failed.
-                message_draft.delete()
-            except Exception as e:
-                failed.append(AppMessage('DraftRemoveFailed', value=(message_draft.id,)).message % e)
-        else: # Save updated Draft (unsuccessful Authorities already removed).
-            try:
-                message_draft.save()
-            except:
-                pass # TO-DO: Log it!
-            # Update the form with updated instance of the Draft.
-            form= MakeRequestForm(instance=message_draft)
+    # Update authorities - remove those that were successful,
+    # or delete the draft if all successful.
+    if len(failed) == 0:
+        try: # Remove draft if nothing failed.
+            data['draft'].delete()
+        except Exception as e:
+            failed.append(AppMessage('DraftRemoveFailed', value=(data['draft'].id,)).message % e)
     else:
-        return render_to_response(template,
-                                  {'request_id': id,
-                                   'form': form,
-                                   'attachments_allowed': attachments_allowed,
-                                   'user_message': user_message},
-            context_instance=RequestContext(request))
+        # Save updated Draft (unsuccessful Authorities already removed).
+        try:
+            data['draft'].save()
+        except:
+            pass
+        # Update the form with updated instance of the Draft.
+        form= MakeRequestForm(instance=data['draft'])
 
     # Report the results (ignore `save_draft` user messages).
     if successful:
         user_message= update_user_message({},
-            _(u'Successfully sent request(s) to: %s') % ', '.join(successful),
-            'success')
+            _(u'Sent request(s) to: %s') % ', '.join(successful), 'success')
     if failed:
         user_message= update_user_message({},
             _(u'Request(s) sending failed: %s') % ', '.join(failed), 'fail')
 
     # Report the results to the user session.
     request.session['user_message']= user_message
+    data['user_message']= user_message
 
     # Re-direct (depending on the Authorities and Failed status).
-    if len(list(selected_authority)) == len(successful): # All is good.
-        if len(list(selected_authority)) == 1: # Authority profile.
-            return redirect(reverse('get_authority_info', args=(
-                selected_authority[0].slug,)))
-        else: # Or list of Authorities in case of a mass message.
+    if len(authorities) == len(successful): # All is good.
+        if len(authorities) == 1:
+            # Return to the Authority profile.
+            return redirect(reverse('get_authority_info',
+                                    args=(authorities[0].slug,)))
+        else:
+            # ... or to the list of Authorities in case of a mass message.
             return redirect(reverse('display_authorities'))
     else:
         # Some are not good - return to the draft page.
-        return render_to_response(template,
-                                  {'request_id': id,
-                                   'form': form,
-                                   'attachments_allowed': attachments_allowed,
-                                   'user_message': user_message},
+        return render_to_response(template, data,
             context_instance=RequestContext(request))
+
 
 def retrieve_similar_items(obj, limit=None):
     """
