@@ -1,4 +1,6 @@
 {% load i18n %}
+{% load backendtemplates %}
+
 <div class="row">
   <div class="well well-lightgray well-shadowed">
     <legend>
@@ -25,7 +27,7 @@
         <p><strong>{% trans 'Joined:' %}</strong> {{ usr.date_joined|date:"j E Y" }},
         <strong>{% trans 'requests:' %}</strong> {{ usr.requests_made.count }}</p>
       {% if usr.profile.description %}
-        <p><strong>{% trans 'About me' %}: </strong>{{ usr.profile.description|linebreaks|urlize }}</p>
+        <p><strong>{% trans 'About me' %}: </strong>{{ usr.profile.description|hide_all_emails|linebreaks|urlize }}</p>
       {% endif %}
       {% if usr.profile.web_site %}
         {% if user.is_authenticated %}

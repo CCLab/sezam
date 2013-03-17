@@ -1,4 +1,6 @@
 {% load i18n %}
+{% load backendtemplates %}
+
 {% if user_profile %}
   {% if user.is_authenticated %}
     {% if user = user_profile.user %}
@@ -23,7 +25,7 @@
           {% if draft.authority.all.count > 1 %}({{ draft.authority.all.count }}){% endif %}
           </small>
         </td>
-        <td><small><a href="/request/{{ draft.id }}/preview/">{{ draft.subject|slice:":45" }}{% if draft.subject|length > 45 %}...{% endif %}</a></small></td>
+        <td><small><a href="/request/{{ draft.id }}/preview/">{{ draft.subject|slice:":45"|hide_all_emails }}{% if draft.subject|length > 45 %}...{% endif %}</a></small></td>
         <td><small>{{ draft.created|date:"j.m.Y" }}</small></td>
         </tr>
         {% endfor %}

@@ -1,4 +1,5 @@
   {% load i18n %}
+  {% load backendtemplates %}
 
       <!-- <div class="span7"> -->
       
@@ -37,7 +38,7 @@
                   </div>                  
                   {% endif %}
                   <div class="content">
-                       {{ msg.body|urlize|linebreaks }}
+                       {{ msg.body|hide_all_emails|urlize|linebreaks }}
                   </div>
               </div>
 

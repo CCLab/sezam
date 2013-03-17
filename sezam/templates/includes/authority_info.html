@@ -1,4 +1,5 @@
   {% load i18n %}
+  {% load backendtemplates %}
     <div class="row well well-lightgray well-shadowed">
         <legend>{{ authority.name }}
             <div class="btn-group pull-right">
@@ -20,10 +21,10 @@
         <br/>{% if authority.web_site1 %}<strong>{% trans 'Buletin of public information' %}:</strong> {{ authority.web_site1|urlize }}{% endif %}</p>
 
         {% if authority.description %}
-        <p><small>{{ authority.description|default:''|linebreaks|urlize }}</small></p>
+        <p><small>{{ authority.description|default:''|hide_all_emails|linebreaks|urlize }}</small></p>
         {% endif %}
         {% if authority.notes %}
-        <p><small><strong>{% trans 'Notes' %}:</strong> {{ authority.notes|default:'' }}</small></p>
+        <p><small><strong>{% trans 'Notes' %}:</strong> {{ authority.notes|default:''|hide_all_emails }}</small></p>
         {% endif %}
 
         <div class="span2">
