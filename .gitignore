@@ -47,3 +47,6 @@ sezam/conf.py
 #Site media
 sezam/site_media/*.jpg
 sezam/site_media/attachments/*
+
+#Styles
+sz.style.css
