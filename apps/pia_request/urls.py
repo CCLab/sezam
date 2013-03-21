@@ -62,7 +62,10 @@ urlpatterns = patterns('apps.pia_request.views',
        {'template': 'thread.html'}, name='set_request_status'),
                        
    url(r'^(?P<id>\d+)/annotate/$', 'annotate_request',
-       {'template': 'thread.html'}, name='annotate_request'),
+       {'email_template': 'emails/report_request.txt'}, name='annotate_request'),
+
+   url(r'^(?P<id>\d+)/report/$', 'report_request',
+       {'template': 'thread.html'}, name='report_request'),
 
    url(r'^(?P<id>\d+)/download/$', 'download_thread',
        {'template': 'thread_print.html'}, name='download_thread'),

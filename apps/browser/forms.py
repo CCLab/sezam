@@ -13,7 +13,9 @@ MODELS= {'piarequest': ['pia_request.piarequest'],
 class ModelSearchForm(HighlightedModelSearchForm):
     q= forms.CharField(required=False, label=_('Search'),
         widget=forms.TextInput(
-            attrs={'class': 'search-query', 'placeholder': _(u'Search')}))
+            attrs={'class': 'search-query',
+                   'placeholder': _(u'Search'),
+                   'autocomplete': 'off'}))
 
     def search(self):
         # Before-search processing goes here (downcode the phrase).

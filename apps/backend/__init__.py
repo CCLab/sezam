@@ -18,7 +18,6 @@ from datetime import datetime
 from django.db import models
 from django.utils.timezone import utc
 from django.core.mail import mail_managers
-from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext as _
 
 from apps.backend.html2text import html2text
@@ -375,7 +374,7 @@ class MailImporter():
                 for part in msg.walk():
                     for k, v in part.items():
                         if k.lower() not in self.content_related:
-                            messageHeader.update({k.lower().strip(): v.strip()})
+                            messageHeader.update({k.lower().strip(): self._clean_text_encoded(v)})
         return messageHeader
 
     def extract_mail_content(self, message_data, **kwargs):
@@ -383,7 +382,6 @@ class MailImporter():
         Returns text message content.
         """
         msg_plain_text, msg_attachments= '', []
-        _f= lambda t: force_unicode(t, errors='ignore')
         for response_part in message_data:
             if isinstance(response_part, tuple):
                 msg= email.message_from_string(response_part[1])
@@ -399,17 +397,15 @@ class MailImporter():
                                                     'filesize': attachment_size})
                     else:
                         # Process message text.
-                        # Update `msg_plain_text` only if it has not been updated yet.
-                        if str(part.get_content_type()) == 'text/plain':
-                            if len(msg_plain_text) == 0:
-                                content= _f(part.get_payload(decode=True))
-                                msg_plain_text += content
-                        elif str(part.get_content_type()) == 'text/html':
-                            if len(msg_plain_text) == 0:
-                                content= html2text(_f(part.get_payload(decode=True)))
-                                msg_plain_text += content
+                        # Update `msg_plain_text` only if it isn't updated yet.
+                        if len(msg_plain_text) == 0:
+                            if str(part.get_content_type()) == 'text/plain':
+                                msg_plain_text= unicode(part.get_payload(decode=True),
+                                                        part.get_content_charset(), 'ignore').encode('utf8','replace')
+                            elif str(part.get_content_type()) == 'text/html':
+                                msg_plain_text= unicode(html2text(part.get_payload(decode=True)),
+                                                        part.get_content_charset(), 'ignore').encode('utf8','replace')
         return msg_plain_text, msg_attachments
-
 
     def _process_attachment(self, part, **kwargs):
         """
@@ -419,7 +415,7 @@ class MailImporter():
         now= datetime.strftime(datetime.utcnow().replace(
             tzinfo=utc), '%d-%m-%Y_%H-%M')
         ext= mimetypes.guess_extension(part.get_content_type())
-        filename= self._clean_filename(part.get_filename())
+        filename= self._clean_text_encoded(part.get_filename())
         if not filename:
             if not ext: # Use a generic bag-of-bits extension.
                 ext= '.bin'
@@ -440,30 +436,25 @@ class MailImporter():
         except Exception as e:
             print >> sys.stderr, '[%s] %s' % (
                 datetime.now().isoformat(),
-                AppMessage('CantSaveAttachmnt').message % {
-                    'filename': filename, 'error': e
-                    }
-                )
+                AppMessage('CantSaveAttachmnt').message % {'filename': filename, 'error': e})
             return None
 
-
-    def _clean_filename(self, filename):
+    def _clean_text_encoded(self, input_text):
         """
-        Cleaning and decoding filename from the attachement.
+        Cleaning and decoding input_text.
         """
-        if re.search(r'=\?', filename):
+        if re.search(r'=\?', input_text):
             encoding= None
             try:
-                filename, encoding= email.Header.decode_header(filename)[0]
+                input_text, encoding= email.Header.decode_header(input_text)[0]
             except Exception as e:
-                filename= None
+                input_text= None
             if encoding:
                 try:
-                    filename= filename.decode(encoding)
+                    input_text= input_text.decode(encoding)
                 except:
-                    filename= None
-        return filename
-
+                    input_text= None
+        return input_text
 
     def ensure_directory(self, dir_name):
         """
@@ -512,7 +503,7 @@ APP_MESSAGES = {
         'message': _(u'Sending e-mail message failed: %s')
         },
     'MsgCreateFailed': {
-        'message': _(u'Creating e-mail message failed')
+        'message': _(u'Creating e-mail message failed: %s')
         },
     'CantSaveAttachmnt': {
         'message': _(u'Cannot save attachment %(filename)s: %(error)s')

@@ -1,0 +1,9 @@
+{% load humanize %}
+{% load i18n %}
+{% trans "Dear manager of" %} {{ PROJECT_TITLE }},
+{% trans "The request number" %} {{ pia_request.id }} {% trans "with the subject" %} "{{ pia_request.summary|slice:"100" }}..." {% trans "is being reported as offensive or unsuitable by user" %} {{ user.get_full_name }}.
+
+{% trans "You can find the request message thread here:" %} http://{{ PROJECT_TITLE }}/request/{{ pia_request.id }}/
+
+{% trans "Please, react ASAP: investigate the case and take necessary actions!" %}
+{% trans "If you want to send user a message, simply reply to this email" %} <{{ user.email }}>.

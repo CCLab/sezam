@@ -24,6 +24,7 @@ from datetime import datetime
 from time import strptime, strftime
 from PIL import Image
 
+import xhtml2pdf
 import xhtml2pdf.pisa as pisa
 import cStringIO as StringIO
 import random, string, re, os, sys
@@ -416,7 +417,6 @@ def send_mail_managers(subject, message, fail_silently=False,
                        [a[1] for a in settings.MANAGERS], headers=headers)
     mail.send(fail_silently=fail_silently)
 
-
 def send_notification(notification):
     """
     Sending user a notification about the event
@@ -447,14 +447,17 @@ def send_notification(notification):
         return False
     return True
 
-
 def render_to_pdf(template_src, context_dict, **kwargs):
     """
     Renders html template to PDF.
     Returns a response of MIME type 'application/pdf'
     """
     context_instanse= kwargs.get('context', None)
-    html= render_to_string(template_src, context_dict, context_instanse)
     result= StringIO.StringIO()
-    pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result)
+    try:
+        html= render_to_string(template_src, context_dict, context_instanse)
+        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result)
+    except xhtml2pdf.w3c.cssParser.CSSParseError:
+        html= render_to_string(template_src, context_dict, None)
+        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result)
     return pdf, result

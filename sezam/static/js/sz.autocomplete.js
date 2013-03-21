@@ -5,7 +5,7 @@
 var Autocomplete = function(options) {
     this.form_selector = options.form_selector
     this.url = options.url || '/authority/search/autocomplete/'
-    this.delay = parseInt(options.delay || 300)
+    this.delay = parseInt(options.delay || 600)
     this.minimum_length = parseInt(options.minimum_length || 3)
     this.form_elem = null
     this.query_box = null

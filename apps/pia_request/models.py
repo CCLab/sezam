@@ -169,8 +169,6 @@ def _post_save(sender, **kwargs):
             return
         g= ContentType.objects.get_for_model
 
-        # bookmark
-        # TO-DO: make a query more elastic: real OR, so, if a or p is absent, don't query on it!
         items= TaggedItem.objects.filter(
             Q(object_id=p.id, content_type_id=g(p.__class__).id)|\
             Q(object_id=a.id, content_type_id=g(a.__class__).id))

@@ -24,9 +24,13 @@ from apps.browser.forms import ModelSearchForm
 from apps.vocabulary.models import AuthorityProfile
 from apps.backend import AppMessage
 from apps.backend.models import TaggedItem, EventNotification
-from apps.backend.utils import re_subject, process_filter_request,\
+from apps.backend.utils import re_subject, process_filter_request, \
     downcode, save_attached_file, update_user_message, id_generator,\
-    get_domain_name, email_from_name, clean_text_for_search, render_to_pdf
+    get_domain_name, email_from_name, clean_text_for_search, render_to_pdf, \
+    send_mail_managers
+
+# Limiting request status list for user.
+PIA_REQUEST_STATUS_VISIBLE= tuple(v for v in PIA_REQUEST_STATUS if v[0] not in ('overdue', 'long_overdue', 'withdrawn', 'awaiting',))
 
 def request_list(request, status=None, **kwargs):
     """
@@ -71,7 +75,7 @@ def new_request(request, slug=None, **kwargs):
     if request.method == 'GET':
         try:
             authority= AuthorityProfile.objects.get(slug=slug)
-        except AuthorityProfile.DoesNotExist:                
+        except AuthorityProfile.DoesNotExist:
             raise Http404
         authority= [authority] # Result should always be a list.
     elif request.method == 'POST':
@@ -515,6 +519,14 @@ def send_request(request, id=None, **kwargs):
             failed.append('<a href="/authority/%s">%s</a> (%s)' % (
                 authority.slug, authority.name, e))
             continue
+
+        # Create notifier - an author always follows its own request.
+        create_request_notification(request.user,
+                                    pia_request,
+                                    pia_request.id,
+                                    pia_request.summary[:50],
+                                    request_events(pia_request))
+
         # Creating the 1st message in the thread.
         pia_msg= PIAThread.objects.create(**message_data)
 
@@ -705,7 +717,7 @@ def view_thread(request, id=None, **kwargs):
 
     return render_to_response(template, {'thread': thread, 'form': form,
         'similar_items': similar_items, 'user_message': user_message,
-        'request_status': PIA_REQUEST_STATUS, 'request_id': id, 'mode': mode,
+        'request_status': PIA_REQUEST_STATUS_VISIBLE, 'request_id': id, 'mode': mode,
         'following': following, 'attachments_allowed': attachments_allowed,
         'page_title': thread[0].request.summary[:50]},
         context_instance=RequestContext(request))
@@ -730,10 +742,14 @@ def download_thread(request, id=None, **kwargs):
         update_user_message(user_message,
             awaiting_message(request.user, thread[0].request.user), 'success')
 
-    data= {'request_id': id, 'thread': thread,
-           'mode': 'print', 'form': None, 'user_message': user_message,
-           'pagesize':'A4', 'title': thread[0].request.summary[:50]}
-    pdf, pdf_content= render_to_pdf(template, data)
+    data= {'request_id': id,
+           'thread': thread,
+           'mode': 'print',
+           'form': None,
+           'pagesize':'A4',
+           'user_message': user_message,
+           'title': thread[0].request.summary[:50]}
+    pdf, pdf_content= render_to_pdf(template, data, context=RequestContext(request))
 
     if not pdf.err:
         basename= downcode(
@@ -872,7 +888,7 @@ def reply_to_thread(request, id=None, **kwargs):
         return render_to_response(template, {'thread': thread,
             'request_id': id, 'user_message': user_message,
             'form': form, 'page_title': page_title, 'mode': 'reply',
-            'request_status': PIA_REQUEST_STATUS},
+            'request_status': PIA_REQUEST_STATUS_VISIBLE},
             context_instance=RequestContext(request))
 
     # Process the Reply form data.
@@ -1013,7 +1029,7 @@ def set_request_status(request, id=None, status_id=None, **kwargs):
     """
     if id is None:
         raise Http404
-    if (status_id is None) or status_id not in [k[0] for k in PIA_REQUEST_STATUS]:
+    if (status_id is None) or status_id not in [k[0] for k in PIA_REQUEST_STATUS_VISIBLE]:
         raise Http404
 
     user_message= request.session.pop('user_message', {})
@@ -1080,7 +1096,7 @@ def annotate_request(request, id=None, **kwargs):
         return render_to_response(template,
             {'thread': thread, 'request_id': id, 'user_message': user_message,
             'form': form, 'page_title': page_title, 'mode': 'annotate',
-            'request_status': PIA_REQUEST_STATUS},
+            'request_status': PIA_REQUEST_STATUS_VISIBLE},
             context_instance=RequestContext(request))
 
     elif request.method == 'GET': # Show empty form to fill.
@@ -1088,11 +1104,46 @@ def annotate_request(request, id=None, **kwargs):
             raise Http404
 
     return render_to_response(template,
-        {'thread': thread, 'request_id': id, 'user_message': user_message,
-        'form': CommentForm(), 'page_title': page_title, 'mode': 'annotate',
-        'request_status': PIA_REQUEST_STATUS},
+                              {'thread': thread,
+                               'request_id': id,
+                               'user_message': user_message,
+                               'page_title': page_title,
+                               'mode': 'annotate',
+                               'form': CommentForm(),
+                               'request_status': PIA_REQUEST_STATUS_VISIBLE},
         context_instance=RequestContext(request))
 
+@login_required
+def report_request(request, id=None, **kwargs):
+    """
+    Report the request - sends mail to site admin
+    and updates user message.
+    """
+    user_message= None
+    if request.method == 'GET': # Show empty form to fill.
+        if id is not None:
+            rq= None
+            try:
+                pia_request= PIARequest.objects.get(id=int(id))
+            except (ValueError, PIARequest.DoesNotExist):
+                user_message= update_user_message({}, 'No such request!', 'fail')
+            else:
+                subject= "The request %s is reported to be offensive or unsuitable" % id
+                email_template= kwargs.get('email_template', 'emails/report_request.txt')
+                message_content= render_to_string(email_template,
+                                                  {'user': request.user,
+                                                   'pia_request': pia_request},
+                    context_instance=RequestContext(request))
+                headers= {'reply_to': request.user.email}
+                send_mail_managers(subject, message_content,
+                                   headers=headers,
+                                   fail_silently=False,
+                                   connection=None)
+                user_message= update_user_message({},
+                    'The report sent to the managers!', 'success')
+    if user_message:
+        request.session['user_message']= user_message
+    return redirect(request.META.get('HTTP_REFERER'))
 
 def _do_discard_request_draft(draft):
     """
@@ -1147,6 +1198,26 @@ def discard_request_draft(request, id=None, **kwargs):
                     value=(draft_id,)).message % result, 'fail')
     return redirect(request.META.get('HTTP_REFERER'))
 
+
+def create_request_notification(user, obj, id, name, events):
+    """
+    Create notification for a request.
+    """
+    try:
+        item= TaggedItem.objects.get(object_id=id,
+                                     name=name,
+                                     content_type_id=ContentType.objects.get_for_model(obj.__class__).id)
+    except TaggedItem.DoesNotExist:
+        item= TaggedItem.objects.create(name=name,
+                                        content_object=obj)
+    for k, v in events.iteritems():
+        try:
+            evnt, created= EventNotification.objects.get_or_create(
+                item=item, action=k, receiver=user, summary=v)
+        except:
+            pass # TO-DO: Log it!
+    return
+
 @login_required
 def follow_request(request, id=None, **kwargs):
     """
@@ -1159,25 +1230,13 @@ def follow_request(request, id=None, **kwargs):
     user_message= request.session.pop('user_message', {})
     
     piarequest= get_object_or_404(PIARequest, id=int(id))
-    if request.user == piarequest.user:
-        request.session['user_message']= update_user_message(
-            user_message, AppMessage('AuthorCantFollow').message, 'info')
-    else:
-        # Create notifier.
-        try:
-            item= TaggedItem.objects.get(object_id=piarequest.id,
-                name=piarequest.summary[:50],
-                content_type_id=ContentType.objects.get_for_model(
-                    piarequest.__class__).id)
-        except TaggedItem.DoesNotExist:
-            item= TaggedItem.objects.create(name=piarequest.summary[:50],
-                                            content_object=piarequest)
-        for k, v in request_events(piarequest).iteritems():
-            try:
-                evnt, created= EventNotification.objects.get_or_create(
-                    item=item, action=k, receiver=request.user, summary=v)
-            except:
-                pass # TO-DO: Log it!        
+
+    # Create notifier.
+    create_request_notification(request.user,
+                                piarequest,
+                                piarequest.id,
+                                piarequest.summary[:50],
+                                request_events(piarequest))
     return redirect(request.META.get('HTTP_REFERER'))
 
 

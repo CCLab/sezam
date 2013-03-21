@@ -26,21 +26,19 @@ from apps.backend.models import TaggedItem, EventNotification
 from apps.backend.utils import process_filter_request, update_user_message,\
     send_mail_managers, get_domain_name
 
-
 def autocomplete(request):
     """
     Autocomplete Authority names.
     """
     query= request.GET.get('q', '')
-    sqs= SearchQuerySet().autocomplete(content_auto=query)[:5]
-    suggestions= [result.name for result in sqs]
-    the_data = json.dumps({'results': suggestions})
+    sqs= SearchQuerySet().autocomplete(content_auto=query)
+    suggestions= [result.content_auto for result in sqs][:15]
+    the_data= json.dumps({'results': suggestions})
     return HttpResponse(the_data, content_type='application/json')
-
 
 def display_authority(request, **kwargs):
     """
-    Display the list of authority, filtered.
+    Display the list of authorities, filtered.
     """
     if request.method == 'POST':
         raise Http404
@@ -52,12 +50,11 @@ def display_authority(request, **kwargs):
         form= ModelSearchForm(request.GET)
     except:
         form= ModelSearchForm()
-
-    return render_to_response(template, {'form': form,
-        'user_message': user_message, 'search_only': search_only,
-        'page_title': _(u'Public Authorities')},
-        context_instance=RequestContext(request))
-
+    data= {'form': form,
+           'search_only': search_only,
+           'user_message': user_message,
+           'page_title': _(u'Public Authorities')}
+    return render_to_response(template, data, context_instance=RequestContext(request))
 
 def get_authority_tree(request, **kwargs):
     """
@@ -95,11 +92,11 @@ def get_authority_tree(request, **kwargs):
             data.append(root_dict)
     return HttpResponse(json.dumps(data))
 
-
 def retrieve_authority_list(id=None):
-    """ Retrieve the list of Authorities from the db, depending on whether
-        a Category id specified or not.
-        """
+    """
+    Retrieve the list of Authorities from the db, depending on whether
+    a Category id specified or not.
+    """
     if id:
         try:
             category= AuthorityCategory.objects.get(id=id)
@@ -118,7 +115,6 @@ def retrieve_authority_list(id=None):
     else:
         return AuthorityProfile.objects.filter(active=True).order_by('name')
 
-
 def get_authority_list(request, id=None, **kwargs):
     """
     Display the list of authority, filtered.
@@ -134,8 +130,10 @@ def get_authority_list(request, id=None, **kwargs):
             raise Http404
 
     result= retrieve_authority_list(id)
+
     if result is None:
         raise Http404
+
     items= result.count()
 
     paginator= Paginator(result, settings.PAGINATE_BY)
@@ -154,11 +152,14 @@ def get_authority_list(request, id=None, **kwargs):
         pageURI= '/'.join([str(id), pageURI])        
 
     return render_to_response(template,
-        {'page': results, 'total_item': items, 'current': page, 'id': id,
-         'pageURI': pageURI, 'per_page': settings.PAGINATE_BY},
+                              {'id': id,
+                               'page': results,
+                               'current': page,
+                               'pageURI': pageURI,
+                               'total_item': items,
+                               'per_page': settings.PAGINATE_BY},
         context_instance=RequestContext(request))
     # TO-DO: Implement URI Generator for pageURI: http://www.djangosnippets.org/snippets/1734/
-
 
 def get_authority(slug):
     """
@@ -171,7 +172,6 @@ def get_authority(slug):
         return AuthorityProfile.objects.filter(**query).order_by('name')[0]
     except AuthorityCategory.DoesNotExist:
         return None
-
 
 def get_authority_info(request, slug, **kwargs):
     """
@@ -234,12 +234,16 @@ def get_authority_info(request, slug, **kwargs):
     except (EmptyPage, InvalidPage):
         results= paginator.page(paginator.num_pages)
 
-    return render_to_response(template, {'authority': authority,
-        'following': following, 'page': results, 'categories': categories,
-        'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': authority.name, 'urlparams': urlparams},
+    return render_to_response(template,
+                              {'authority': authority,
+                               'following': following,
+                               'page': results,
+                               'categories': categories,
+                               'form': PIAFilterForm(initial=initial),
+                               'user_message': user_message,
+                               'page_title': authority.name,
+                               'urlparams': urlparams},
         context_instance=RequestContext(request))
-
 
 def find_authority(request, **kwargs):
     """ Look for the Authority to make request to.
@@ -248,7 +252,6 @@ def find_authority(request, **kwargs):
     return render_to_response(template, {
         'page_title': _(u'Look for the authority')},
         context_instance=RequestContext(request))
-
 
 def add_authority(request, slug=None, **kwargs):
     """
@@ -303,11 +306,13 @@ def add_authority(request, slug=None, **kwargs):
                 request.session['user_message']= user_message
                 return redirect(reverse('display_authorities'))
 
-    return render_to_response(template, {'form': form, 'from': from_link,
-        'mode': 'authority', 'user_message': user_message,
-        'page_title': _(u'Add authority')},
+    return render_to_response(template,
+                              {'form': form,
+                               'from': from_link,
+                               'mode': 'authority',
+                               'user_message': user_message,
+                               'page_title': _(u'Add authority')},
         context_instance=RequestContext(request))
-
 
 @login_required
 def follow_authority(request, slug=None, **kwargs):
@@ -338,7 +343,6 @@ def follow_authority(request, slug=None, **kwargs):
         except:
             pass # TO-DO: Log it!
     return redirect(request.META.get('HTTP_REFERER'))
-
 
 @login_required
 def unfollow_authority(request, slug=None, **kwargs):
@@ -372,7 +376,6 @@ def unfollow_authority(request, slug=None, **kwargs):
             item.delete()
         except: pass
     return redirect(request.META.get('HTTP_REFERER'))
-
 
 def download_authority_list(request, ext=None, **kwargs):
     """
@@ -417,7 +420,6 @@ def download_authority_list(request, ext=None, **kwargs):
     response.write(f)
     return response
 
-
 def authority2pdf(filename):
     """
     Writes a queryset of AuthorityProfile to PDF file.
@@ -425,7 +427,6 @@ def authority2pdf(filename):
     Returns open file descriptor.
     """
     return None
-
 
 def authority2csv(filename):
     """

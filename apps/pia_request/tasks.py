@@ -32,7 +32,8 @@ def check_mail(mailbox_settings=None):
     messages_total= 0
     mailboxes= collect_mailboxes(mailbox_settings)
     for mailbox in mailboxes:
-        imp= MailImporter(mailbox, attachment_dir=ATTACHMENT_DIR,
+        imp= MailImporter(mailbox,
+                          attachment_dir=ATTACHMENT_DIR,
                           addr_template=addr_template)
         unread_messages= imp.process_mails(imp.imap_connect(), header_only=False)
         for msg in unread_messages:
@@ -53,8 +54,7 @@ def check_mail(mailbox_settings=None):
                 try:
                     request_id= int(field_to.split('@')[0].rsplit('-', 1)[-1])
                 except:
-                    print AppMessage(
-                        'ResponseNotFound', value=msg['header']).message
+                    print AppMessage('ResponseNotFound', value=msg['header']).message
                     continue
             new_message= new_message_in_thread(request_id, msg)
             if new_message:
@@ -120,7 +120,8 @@ def new_message_in_thread(request_id, msg):
         new_message.save()
     except Exception as e:
         new_message= None
-        print AppMessage('MsgCreateFailed', value=(request_id, e,)).message
+        print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(),
+                                          AppMessage('MsgCreateFailed').message % e)
     if new_message:
         # Change the status of the Request to 'awaiting classification'.
         request.status= get_request_status('awaiting')
