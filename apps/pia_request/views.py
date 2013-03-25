@@ -447,7 +447,7 @@ def send_request(request, id=None, **kwargs):
 
     # All the following scenarios require saving the draft first.
     data= save_request_draft(request, id, **kwargs)
-    template= data.pop('template', 'request.html')
+    template= data.pop('template', template)
 
     # SCENARIO 2.
     # Only save the draft - it is in fact saved already, return the response.
@@ -472,9 +472,6 @@ def send_request(request, id=None, **kwargs):
     # No newlines in Email subject!
     message_subject = ''.join(data['draft'].subject.splitlines())
     email_template= kwargs.get('email_template', 'emails/request_to_authority.txt')
-    message_content= render_to_string(email_template,
-        {'content': data['draft'].body,
-         'info_email': 'info@%s' % get_domain_name()})
 
     # Process draft - try to send message to every Authority in the Draft.
     successful, failed= list(), list()
@@ -490,15 +487,18 @@ def send_request(request, id=None, **kwargs):
             authority=authority,
             user=request.user)
         reply_to= email_from_name(request.user.get_full_name(),
-                                  id=pia_request.id,
-                                  delimiter='.')
+                                  id=pia_request.id, delimiter='.')
         email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else reply_to
+        message_content= render_to_string(email_template, {
+            'reply_to': reply_to,
+            'content': data['draft'].body,
+            'info_email': 'info@%s' % get_domain_name()})
         message_data= {'request': pia_request,
-                       'is_response': False,
-                       'email_to': email_to,
-                       'email_from': reply_to,
-                       'subject': message_subject,
-                       'body': message_content}
+            'is_response': False,
+            'email_to': email_to,
+            'email_from': reply_to,
+            'subject': message_subject,
+            'body': message_content}
         message_request= EmailMessage(
             message_subject,
             message_content,
@@ -679,10 +679,13 @@ def view_thread(request, id=None, **kwargs):
     if is_print.lower() in settings.URL_PARAM_TRUE:
         mode= 'print'
         template= template.replace('.html', '_print.html')
-        return render_to_response(template, {
-            'request_id': id, 'mode': mode, 'thread': thread, 'form': form,
-            'user_message': user_message,
-            'page_title': thread[0].request.summary[:50]},
+        return render_to_response(template,
+                                  {'form': form,
+                                   'mode': mode,
+                                   'request_id': id,
+                                   'thread': thread,
+                                   'user_message': user_message,
+                                   'page_title': thread[0].request.summary[:50]},
             context_instance=RequestContext(request))
 
     attachments_allowed= request.session.pop('attachments_allowed',
@@ -715,11 +718,17 @@ def view_thread(request, id=None, **kwargs):
         else:
             following= item.is_followed_by(request.user)
 
-    return render_to_response(template, {'thread': thread, 'form': form,
-        'similar_items': similar_items, 'user_message': user_message,
-        'request_status': PIA_REQUEST_STATUS_VISIBLE, 'request_id': id, 'mode': mode,
-        'following': following, 'attachments_allowed': attachments_allowed,
-        'page_title': thread[0].request.summary[:50]},
+    return render_to_response(template,
+                              {'mode': mode,
+                               'request_id': id,
+                               'form': form,
+                               'thread': thread,
+                               'following': following,
+                               'user_message': user_message,
+                               'similar_items': similar_items,
+                               'attachments_allowed': attachments_allowed,
+                               'request_status': PIA_REQUEST_STATUS_VISIBLE,
+                               'page_title': thread[0].request.summary[:50]},
         context_instance=RequestContext(request))
 
 def download_thread(request, id=None, **kwargs):
@@ -762,7 +771,6 @@ def download_thread(request, id=None, **kwargs):
         return response
     return HttpResponse(_(u'There are errors in the template <pre>%s</pre>') %\
                         cgi.escape(html))
-
 
 def zip_thread(thread, pdf_content, basename):
     """
@@ -873,22 +881,27 @@ def reply_to_thread(request, id=None, **kwargs):
         initial= {'thread_message': msg,
                   'user': request.user, 'authority': [msg.request.authority],
                   'subject': re_subject(msg.subject),
-                  'body': render_to_string(email_template, {
-                      'authority_name': msg.request.authority.name,
-                      'content': '', 'last_msg_created': msg.created,
-                      'last_msg_email_from': msg.email_from,
-                      'last_msg_content': msg.body.replace('\n', '\n>> '),
-                      'info_email': 'info@%s' % get_domain_name()}),
-                  'is_response': is_response,} # This one is special!!!
+                  'body': render_to_string(email_template,
+                                           {'content': '',
+                                            'authority_name': msg.request.authority.name,
+                                            'last_msg_created': msg.created,
+                                            'last_msg_email_from': msg.email_from,
+                                            'last_msg_content': msg.body.replace('\n', '\n>> '),
+                                            'info_email': 'info@%s' % get_domain_name()}),
+                  'is_response': is_response,} # This one is particularly important!!!
                                                # It tells if e-mails should be
                                                # swapped in case User manually
                                                # enters reply from Authority.
         form= ReplyDraftForm(initial=initial)
 
-        return render_to_response(template, {'thread': thread,
-            'request_id': id, 'user_message': user_message,
-            'form': form, 'page_title': page_title, 'mode': 'reply',
-            'request_status': PIA_REQUEST_STATUS_VISIBLE},
+        return render_to_response(template,
+                                  {'form': form,
+                                   'mode': 'reply',
+                                   'thread': thread,
+                                   'request_id': id,
+                                   'user_message': user_message,
+                                   'page_title': page_title,
+                                   'request_status': PIA_REQUEST_STATUS_VISIBLE},
             context_instance=RequestContext(request))
 
     # Process the Reply form data.
@@ -912,18 +925,22 @@ def reply_to_thread(request, id=None, **kwargs):
 
         if not form.is_valid():
             # If form is invalid and user doesn't want to discard a draft.
-            return render_to_response(template, {'thread': thread,
-                'request_id': id, 'form': form, 'page_title': page_title,
-                'user_message': user_message, 'mode': 'reply',
-                'attachments_allowed': attachments_allowed,},
+            return render_to_response(template,
+                                      {'form': form,
+                                       'mode': 'reply',
+                                       'thread': thread,
+                                       'request_id': id,
+                                       'page_title': page_title,
+                                       'user_message': user_message,
+                                       'attachments_allowed': attachments_allowed},
                 context_instance=RequestContext(request))
 
         # Form is valid, process scenarios.
         # In case of any scenario the Draft must be saved first.
         data= form.cleaned_data
         data.update({'thread_message': msg,
-            'attachments': dict(request.FILES).get('attachments', []),
-            'attached': dict(request.POST).get(u'attached_id', [])})
+                     'attachments': dict(request.FILES).get('attachments', []),
+                     'attached': dict(request.POST).get(u'attached_id', [])})
         if draft_id:
             data.update({'id': draft_id})
 
@@ -936,7 +953,7 @@ def reply_to_thread(request, id=None, **kwargs):
         if result['draft']:
             reply_draft= result['draft']
             user_message= update_user_message(user_message,
-                _(u'Draft saved successfully.'), 'success')
+                                              _(u'Draft saved successfully.'), 'success')
             # Update number of allowed attachments.
             request.session['attachments_allowed']= result['attachments_allowed']
         else:
@@ -963,8 +980,11 @@ def reply_to_thread(request, id=None, **kwargs):
                 _email_from= settings.DEFAULT_FROM_EMAIL if settings.USE_DEFAULT_FROM_EMAIL else email_from
 
                 # Make and send email.
-                reply= EmailMessage(reply_draft.subject, reply_draft.body,
-                    _email_from, [email_to], headers = {'Reply-To': email_from})
+                reply= EmailMessage(reply_draft.subject,
+                                    reply_draft.body,
+                                    _email_from,
+                                    [email_to],
+                                    headers = {'Reply-To': email_from})
                 reply= attach_files(reply, reply_draft) # Attachments from draft.
 
                 try: # to send the message.
@@ -976,13 +996,8 @@ def reply_to_thread(request, id=None, **kwargs):
                     request.session['user_message']= user_message
                     return redirect('/request/%s/#form_reply' % id)
 
-                # If successful, collect data for saving
-                # the message in the thread.
-                message_data= {'request': msg.request, 'is_response': False,
-                    'email_to': email_to, 'email_from': email_from,
-                    'subject': reply_draft.subject, 'body': reply_draft.body}
-
                 # What will be reported if all operations done successfully.
+                is_response= False
                 success_message= _(u'Reply sent successfully.')
 
             # SCENARIO 4
@@ -994,13 +1009,17 @@ def reply_to_thread(request, id=None, **kwargs):
                 email_to= email_from_name(reply_draft.user.get_full_name(),
                                           id=id, delimiter='.')
                 email_from= msg.request.authority.email
-                message_data= {'request': msg.request, 'is_response': True,
-                    'email_to': email_to, 'email_from': email_from,
-                    'subject': reply_draft.subject, 'body': reply_draft.body}
+                is_response= True
                 success_message= _(u'Reply saved successfully.')
 
             # Common part of SCENARIOS 3 and 4
             # Save the message in the thread, re-link attachments, remove draft.
+            message_data= {'request': msg.request,
+                           'is_response': is_response,
+                           'email_to': email_to,
+                           'email_from': email_from,
+                           'subject': reply_draft.subject,
+                           'body': reply_draft.body}
             pia_msg= PIAThread(**message_data)
             try:
                 pia_msg.save()

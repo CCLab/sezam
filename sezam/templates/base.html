@@ -41,6 +41,26 @@
   {% load i18n %}
 
   <body data-spy="scroll" data-target="inner-sidebar">
+    <div class="header-bg">
+      <div class="border-top"></div>
+      <div class="header"></div>
+      <div class="navbar navbar-inverse navbar-fixed-top">	 
+	<div class="navbar-inner"></div>
+	<div class="navbar-inner"></div>
+      </div>
+      <div class="header-bg-inner">
+      </div>
+    </div>
+    <div class="body-content">	
+      <div class="border-top"></div>
+      <div class="border-left"></div>
+      <div class="header">
+	<div class="header-inner">
+	  <a href="" class="header-title"><span class="orange">ZAPYTAJ</span>PANSTWO<span class="grey">.PL</span></a>
+	  <a href="" class="header-right"></a>
+	</div>
+      </div>
+
   {% include "includes/navbar.html" %}
 
   {% block title %}{% endblock %}
@@ -50,6 +70,7 @@
   {% block content-related %}{% endblock %}
 
     <hr class="soften">
+    </div>
 
     <!-- Footer -->
     <footer class="footer">

@@ -77,7 +77,7 @@ class TerritoryType(Vocabulary):
         For Poland: wojewodztwo, gmina, miasto, etc.
         """
     display_name= CharField(max_length=50, blank=True, null=True,
-                            verbose_name=_(u'Name tp display'))
+                            verbose_name=_(u'Name to display'))
 
 
 class Territory(AuthorityCategory):

@@ -194,7 +194,7 @@ def send_reminder(pia_request, overdue_date=None, **kwargs):
         message_request.send(fail_silently=False)
     except Exception as e:
         print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(),
-            AppMessage('MailSendFailed').message)
+            AppMessage('MailSendFailed').message % e)
         return None
     return True # Success. 
 
@@ -226,7 +226,7 @@ def send_report(pia_request, status, **kwargs):
     try: # sending the message to the Authority, check if it doesn't fail.
         message_request.send(fail_silently=False)
     except Exception as e:
-        print AppMessage('MailSendFailed', value=('report', pia_request.pk,)).message
+        print AppMessage('MailSendFailed').message % e
         return None
     return True # Success.
 

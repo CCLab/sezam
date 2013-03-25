@@ -11,10 +11,10 @@ class PIARequestDraftAdmin(admin.ModelAdmin):
 
 
 class PIARequestAdmin(admin.ModelAdmin):
-    list_display= ('user', 'authority', 'summary', 'status',
-        'latest_thread_post')
-    search_fields= ('summary', 'authority', 'user')
-    list_filter= ('authority', 'user', 'created',)
+    list_display= ('user', 'created', 'lastchanged', 'authority', 'summary',
+                   'status',)
+    search_fields= ('summary', 'authority', 'user',)
+    list_filter= ('created', 'lastchanged', 'status',)
     fields= ('status', ('user', 'authority',), 'summary',)
     ordering= ('-created',)
 

@@ -2,6 +2,7 @@
 {% load i18n %}
 {{ content }}
 
+
 {{ last_msg_created }} {{ last_msg_email_from }}:
 >> {{ last_msg_content }}
 

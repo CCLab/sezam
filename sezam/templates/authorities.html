@@ -32,6 +32,8 @@
       <ul class="nav nav-pills nav-stacked">
         <li><a href="/authority/add/?from={{ request.path|urlencode }}">{% trans "Can't find authority?" %}</a></li>
         <li class="disabled"><a href="#">&nbsp;</a></li>
+        {% if user.is_authenticated %}
+          {% if user.profile.trusted %}
         <li class="disabled"><a href="#">{% trans "List of ALL authorities" %} »</a></li>
         <li>
           <ul class="nav nav-pills">
@@ -39,6 +41,8 @@
             <li><a href="/authority/download/csv/">CSV</a></li>
           </ul>
         </li>
+          {% endif %}
+        {% endif %}
       </ul>
     </div>
     {% endif %}
