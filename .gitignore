@@ -30,7 +30,6 @@ pip-log.txt
 
 #Translations
 *.mo
-*.po
 
 #Mr Developer
 .mr.developer.cfg
