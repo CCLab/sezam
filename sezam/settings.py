@@ -5,6 +5,7 @@
 import os
 import sys
 from platform import platform
+from django.utils.translation import ugettext as _
 
 PROJECT_TITLE = 'zapytajpanstwo.pl'
 
@@ -38,7 +39,11 @@ TIME_ZONE = 'Europe/Warsaw'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'pl-pl'
+LANGUAGE_CODE = 'pl'
+
+LANGUAGES = (
+  ('pl', _('Polish')),
+)
 
 SITE_ID = 1
 
@@ -224,7 +229,7 @@ THUMBNAIL_SIZE = (70, 70)
 
 # Email - mailbox backend settings.
 MAILBOXES = {
-    'default': { # Test mailbox: go to http://poczta.onet.pl/ to check mail.
+    'default': {
         'host': '',
         'port': None,
         'login': '',
