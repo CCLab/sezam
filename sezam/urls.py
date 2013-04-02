@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.views.generic.simple import direct_to_template
 from django.utils.translation import ugettext_lazy as _
 
 # Uncomment the next two lines to enable the admin:
@@ -8,7 +9,7 @@ admin.autodiscover()
 
 urlpatterns= patterns('',
     url(r'^$', 'apps.browser.views.display_index', {'template': 'index.html'}),
-    # url(r'^search/', include('haystack.urls')),
+    url(r'^help/', direct_to_template, {'template': 'help.html'}),
     url(r'^search/', include('apps.browser.urls')),
     url(r'^authority/', include('apps.authority.urls')),
     url(r'^request/', include('apps.pia_request.urls')),

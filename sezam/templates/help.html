@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% load i18n %}
+
+<div class="container">
+  <div class="row span7">
+    <span name="about"/>
+    <h2>{% trans 'About' %} {{ resource_name }}</h2>
+    <p>{% trans 'About text' %}</p>
+  </div>
+</div>
+
+{% endblock %}

@@ -18,10 +18,10 @@
             {% if user.is_authenticated %}
               {% ifequal user thread.0.request.user %}
             <li class="nav-header">{% trans 'Only' %} {{ thread.0.request.user.get_full_name }}</li>
-            <li><a href="/request/{{ request_id }}/reply/#form_reply">Write a reply</a></li>
+            <li><a href="/request/{{ request_id }}/reply/#form_reply">{% trans 'Write a reply' %}</a></li>
             <li class="dropdown">
                 <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                    Update the status of this request
+                    {% trans 'Update the status of this request' %}
                     <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
@@ -36,11 +36,11 @@
         </div>
 
         <h3>{% trans 'Offensive? Unsuitable?' %}</h3>
-        <p>{% trans 'Requests for personal information and vexatious requests are not considered valid for FOI purposes' %} (<a href="/help/about/">{% trans 'read more' %}</a>).</p>
+        <p>{% trans 'Requests for personal information and vexatious requests are not considered valid for FOI purposes' %} (<a href="/help/#about">{% trans 'read more' %}</a>).</p>
         <p>{% trans "If you believe this request is not suitable, you can report it for attention by the site administrators." %}).</p>
         <div class="nav nav-pills nav-stacked">
           <ul class="nav nav-list">
-            <li class="active"><a href="/request/{{ thread.0.request.id }}/report/">Report this request</a></li>
+            <li class="active"><a href="/request/{{ thread.0.request.id }}/report/">{% trans 'Report this request' %}</a></li>
           </ul>
         </div>
 

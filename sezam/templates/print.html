@@ -7,9 +7,13 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    {% if not download %}
     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/sz.style.css" rel="stylesheet">
+    {% else %}
+    <link href="{{ STATIC_URL }}css/sz.print.css" rel="stylesheet">
+    {% endif %}
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -22,6 +26,34 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
+
+    <!-- Support for Polish symbols -->
+    <style type="text/css">   
+      @font-face {  
+      font-family: "arial", "helvetica", "symbol";
+      src: url({{ STATIC_URL }}font/arial.ttf);  
+      }  
+  
+      @font-face {  
+      font-family: "Comic Sans" ,"wingdings";
+      src: url({{ STATIC_URL }}font/Comic_Sans_MS.ttf);  
+      }
+
+      @page {  
+      margin: 1cm;  
+      margin-bottom: 2.5cm;  
+      @frame footer {  
+      -pdf-frame-content: footerContent;  
+      bottom: 2cm;  
+      margin-left: 1cm;  
+      margin-right: 1cm;  
+      height: 1cm;  
+      }  
+
+      html, body, table, caption, tbody, tfoot, thead, tr, th, td, div {
+      font-family: "arial";
+      }
+    </style>
 
     <title>{{ page_title|default:""}} {% if page_title %}-{% endif %} {{ resource_name }}</title>
   </head>

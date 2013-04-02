@@ -381,11 +381,12 @@ def update_user_message(msg, notification, kind):
     {
         'success': [<notifications>],
         'warning': [<notifications>],
+        'warning_yesno': [<notifications>],
         'fail': [<errors>]
     }
     Anything else is considered as 'info'.
     """
-    kinds= ('success', 'warning', 'fail',)
+    kinds= ('success', 'warning', 'warning_yesno', 'fail',)
     if kind not in kinds:
         kind= 'info'
     notifications= msg.pop(kind, [])
@@ -453,11 +454,14 @@ def render_to_pdf(template_src, context_dict, **kwargs):
     Returns a response of MIME type 'application/pdf'
     """
     context_instanse= kwargs.get('context', None)
+    context_dict.update({'download': True})
     result= StringIO.StringIO()
     try:
         html= render_to_string(template_src, context_dict, context_instanse)
-        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result)
+        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
+                               encoding="utf8")
     except xhtml2pdf.w3c.cssParser.CSSParseError:
         html= render_to_string(template_src, context_dict, None)
-        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result)
+        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
+                               encoding="utf8")
     return pdf, result

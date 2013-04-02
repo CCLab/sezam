@@ -5,7 +5,7 @@ from django import forms
 from apps.vocabulary.models import AuthorityProfile
 from apps.pia_request.models import PIARequestDraft
 
-REQUEST_BODY_TEMPLATE= _(u"Dear %(name)s, %(space3)sYours faithfully, %(space1)s%(user_name)s")
+REQUEST_BODY_TEMPLATE= _(u"Dear Sir/Madam, %(space3)sYours faithfully %(space1)s%(user_name)s")
 SPACER="""
 """
 
@@ -68,7 +68,6 @@ class MakeRequestForm(forms.ModelForm):
                 self.fields['body'].initial= initial['body']
             except KeyError:
                 self.fields['body'].initial= REQUEST_BODY_TEMPLATE % {
-                    'name': initial['authority'][0].official_short_name(),
                     'user_name': initial['user'].get_full_name(),
                     'space3': SPACER*3, 'space1': SPACER}
             try:
@@ -77,7 +76,7 @@ class MakeRequestForm(forms.ModelForm):
                 self.fields['subject'].initial= ''
         else:
             self.fields['body'].initial= REQUEST_BODY_TEMPLATE % {
-                'name': ' ', 'user_name': ' ', 'space3': SPACER*3, 'space1': SPACER}
+                'user_name': ' ', 'space3': SPACER*3, 'space1': SPACER}
 
         # Draft is a PIAMessage, so the e-mails should always be filled.
         ctrl= DraftFormControl().ensure_emails(self)
@@ -126,7 +125,6 @@ class CommentForm(forms.Form):
     """
     comment= forms.CharField(label=_(u'Your comment here'),
         widget=forms.Textarea(attrs={'class': 'span6', 'id': 'id_comment'}))
-
 
 class PIAFilterForm(forms.Form):
     """

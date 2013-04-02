@@ -72,20 +72,23 @@ def check_overdue():
     Executed daily at midnight.
     Returns status of completion.
     """
-    when= datetime.utcnow().replace(tzinfo=utc) - timedelta(days=OVERDUE_DAYS)
     total_overdue_requests= 0
-    in_progress= get_request_status('in_progress')
-    for pia_request in PIARequest.objects.filter(
-            created__lt=when, status=in_progress):
-        if PIAThread.objects.filter(
-                request=pia_request, is_response=True).count() == 0:
+
+    # Process overdue requests (those remain unanswered for OVERDUE_DAYS).
+    when= datetime.utcnow().replace(tzinfo=utc) - timedelta(days=OVERDUE_DAYS)
+    in_progress= 'in_progress'
+    for pia_request in PIARequest.objects.filter(created__lt=when,
+                                                 status=in_progress):
+        if PIAThread.objects.filter(request=pia_request,
+                                    is_response=True).count() == 0:
             total_overdue_requests += 1
-            # Send a reminder to the Authority
-            reminder_sent= send_reminder(pia_request)
-            if reminder_sent:
-                # Send an overdue report to user.
-                report_sent= send_report(pia_request, status='overdue',
-                    template='emails/report_overdue_to_user.txt')
+            
+            # Send a reminder to the Authority.
+            send_reminder(pia_request)
+            # Send an overdue report to user.
+            send_report(pia_request,
+                        status='overdue',
+                        template='emails/report_overdue_to_user.txt')
 
             # Set 'overdue' status to the request:
             # this doesn't depend on sending messages - even if there are errors
@@ -95,8 +98,31 @@ def check_overdue():
                 pia_request.save()
             except Exception as e:
                 pass
-    return AppMessage(
-        'CheckOverdueComplete', value=total_overdue_requests).message
+
+    # Process long_overdue requests (those that remain unanswered for twice OVERDUE_DAYS).
+    when= datetime.utcnow().replace(tzinfo=utc) - timedelta(days=OVERDUE_DAYS * 2)
+    in_progress= ['in_progress', 'overdue']
+    for pia_request in PIARequest.objects.filter(created__lt=when,
+                                                 status__in=in_progress):
+        if PIAThread.objects.filter(request=pia_request,
+                                    is_response=True).count() == 0:
+            total_overdue_requests += 1
+
+            # Send a reminder to the Authority.
+            send_reminder(pia_request,
+                          email_template='emails/reminder_long_overdue.txt')
+            # Send an overdue report to user.
+            send_report(pia_request,
+                        status='long_overdue',
+                        template='emails/report_long_overdue_to_user.txt')
+            # Set 'long_overdue' status to the request.
+            pia_request.status= 'long_overdue'
+            try:
+                pia_request.save()
+            except Exception as e:
+                pass
+
+    return AppMessage('CheckOverdueComplete').message % total_overdue_requests
 
 
 def new_message_in_thread(request_id, msg):
@@ -182,8 +208,10 @@ def send_reminder(pia_request, overdue_date=None, **kwargs):
         print AppMessage('AuthEmailNotFound', value=(authority.slug, authority.name,)).message
         return None
     email_from= email_from_name(pia_request.user.get_full_name(),
-                                id=pia_request.id, delimiter='.')
-    message_subject= get_message_subject('overdue', number=pia_request.pk,
+                                id=pia_request.id,
+                                delimiter='.')
+    message_subject= get_message_subject('overdue',
+                                         number=pia_request.pk,
                                          date=overdue_date)
     message_content= render_to_string(template, { 'email_to': email_to,
         'request_id': str(pia_request.pk), 'request_date': overdue_date,
@@ -223,7 +251,7 @@ def send_report(pia_request, status, **kwargs):
         'authority': authority, 'user': user, 'domain': get_domain_name()})
     message_request= EmailMessage(message_subject, message_content,
         DEFAULT_FROM_EMAIL, [email_to], headers = {'Reply-To': email_from})
-    try: # sending the message to the Authority, check if it doesn't fail.
+    try: # sending the message to the User, check if it doesn't fail.
         message_request.send(fail_silently=False)
     except Exception as e:
         print AppMessage('MailSendFailed').message % e
@@ -243,6 +271,7 @@ def get_message_subject(status, **kwargs):
             datetime.utcnow().replace(tzinfo=utc), '%d %B %Y')
     subjects= {
         'overdue': _(u'Public Information Request ') + str(number) + _(u' is overdue from ') + date,
+        'long_overdue': _(u'Public Information Request ') + str(number) + _(u' is long overdue - from ') + date,
         'response_received': _(u'The response received for the Public Information Request ') + \
             str(number) + _(u' from ') + date
         }

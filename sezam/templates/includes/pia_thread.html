@@ -1,15 +1,12 @@
   {% load i18n %}
   {% load backendtemplates %}
-
-      <!-- <div class="span7"> -->
-      
-      <!-- </div> -->
-
       <!-- Thread -->
       <div class="span7">
+        {% ifnotequal mode 'print' %}
         <div class="row">
           {% include "includes/user_message.html" %}
         </div>
+        {% endifnotequal %}
         {% for msg in thread %}
            <div class="row">
               {% if forloop.first %}
@@ -86,8 +83,10 @@
           {% include "includes/pia_thread_annotate_form.html" %}
         {% else %}
           <div class="row">&nbsp;</div>
+          {% ifnotequal mode 'print' %}
           <div class="row">
             {% include "includes/user_message.html" %}
           </div>
+          {% endifnotequal %}
         {% endif %}
       </div>

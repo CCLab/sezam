@@ -60,11 +60,13 @@ def request_list(request, status=None, **kwargs):
     except (EmptyPage, InvalidPage):
         results= paginator.page(paginator.num_pages)
 
-    return render_to_response(template, {'page': results,
-        'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': _(u'View and search requests'), 'urlparams': urlparams},
+    return render_to_response(template,
+                              {'page': results,
+                               'form': PIAFilterForm(initial=initial),
+                               'user_message': user_message,
+                               'urlparams': urlparams,
+                               'page_title': _(u'View and search requests')},
         context_instance=RequestContext(request))
-
 
 @login_required
 def new_request(request, slug=None, **kwargs):
@@ -92,10 +94,9 @@ def new_request(request, slug=None, **kwargs):
         else: # Nothing selected.
             return redirect(request.META.get('HTTP_REFERER'))
     initial= {'authority': authority, 'user': request.user}
-    return render_to_response(template, {
-        'form': MakeRequestForm(initial=initial)},
+    return render_to_response(template,
+        {'form': MakeRequestForm(initial=initial)},
         context_instance=RequestContext(request))
-
 
 def process_attachments(msg, attachments, **kwargs):
     """
@@ -637,7 +638,6 @@ def more_like_this(pia_request, limit=None):
         except: pass
     return similar_items
 
-
 def awaiting_message(curr_user, request_user):
     """
     In case of 'awaiting classification' status, return a proper user_message.
@@ -652,7 +652,6 @@ def awaiting_message(curr_user, request_user):
             return AppMessage('ClassifyRespUser').message
         else:
             return AppMessage('ClassifyRespAlien').message
-
 
 def view_thread(request, id=None, **kwargs):
     """
@@ -842,11 +841,14 @@ def similar_requests(request, id=None, **kwargs):
     except (EmptyPage, InvalidPage):
         results= paginator.page(paginator.num_pages)
 
-    return render_to_response(template, {'page': results, 'query': rq.summary,
-        'form': PIAFilterForm(initial=initial), 'user_message': user_message,
-        'page_title': _(u'Browse similar requests'),
-        'urlparams': urlparams}, context_instance=RequestContext(request))
-
+    return render_to_response(template,
+                              {'page': results,
+                               'query': rq.summary,
+                               'urlparams': urlparams,
+                               'user_message': user_message,
+                               'form': PIAFilterForm(initial=initial),
+                               'page_title': _(u'Browse similar requests')},
+        context_instance=RequestContext(request))
 
 @login_required
 def reply_to_thread(request, id=None, **kwargs):
@@ -968,7 +970,11 @@ def reply_to_thread(request, id=None, **kwargs):
             return redirect('/request/%s/#form_reply' % id)
 
         else:
-            user_message= {} # Ignore anything said so far.
+            # Ignore anything said so far.
+            user_message= {}
+
+            # Used to distinguish answers of Authority manually entered by User.
+            disclaimer= ''
 
             # SCENARIO 3
             # User wants to send the message -> collect data and attachments
@@ -1010,6 +1016,9 @@ def reply_to_thread(request, id=None, **kwargs):
                                           id=id, delimiter='.')
                 email_from= msg.request.authority.email
                 is_response= True
+                disclaimer= AppMessage('DisclaimerManualReply').message % {
+                        'auth': msg.request.authority.name,
+                        'domain': get_domain_name()}
                 success_message= _(u'Reply saved successfully.')
 
             # Common part of SCENARIOS 3 and 4
@@ -1019,7 +1028,7 @@ def reply_to_thread(request, id=None, **kwargs):
                            'email_to': email_to,
                            'email_from': email_from,
                            'subject': reply_draft.subject,
-                           'body': reply_draft.body}
+                           'body': disclaimer + reply_draft.body}
             pia_msg= PIAThread(**message_data)
             try:
                 pia_msg.save()
@@ -1139,27 +1148,35 @@ def report_request(request, id=None, **kwargs):
     and updates user message.
     """
     user_message= None
-    if request.method == 'GET': # Show empty form to fill.
-        if id is not None:
-            rq= None
-            try:
-                pia_request= PIARequest.objects.get(id=int(id))
-            except (ValueError, PIARequest.DoesNotExist):
-                user_message= update_user_message({}, 'No such request!', 'fail')
-            else:
-                subject= "The request %s is reported to be offensive or unsuitable" % id
-                email_template= kwargs.get('email_template', 'emails/report_request.txt')
-                message_content= render_to_string(email_template,
-                                                  {'user': request.user,
-                                                   'pia_request': pia_request},
-                    context_instance=RequestContext(request))
-                headers= {'reply_to': request.user.email}
-                send_mail_managers(subject, message_content,
-                                   headers=headers,
-                                   fail_silently=False,
-                                   connection=None)
-                user_message= update_user_message({},
-                    'The report sent to the managers!', 'success')
+    if request.method == 'GET':
+        user_message= update_user_message({},
+                        AppMessage('ReportRequest').message % get_domain_name(),
+                        'warning_yesno')
+    elif request.method == 'POST':
+        if request.POST.get('cancel', None):
+            pass
+        elif request.POST.get('proceed', None):
+            if id is not None:
+                rq= None
+                try:
+                    pia_request= PIARequest.objects.get(id=int(id))
+                except (ValueError, PIARequest.DoesNotExist):
+                    user_message= update_user_message({}, 'No such request!', 'fail')
+                else:
+                    subject= _(u'The request is reported to be offensive or unsuitable: ') + str(id)
+                    email_template= kwargs.get('email_template', 'emails/report_request.txt')
+                    message_content= render_to_string(email_template,
+                                                      {'user': request.user,
+                                                       'pia_request': pia_request},
+                        context_instance=RequestContext(request))
+                    headers= {'reply_to': request.user.email}
+                    send_mail_managers(subject, message_content,
+                                       headers=headers,
+                                       fail_silently=False,
+                                       connection=None)
+                    user_message= update_user_message({},
+                                    'The report sent to the managers!',
+                                    'success')
     if user_message:
         request.session['user_message']= user_message
     return redirect(request.META.get('HTTP_REFERER'))
@@ -1190,7 +1207,6 @@ def _do_discard_request_draft(draft):
     except Exception as e:
         return e
     return None # No news are good news
-    
 
 @login_required
 def discard_request_draft(request, id=None, **kwargs):
@@ -1213,10 +1229,11 @@ def discard_request_draft(request, id=None, **kwargs):
         for draft_id in draft_id_list:
             if _do_discard_request_draft(draft_id):
                 request.session['user_message']= update_user_message(
-                    user_message, AppMessage('DraftDiscardFailed',
-                    value=(draft_id,)).message % result, 'fail')
+                    user_message,
+                    AppMessage('DraftDiscardFailed',
+                               value=(draft_id,)).message % result,
+                    'fail')
     return redirect(request.META.get('HTTP_REFERER'))
-
 
 def create_request_notification(user, obj, id, name, events):
     """

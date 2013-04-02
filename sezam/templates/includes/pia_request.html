@@ -33,7 +33,7 @@
           <div class="span3 pull-right">
             <p>{% trans "Write your request in <strong>simple, precise language</strong>." %}</p>
             <p>{% trans "Ask for <strong>specific</strong> documents or information, this site is not suitable for general enquiries."%}</p>
-            <p>{% trans "Keep it <strong>focused</strong>, you'll be more likely to get what you want" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
+            <p>{% trans "Keep it <strong>focused</strong>, you'll be more likely to get what you want" %} (<a href="/help/#requesting">{% trans "why?" %}</a>).</p>
             {% if not request_id %}
             <div class="form-actions">
               <input class="btn btn-primary" name="preview_request" type="submit" value='{% trans "Preview request" %}' />
@@ -67,7 +67,7 @@
       <input class="btn" name="discard_request_draft" type="submit" value='{% trans "Discard" %}' />
       <div class="span3 pull-right">
         <p>{% trans "Check you haven't included any personal information." %}</p>
-        <p>{% trans "Your name, request and any responses will appear in search engines" %} (<a href="/help/requesting#focused">{% trans "why?" %}</a>).</p>
+        <p>{% trans "Your name, request and any responses will appear in search engines" %} (<a href="/help/#requesting">{% trans "why?" %}</a>).</p>
       </div>
     </div>
   </form>

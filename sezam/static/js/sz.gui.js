@@ -45,7 +45,7 @@ $(function() {
         STRING:{
             file: '<em title="Kliknij, aby usunąć" onclick="$(this).parent().prev().click()">$file</em>',
             remove: '<i class="icon-remove-sign"></i>',
-            selected: 'Selecionado: $file',
+            selected: 'Wybrano: $file',
             denied: 'Nie możesz wybrać plik typu $ext.\nSpróbuj ponownie...',
             duplicate: 'Ten plik został już wybrany:\n$file!'
         }

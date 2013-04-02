@@ -1,3 +1,4 @@
+{% load i18n %}
     {% autoescape off %}
     {% if user_message %}
       {% if user_message.success %}
@@ -18,6 +19,18 @@
       {% if user_message.info %}
         {% for notification in user_message.info %}
     <div class="alert alert-info"><button class="close" data-dismiss="alert" type="button">×</button>{{ notification }}</div>
+        {% endfor %}
+      {% endif%}
+      {% if user_message.warning_yesno %}
+        {% for notification in user_message.warning_yesno %}
+    <div class="alert">
+      <form method="post" action="/request/{{ thread.0.request.id }}/report/">
+      {% csrf_token %}
+      <p>{{ notification }}</p>
+      <input class="btn btn-primary" name="proceed" type="submit" value="{% trans 'Proceed' %}">
+      <input class="btn" name="cancel" type="submit" value="{% trans 'Cancel' %}"></p>
+      </form>
+    </div>
         {% endfor %}
       {% endif%}
     {% endif %}

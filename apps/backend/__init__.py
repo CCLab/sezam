@@ -512,7 +512,7 @@ APP_MESSAGES = {
         'message': _(u'Email check complete, received %s messages')
         },
     'CheckOverdueComplete': {
-        'message': _(u'Complete checking overdue requests. Total number of overdue requests: ')
+        'message': _(u'Complete checking overdue requests. Total number of overdue requests: %s')
         },
     'ClassifyRespUser': {
         'message': _(u'The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, set the appropriate status, please.')
@@ -553,8 +553,14 @@ APP_MESSAGES = {
     'AddDetailsToThread': {
         'message': _(u"<h5>Status was updated successfully.</h5><p>If you have any additional information concerning this request (for example, an answer sent via snail mail), and feel like adding something would help users to find the right answer to their requests in the future, please, use <a href=\"%(url)s\">this form</a>.<br/>Thank you!</p>"),
         },
+    'ReportRequest': {
+        'message': _(u"<strong>You are going to report this request as offensive or unsuitable!</strong><br>An email will be sent to the managers of %s.<p>Are you sure you want to proceed?</p>"),
+        },
     'AuthorCantFollow': {
         'message': _(u'You cannot follow your own request. As its author you are getting all updates anyway.'),
+        },
+    'DisclaimerManualReply': {
+        'message': _(u"Warning! This answer or additional information from %(auth)s was obtained without use of the service %(domain)s and entered manually by the user, who originally asked the question.\n-------------\n"),
         },
     }
 
