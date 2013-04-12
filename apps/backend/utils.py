@@ -456,17 +456,12 @@ def render_to_pdf(template_src, context_dict, **kwargs):
     context_instanse= kwargs.get('context', None)
     context_dict.update({'download': True})
     result= StringIO.StringIO()
-    # try:
-    #     html= render_to_string(template_src, context_dict, context_instanse)
-    #     pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
-    #                            encoding="utf8")
-    # except xhtml2pdf.w3c.cssParser.CSSParseError:
-    #     html= render_to_string(template_src, context_dict, None)
-    #     pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
-    #                            encoding="utf8")
-
-    html= render_to_string(template_src, context_dict, context_instanse)
-    pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
-                           encoding="utf8")
-
+    try:
+        html= render_to_string(template_src, context_dict, context_instanse)
+        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
+                               encoding="utf8")
+    except xhtml2pdf.w3c.cssParser.CSSParseError:
+        html= render_to_string(template_src, context_dict, None)
+        pdf= pisa.pisaDocument(StringIO.StringIO(html.encode("UTF-8")), result,
+                               encoding="utf8")
     return pdf, result
