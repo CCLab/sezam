@@ -7,12 +7,12 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    {% if not download %}
+    {% if download %}
+    <link href="{{ STATIC_URL }}css/sz.print.css" rel="stylesheet">
+    {% else %}
     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/sz.style.css" rel="stylesheet">
-    {% else %}
-    <link href="{{ STATIC_URL }}css/sz.print.css" rel="stylesheet">
     {% endif %}
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
