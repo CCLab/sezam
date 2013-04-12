@@ -7,10 +7,13 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    {% if download %}
+    <link href="{{ STATIC_URL }}css/sz.print.css" rel="stylesheet">
+    {% else %}
     <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/style.css" rel="stylesheet">
     <link href="{{ STATIC_URL }}css/sz.style.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/sz.print.css" rel="stylesheet">
+    {% endif %}
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -63,5 +66,10 @@
   {% block content %}{% endblock %}
 
   {% block content-related %}{% endblock %}
-  </body>
+
+  {% if download %}
+  {% trans "This is download version of the web-page" %}
+  {% endif %}
+
+</body>
 </html>
