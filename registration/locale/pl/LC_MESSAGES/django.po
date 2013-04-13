@@ -3,23 +3,23 @@
 # This file is distributed under the same license as the django-registration package.
 # Jarek Zgoda <jarek.zgoda@gmail.com>, 2007.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-02 17:41+0200\n"
-"PO-Revision-Date: 2007-12-15 12:45+0100\n"
-"Last-Translator: Jarek Zgoda <jarek.zgoda@gmail.com>\n"
+"PO-Revision-Date: 2013-04-13 18:25+0100\n"
+"Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
 "Language-Team: Polish <LL@li.org>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
 
 #: admin.py:23
 msgid "Activate users"
-msgstr ""
+msgstr "Aktywuj użytkownika"
 
 #: admin.py:43
 #, fuzzy
@@ -51,7 +51,7 @@ msgstr "hasło"
 msgid ""
 "Too weak! Password must include special characters and numbers and be at "
 "least 8 symbols long."
-msgstr ""
+msgstr "Hasło jest zbyt słabe."
 
 #: forms.py:48
 #, fuzzy
@@ -60,11 +60,11 @@ msgstr "hasło (ponownie)"
 
 #: forms.py:60
 msgid "A user with that username already exists."
-msgstr ""
+msgstr "Użytkownik z tą nazwą już istnieje."
 
 #: forms.py:74
 msgid "The two password fields didn't match."
-msgstr ""
+msgstr "Wprowadzone hasła różnią się."
 
 #: forms.py:85 forms.py:103
 msgid "I have read and agree to the Terms of Service"
@@ -76,11 +76,11 @@ msgstr "Musisz zaakceptować regulamin, aby się zarejestrować"
 
 #: forms.py:98
 msgid "First name"
-msgstr ""
+msgstr "Imię"
 
 #: forms.py:101
 msgid "Last name"
-msgstr ""
+msgstr "Nazwisko"
 
 #: forms.py:113
 msgid ""
@@ -114,7 +114,16 @@ msgstr "profile rejestracji"
 
 #: views.py:190
 msgid "This email is fake! Please, type a true one."
-msgstr ""
+msgstr "To nie jest prawidłowy adres email."
+
+msgid "Old password"
+msgstr "Stare hasło"
+
+msgid "New password"
+msgstr "Nowe hasło"
+
+msgid "New password confirmation"
+msgstr "Powtórz nowe hasło"
 
 #~ msgid "This username is already taken. Please choose another."
 #~ msgstr "Ta nazwa użytkownika jest już zajęta. Wybierz inną."
