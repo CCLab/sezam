@@ -1962,3 +1962,13 @@ msgid ""
 msgstr ""
 "To jest odpowiedź na wniosek o informację publiczną, która została "
 "uzyskana w inny sposób niż drogą e-mailową, i dodana ręcznie."
+
+msgid "Old password"
+msgstr "Stare hasło"
+
+msgid "New password"
+msgstr "Nowe hasło"
+
+msgid "New password confirmation"
+msgstr "Powtórz nowe hasło"
+
