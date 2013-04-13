@@ -7,2446 +7,67 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ZapytajPanstwo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-01 11:46+0100\n"
-"PO-Revision-Date: 2013-04-11 21:37+0100\n"
+"POT-Creation-Date: 2013-04-13 17:31+0200\n"
+"PO-Revision-Date: 2013-04-13 17:57+0100\n"
 "Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
-"Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpolske.pl>\n"
+"Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpanstwo.pl>\n"
+"Language: Polish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 1.5.5\n"
-"Language: Polish\n"
 
-#: apps/authority/forms.py:8 apps/authority/forms.py:12
-#: apps/vocabulary/models.py:19 apps/vocabulary/models.py:52
-#: apps/vocabulary/models.py:161 sezam/templates/emails/authority_added.txt:9
-msgid "Name"
-msgstr "Imię"
+#: settings.py:45
+msgid "Polish"
+msgstr "polski"
 
-#: apps/authority/forms.py:10
-msgid "Position"
-msgstr "Stanowisko"
-
-#: apps/authority/forms.py:14 apps/vocabulary/models.py:163
-#: registration/forms.py:101
-msgid "Last name"
-msgstr "Nazwisko"
-
-#: apps/authority/forms.py:16
-msgid "Street name"
-msgstr "Ulica"
-
-#: apps/authority/forms.py:18
-msgid "Building, floor, office"
-msgstr "Budynek, piętro, biuro"
-
-#: apps/authority/forms.py:20
-msgid "More address data"
-msgstr "Dodatkowe dane adresowe"
-
-#: apps/authority/forms.py:21
-msgid "Line 1"
-msgstr "Linia 1"
-
-#: apps/authority/forms.py:23
-msgid "Line 2"
-msgstr "Linia 2"
-
-#: apps/authority/forms.py:25 apps/userprofile/forms.py:23
-#: apps/vocabulary/models.py:124 apps/vocabulary/models.py:244
-msgid "Postal code"
-msgstr "Kod pocztowy"
-
-#: apps/authority/forms.py:27 apps/userprofile/forms.py:25
-#: apps/vocabulary/models.py:125 apps/vocabulary/models.py:246
-msgid "City"
-msgstr "Miasto"
-
-#: apps/authority/forms.py:29 apps/authority/forms.py:36
-#: apps/authority/forms.py:41 apps/authority/forms.py:45
-msgid "Code"
-msgstr "Kod"
-
-#: apps/authority/forms.py:30
-msgid "Primary number"
-msgstr "Główny numer"
-
-#: apps/authority/forms.py:32 apps/authority/forms.py:39
-#: apps/authority/forms.py:43
-msgid "Number"
-msgstr "Numer"
-
-#: apps/authority/forms.py:34 apps/userprofile/forms.py:34
-#: apps/vocabulary/models.py:133 apps/vocabulary/models.py:255
-msgid "Internal"
-msgstr "Wewnętrzny"
-
-#: apps/authority/forms.py:37
-msgid "More telephones"
-msgstr "Dodatkowe numery"
-
-#: apps/authority/forms.py:47
-msgid "Fax number"
-msgstr "Fax"
-
-#: apps/authority/forms.py:49
-msgid "Primary email"
-msgstr "Główny e-mail"
-
-#: apps/authority/forms.py:51
-msgid "Secretary e-mail"
-msgstr "E-mail do sekretariatu"
-
-#: apps/authority/forms.py:53
-msgid "Info e-mail"
-msgstr "Ogólny email"
-
-#: apps/authority/forms.py:55
-msgid "Official web-site"
-msgstr "Strona internetowa"
-
-#: apps/authority/forms.py:57 apps/vocabulary/models.py:156
-msgid "Public Information Bulletin"
-msgstr "Strona BIP"
-
-#: apps/authority/forms.py:59 apps/vocabulary/models.py:110
-msgid "Description"
-msgstr "Opis"
-
-#: apps/authority/views.py:58 sezam/templates/authorities.html:54
-msgid "Public Authorities"
-msgstr "Administracja publiczna"
-
-#: apps/authority/views.py:249
-msgid "Look for the authority"
-msgstr "Szukaj instytucji"
-
-#: apps/authority/views.py:286
-msgid "New authority in the db: "
-msgstr "Nowa instytucja w bazie"
-
-#: apps/authority/views.py:308
-msgid "Add authority"
-msgstr "Dodaj instytucję"
-
-#: apps/backend/__init__.py:31
-msgid "Afghanistan"
-msgstr ""
-
-#: apps/backend/__init__.py:32
-msgid "Aland Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:33
-msgid "Albania"
-msgstr ""
-
-#: apps/backend/__init__.py:34
-msgid "Algeria"
-msgstr ""
-
-#: apps/backend/__init__.py:35
-msgid "American Samoa"
-msgstr ""
-
-#: apps/backend/__init__.py:36
-msgid "Andorra"
-msgstr ""
-
-#: apps/backend/__init__.py:37
-msgid "Angola"
-msgstr ""
-
-#: apps/backend/__init__.py:38
-msgid "Anguilla"
-msgstr ""
-
-#: apps/backend/__init__.py:39
-msgid "Antigua and Barbuda"
-msgstr ""
-
-#: apps/backend/__init__.py:40
-msgid "Argentina"
-msgstr ""
-
-#: apps/backend/__init__.py:41
-msgid "Armenia"
-msgstr ""
-
-#: apps/backend/__init__.py:42
-msgid "Aruba"
-msgstr ""
-
-#: apps/backend/__init__.py:43
-msgid "Australia"
-msgstr ""
-
-#: apps/backend/__init__.py:44
-msgid "Austria"
-msgstr ""
-
-#: apps/backend/__init__.py:45
-msgid "Azerbaijan"
-msgstr ""
-
-#: apps/backend/__init__.py:46
-msgid "Bahamas"
-msgstr ""
-
-#: apps/backend/__init__.py:47
-msgid "Bahrain"
-msgstr ""
-
-#: apps/backend/__init__.py:48
-msgid "Bangladesh"
-msgstr ""
-
-#: apps/backend/__init__.py:49
-msgid "Barbados"
-msgstr ""
-
-#: apps/backend/__init__.py:50
-msgid "Belarus"
-msgstr ""
-
-#: apps/backend/__init__.py:51
-msgid "Belgium"
-msgstr ""
-
-#: apps/backend/__init__.py:52
-msgid "Belize"
-msgstr ""
-
-#: apps/backend/__init__.py:53
-msgid "Benin"
-msgstr ""
-
-#: apps/backend/__init__.py:54
-msgid "Bermuda"
-msgstr ""
-
-#: apps/backend/__init__.py:55
-msgid "Bhutan"
-msgstr ""
-
-#: apps/backend/__init__.py:56
-msgid "Bolivia"
-msgstr ""
-
-#: apps/backend/__init__.py:57
-msgid "Bosnia and Herzegovina"
-msgstr ""
-
-#: apps/backend/__init__.py:58
-msgid "Botswana"
-msgstr ""
-
-#: apps/backend/__init__.py:59
-msgid "Brazil"
-msgstr ""
-
-#: apps/backend/__init__.py:60
-msgid "British Virgin Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:61
-msgid "Brunei Darussalam"
-msgstr ""
-
-#: apps/backend/__init__.py:62
-msgid "Bulgaria"
-msgstr ""
-
-#: apps/backend/__init__.py:63
-msgid "Burkina Faso"
-msgstr ""
-
-#: apps/backend/__init__.py:64
-msgid "Burundi"
-msgstr ""
-
-#: apps/backend/__init__.py:65
-msgid "Cambodia"
-msgstr ""
-
-#: apps/backend/__init__.py:66
-msgid "Cameroon"
-msgstr ""
-
-#: apps/backend/__init__.py:67
-msgid "Canada"
-msgstr ""
-
-#: apps/backend/__init__.py:68
-msgid "Cape Verde"
-msgstr ""
-
-#: apps/backend/__init__.py:69
-msgid "Cayman Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:70
-msgid "Central African Republic"
-msgstr ""
-
-#: apps/backend/__init__.py:71
-msgid "Chad"
-msgstr ""
-
-#: apps/backend/__init__.py:72
-msgid "Channel Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:73
-msgid "Chile"
-msgstr ""
-
-#: apps/backend/__init__.py:74
-msgid "China"
-msgstr ""
-
-#: apps/backend/__init__.py:75
-msgid "China - Hong Kong"
-msgstr ""
-
-#: apps/backend/__init__.py:76
-msgid "China - Macao"
-msgstr ""
-
-#: apps/backend/__init__.py:77
-msgid "Colombia"
-msgstr ""
-
-#: apps/backend/__init__.py:78
-msgid "Comoros"
-msgstr ""
-
-#: apps/backend/__init__.py:79
-msgid "Congo"
-msgstr ""
-
-#: apps/backend/__init__.py:80
-msgid "Cook Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:81
-msgid "Costa Rica"
-msgstr ""
-
-#: apps/backend/__init__.py:82
-msgid "Cote d'Ivoire"
-msgstr ""
-
-#: apps/backend/__init__.py:83
-msgid "Croatia"
-msgstr ""
-
-#: apps/backend/__init__.py:84
-msgid "Cuba"
-msgstr ""
-
-#: apps/backend/__init__.py:85
-msgid "Cyprus"
-msgstr ""
-
-#: apps/backend/__init__.py:86
-msgid "Czech Republic"
-msgstr ""
-
-#: apps/backend/__init__.py:87
-msgid "Democratic People's Republic of Korea"
-msgstr ""
-
-#: apps/backend/__init__.py:88
-msgid "Democratic Republic of the Congo"
-msgstr ""
-
-#: apps/backend/__init__.py:89
-msgid "Denmark"
-msgstr ""
-
-#: apps/backend/__init__.py:90
-msgid "Djibouti"
-msgstr ""
-
-#: apps/backend/__init__.py:91
-msgid "Dominica"
-msgstr ""
-
-#: apps/backend/__init__.py:92
-msgid "Dominican Republic"
-msgstr ""
-
-#: apps/backend/__init__.py:93
-msgid "Ecuador"
-msgstr ""
-
-#: apps/backend/__init__.py:94
-msgid "Egypt"
-msgstr ""
-
-#: apps/backend/__init__.py:95
-msgid "El Salvador"
-msgstr ""
-
-#: apps/backend/__init__.py:96
-msgid "Equatorial Guinea"
-msgstr ""
-
-#: apps/backend/__init__.py:97
-msgid "Eritrea"
-msgstr ""
-
-#: apps/backend/__init__.py:98
-msgid "Estonia"
-msgstr ""
-
-#: apps/backend/__init__.py:99
-msgid "Ethiopia"
-msgstr ""
-
-#: apps/backend/__init__.py:100
-msgid "Faeroe Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:101
-msgid "Falkland Islands (Malvinas)"
-msgstr ""
-
-#: apps/backend/__init__.py:102
-msgid "Fiji"
-msgstr ""
-
-#: apps/backend/__init__.py:103
-msgid "Finland"
-msgstr ""
-
-#: apps/backend/__init__.py:104
-msgid "France"
-msgstr ""
-
-#: apps/backend/__init__.py:105
-msgid "French Guiana"
-msgstr ""
-
-#: apps/backend/__init__.py:106
-msgid "French Polynesia"
-msgstr ""
-
-#: apps/backend/__init__.py:107
-msgid "Gabon"
-msgstr ""
-
-#: apps/backend/__init__.py:108
-msgid "Gambia"
-msgstr ""
-
-#: apps/backend/__init__.py:109
-msgid "Georgia"
-msgstr ""
-
-#: apps/backend/__init__.py:110
-msgid "Germany"
-msgstr ""
-
-#: apps/backend/__init__.py:111
-msgid "Ghana"
-msgstr ""
-
-#: apps/backend/__init__.py:112
-msgid "Gibraltar"
-msgstr ""
-
-#: apps/backend/__init__.py:113
-msgid "Greece"
-msgstr ""
-
-#: apps/backend/__init__.py:114
-msgid "Greenland"
-msgstr ""
-
-#: apps/backend/__init__.py:115
-msgid "Grenada"
-msgstr ""
-
-#: apps/backend/__init__.py:116
-msgid "Guadeloupe"
-msgstr ""
-
-#: apps/backend/__init__.py:117
-msgid "Guam"
-msgstr ""
-
-#: apps/backend/__init__.py:118
-msgid "Guatemala"
-msgstr ""
-
-#: apps/backend/__init__.py:119
-msgid "Guernsey"
-msgstr ""
-
-#: apps/backend/__init__.py:120
-msgid "Guinea"
-msgstr ""
-
-#: apps/backend/__init__.py:121
-msgid "Guinea-Bissau"
-msgstr ""
-
-#: apps/backend/__init__.py:122
-msgid "Guyana"
-msgstr ""
-
-#: apps/backend/__init__.py:123
-msgid "Haiti"
-msgstr ""
-
-#: apps/backend/__init__.py:124
-msgid "Holy See (Vatican City)"
-msgstr ""
-
-#: apps/backend/__init__.py:125
-msgid "Honduras"
-msgstr ""
-
-#: apps/backend/__init__.py:126
-msgid "Hungary"
-msgstr ""
-
-#: apps/backend/__init__.py:127
-msgid "Iceland"
-msgstr ""
-
-#: apps/backend/__init__.py:128
-msgid "India"
-msgstr ""
-
-#: apps/backend/__init__.py:129
-msgid "Indonesia"
-msgstr ""
-
-#: apps/backend/__init__.py:130
-msgid "Iran"
-msgstr ""
-
-#: apps/backend/__init__.py:131
-msgid "Iraq"
-msgstr ""
-
-#: apps/backend/__init__.py:132
-msgid "Ireland"
-msgstr ""
-
-#: apps/backend/__init__.py:133
-msgid "Isle of Man"
-msgstr ""
-
-#: apps/backend/__init__.py:134
-msgid "Israel"
-msgstr ""
-
-#: apps/backend/__init__.py:135
-msgid "Italy"
-msgstr ""
-
-#: apps/backend/__init__.py:136
-msgid "Jamaica"
-msgstr ""
-
-#: apps/backend/__init__.py:137
-msgid "Japan"
-msgstr ""
-
-#: apps/backend/__init__.py:138
-msgid "Jersey"
-msgstr ""
-
-#: apps/backend/__init__.py:139
-msgid "Jordan"
-msgstr ""
-
-#: apps/backend/__init__.py:140
-msgid "Kazakhstan"
-msgstr ""
-
-#: apps/backend/__init__.py:141
-msgid "Kenya"
-msgstr ""
-
-#: apps/backend/__init__.py:142
-msgid "Kiribati"
-msgstr ""
-
-#: apps/backend/__init__.py:143
-msgid "Kuwait"
-msgstr ""
-
-#: apps/backend/__init__.py:144
-msgid "Kyrgyzstan"
-msgstr ""
-
-#: apps/backend/__init__.py:145
-msgid "Lao People's Democratic Republic"
-msgstr ""
-
-#: apps/backend/__init__.py:146
-msgid "Latvia"
-msgstr ""
-
-#: apps/backend/__init__.py:147
-msgid "Lebanon"
-msgstr ""
-
-#: apps/backend/__init__.py:148
-msgid "Lesotho"
-msgstr ""
-
-#: apps/backend/__init__.py:149
-msgid "Liberia"
-msgstr ""
-
-#: apps/backend/__init__.py:150
-msgid "Libyan Arab Jamahiriya"
-msgstr ""
-
-#: apps/backend/__init__.py:151
-msgid "Liechtenstein"
-msgstr ""
-
-#: apps/backend/__init__.py:152
-msgid "Lithuania"
-msgstr ""
-
-#: apps/backend/__init__.py:153
-msgid "Luxembourg"
-msgstr ""
-
-#: apps/backend/__init__.py:154
-msgid "Macedonia"
-msgstr ""
-
-#: apps/backend/__init__.py:155
-msgid "Madagascar"
-msgstr ""
-
-#: apps/backend/__init__.py:156
-msgid "Malawi"
-msgstr ""
-
-#: apps/backend/__init__.py:157
-msgid "Malaysia"
-msgstr ""
-
-#: apps/backend/__init__.py:158
-msgid "Maldives"
-msgstr ""
-
-#: apps/backend/__init__.py:159
-msgid "Mali"
-msgstr ""
-
-#: apps/backend/__init__.py:160
-msgid "Malta"
-msgstr ""
-
-#: apps/backend/__init__.py:161
-msgid "Marshall Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:162
-msgid "Martinique"
-msgstr ""
-
-#: apps/backend/__init__.py:163
-msgid "Mauritania"
-msgstr ""
-
-#: apps/backend/__init__.py:164
-msgid "Mauritius"
-msgstr ""
-
-#: apps/backend/__init__.py:165
-msgid "Mayotte"
-msgstr ""
-
-#: apps/backend/__init__.py:166
-msgid "Mexico"
-msgstr ""
-
-#: apps/backend/__init__.py:167
-msgid "Micronesia, Federated States of"
-msgstr ""
-
-#: apps/backend/__init__.py:168
-msgid "Monaco"
-msgstr ""
-
-#: apps/backend/__init__.py:169
-msgid "Mongolia"
-msgstr ""
-
-#: apps/backend/__init__.py:170
-msgid "Montenegro"
-msgstr ""
-
-#: apps/backend/__init__.py:171
-msgid "Montserrat"
-msgstr ""
-
-#: apps/backend/__init__.py:172
-msgid "Morocco"
-msgstr ""
-
-#: apps/backend/__init__.py:173
-msgid "Mozambique"
-msgstr ""
-
-#: apps/backend/__init__.py:174
-msgid "Myanmar"
-msgstr ""
-
-#: apps/backend/__init__.py:175
-msgid "Namibia"
-msgstr ""
-
-#: apps/backend/__init__.py:176
-msgid "Nauru"
-msgstr ""
-
-#: apps/backend/__init__.py:177
-msgid "Nepal"
-msgstr ""
-
-#: apps/backend/__init__.py:178
-msgid "Netherlands"
-msgstr ""
-
-#: apps/backend/__init__.py:179
-msgid "Netherlands Antilles"
-msgstr ""
-
-#: apps/backend/__init__.py:180
-msgid "New Caledonia"
-msgstr ""
-
-#: apps/backend/__init__.py:181
-msgid "New Zealand"
-msgstr ""
-
-#: apps/backend/__init__.py:182
-msgid "Nicaragua"
-msgstr ""
-
-#: apps/backend/__init__.py:183
-msgid "Niger"
-msgstr ""
-
-#: apps/backend/__init__.py:184
-msgid "Nigeria"
-msgstr ""
-
-#: apps/backend/__init__.py:185
-msgid "Niue"
-msgstr ""
-
-#: apps/backend/__init__.py:186
-msgid "Norfolk Island"
-msgstr ""
-
-#: apps/backend/__init__.py:187
-msgid "Northern Mariana Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:188
-msgid "Norway"
-msgstr ""
-
-#: apps/backend/__init__.py:189
-msgid "Occupied Palestinian Territory"
-msgstr ""
-
-#: apps/backend/__init__.py:190
-msgid "Oman"
-msgstr ""
-
-#: apps/backend/__init__.py:191
-msgid "Pakistan"
-msgstr ""
-
-#: apps/backend/__init__.py:192
-msgid "Palau"
-msgstr ""
-
-#: apps/backend/__init__.py:193
-msgid "Panama"
-msgstr ""
-
-#: apps/backend/__init__.py:194
-msgid "Papua New Guinea"
-msgstr ""
-
-#: apps/backend/__init__.py:195
-msgid "Paraguay"
-msgstr ""
-
-#: apps/backend/__init__.py:196
-msgid "Peru"
-msgstr ""
-
-#: apps/backend/__init__.py:197
-msgid "Philippines"
-msgstr ""
-
-#: apps/backend/__init__.py:198
-msgid "Pitcairn"
-msgstr ""
-
-#: apps/backend/__init__.py:199
-msgid "Poland"
-msgstr ""
-
-#: apps/backend/__init__.py:200
-msgid "Portugal"
-msgstr ""
-
-#: apps/backend/__init__.py:201
-msgid "Puerto Rico"
-msgstr ""
-
-#: apps/backend/__init__.py:202
-msgid "Qatar"
-msgstr ""
-
-#: apps/backend/__init__.py:203
-msgid "Republic of Korea"
-msgstr ""
-
-#: apps/backend/__init__.py:204
-msgid "Republic of Moldova"
-msgstr ""
-
-#: apps/backend/__init__.py:205
-msgid "Reunion"
-msgstr ""
-
-#: apps/backend/__init__.py:206
-msgid "Romania"
-msgstr ""
-
-#: apps/backend/__init__.py:207
-msgid "Russian Federation"
-msgstr ""
-
-#: apps/backend/__init__.py:208
-msgid "Rwanda"
-msgstr ""
-
-#: apps/backend/__init__.py:209
-msgid "Saint-Barthelemy"
-msgstr ""
-
-#: apps/backend/__init__.py:210
-msgid "Saint Helena"
-msgstr ""
-
-#: apps/backend/__init__.py:211
-msgid "Saint Kitts and Nevis"
-msgstr ""
-
-#: apps/backend/__init__.py:212
-msgid "Saint Lucia"
-msgstr ""
-
-#: apps/backend/__init__.py:213
-msgid "Saint-Martin (French part)"
-msgstr ""
-
-#: apps/backend/__init__.py:214
-msgid "Saint Pierre and Miquelon"
-msgstr ""
-
-#: apps/backend/__init__.py:215
-msgid "Saint Vincent and the Grenadines"
-msgstr ""
-
-#: apps/backend/__init__.py:216
-msgid "Samoa"
-msgstr ""
-
-#: apps/backend/__init__.py:217
-msgid "San Marino"
-msgstr ""
-
-#: apps/backend/__init__.py:218
-msgid "Sao Tome and Principe"
-msgstr ""
-
-#: apps/backend/__init__.py:219
-msgid "Saudi Arabia"
-msgstr ""
-
-#: apps/backend/__init__.py:220
-msgid "Senegal"
-msgstr ""
-
-#: apps/backend/__init__.py:221
-msgid "Serbia"
-msgstr ""
-
-#: apps/backend/__init__.py:222
-msgid "Seychelles"
-msgstr ""
-
-#: apps/backend/__init__.py:223
-msgid "Sierra Leone"
-msgstr ""
-
-#: apps/backend/__init__.py:224
-msgid "Singapore"
-msgstr ""
-
-#: apps/backend/__init__.py:225
-msgid "Slovakia"
-msgstr ""
-
-#: apps/backend/__init__.py:226
-msgid "Slovenia"
-msgstr ""
-
-#: apps/backend/__init__.py:227
-msgid "Solomon Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:228
-msgid "Somalia"
-msgstr ""
-
-#: apps/backend/__init__.py:229
-msgid "South Africa"
-msgstr ""
-
-#: apps/backend/__init__.py:230
-msgid "Spain"
-msgstr ""
-
-#: apps/backend/__init__.py:231
-msgid "Sri Lanka"
-msgstr ""
-
-#: apps/backend/__init__.py:232
-msgid "Sudan"
-msgstr ""
-
-#: apps/backend/__init__.py:233
-msgid "Suriname"
-msgstr ""
-
-#: apps/backend/__init__.py:234
-msgid "Svalbard and Jan Mayen Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:235
-msgid "Swaziland"
-msgstr ""
-
-#: apps/backend/__init__.py:236
-msgid "Sweden"
-msgstr ""
-
-#: apps/backend/__init__.py:237
-msgid "Switzerland"
-msgstr ""
-
-#: apps/backend/__init__.py:238
-msgid "Syrian Arab Republic"
-msgstr ""
-
-#: apps/backend/__init__.py:239
-msgid "Tajikistan"
-msgstr ""
-
-#: apps/backend/__init__.py:240
-msgid "Thailand"
-msgstr ""
-
-#: apps/backend/__init__.py:241
-msgid "Timor-Leste"
-msgstr ""
-
-#: apps/backend/__init__.py:242
-msgid "Togo"
-msgstr ""
-
-#: apps/backend/__init__.py:243
-msgid "Tokelau"
-msgstr ""
-
-#: apps/backend/__init__.py:244
-msgid "Tonga"
-msgstr ""
-
-#: apps/backend/__init__.py:245
-msgid "Trinidad and Tobago"
-msgstr ""
-
-#: apps/backend/__init__.py:246
-msgid "Tunisia"
-msgstr ""
-
-#: apps/backend/__init__.py:247
-msgid "Turkey"
-msgstr ""
-
-#: apps/backend/__init__.py:248
-msgid "Turkmenistan"
-msgstr ""
-
-#: apps/backend/__init__.py:249
-msgid "Turks and Caicos Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:250
-msgid "Tuvalu"
-msgstr ""
-
-#: apps/backend/__init__.py:251
-msgid "Uganda"
-msgstr ""
-
-#: apps/backend/__init__.py:252
-msgid "Ukraine"
-msgstr ""
-
-#: apps/backend/__init__.py:253
-msgid "United Arab Emirates"
-msgstr ""
-
-#: apps/backend/__init__.py:254
-msgid "United Kingdom"
-msgstr ""
-
-#: apps/backend/__init__.py:255
-msgid "United Republic of Tanzania"
-msgstr ""
-
-#: apps/backend/__init__.py:256
-msgid "United States of America"
-msgstr ""
-
-#: apps/backend/__init__.py:257
-msgid "United States Virgin Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:258
-msgid "Uruguay"
-msgstr ""
-
-#: apps/backend/__init__.py:259
-msgid "Uzbekistan"
-msgstr ""
-
-#: apps/backend/__init__.py:260
-msgid "Vanuatu"
-msgstr ""
-
-#: apps/backend/__init__.py:261
-msgid "Venezuela (Bolivarian Republic of)"
-msgstr ""
-
-#: apps/backend/__init__.py:262
-msgid "Viet Nam"
-msgstr ""
-
-#: apps/backend/__init__.py:263
-msgid "Wallis and Futuna Islands"
-msgstr ""
-
-#: apps/backend/__init__.py:264
-msgid "Western Sahara"
-msgstr ""
-
-#: apps/backend/__init__.py:265
-msgid "Yemen"
-msgstr ""
-
-#: apps/backend/__init__.py:266
-msgid "Zambia"
-msgstr ""
-
-#: apps/backend/__init__.py:267
-msgid "Zimbabwe"
-msgstr ""
-
-#: apps/backend/__init__.py:494
-msgid ""
-"Mailbox with the specified name not found! Check MAILBOXES dict in the main "
-"project settings!"
-msgstr ""
-"Nie istnieje wskazana skrzynka pocztowa. Sprawdź ustawienie MAILBOXES w "
-"głównych ustawieniach projektu."
-
-#: apps/backend/__init__.py:497
-msgid ""
-"Message with no proper recipient e-mail address! Possible spam? Please, "
-"check the inbox."
-msgstr ""
-"Wiadomość nie posiada prawidłowego adresata. Spam? Sprawdź proszę zawartość "
-"skrzynki pocztowej."
-
-#: apps/backend/__init__.py:500
-msgid "Cannot find in the database the Request with given ID!"
-msgstr "W bazie nie istnieje wpis o podanym numerze ID."
-
-#: apps/backend/__init__.py:503
-msgid "Cannot create new Message in the Thread for the Request with given ID!"
-msgstr "Nie można stworzyć nowej wiadomości w wątku o podanym ID."
-
-#: apps/backend/__init__.py:506
-msgid "We do not have an e-mail of this authority in our database"
-msgstr "Nie posiadamy adresu e-mail tej instytucji."
-
-#: apps/backend/__init__.py:509
-msgid "Cannot find e-mail address of this user in our database"
-msgstr "Nie posiadamy adresu e-mail tego użytkownika."
-
-#: apps/backend/__init__.py:512
-#, python-format
-msgid "Sending e-mail message failed: %s"
-msgstr "Nie udało się wysłać wiadomości: %s"
-
-#: apps/backend/__init__.py:515
-msgid "Creating e-mail message failed"
-msgstr "Nie udało się utworzyć wiadomości e-mail"
-
-#: apps/backend/__init__.py:518
-#, python-format
-msgid "Cannot save attachment %(filename)s: %(error)s"
-msgstr "Nie mogę zapisać załącznika %(filename)s: %(error)s"
-
-#: apps/backend/__init__.py:521
-#, python-format
-msgid "Email check complete, received %s messages"
-msgstr "Zakończono sprawdzanie poczty, otrzymano %s wiadomości"
-
-#: apps/backend/__init__.py:524
-msgid "Complete checking overdue requests. Total number of overdue requests: "
-msgstr ""
-"Zakończono sprawdzanie przeterminowanych wniosków. Łączna liczba "
-"przeterminowanych wniosków:"
-
-#: apps/backend/__init__.py:527
-msgid ""
-"The response from the Authority has not been classified yet. If you are "
-"satisfied or unsatisfied with the response, set the appropriate status, "
-"please."
-msgstr ""
-"Nie sklasyfikowano jeszcze odpowiedzi. Prosimy o wskazanie, czy odpowiedź "
-"była satysfakcjonująca poprzez ustawienie odpowiedniego statusu."
-
-#: apps/backend/__init__.py:530
-#, python-format
-msgid ""
-"We don't know whether the most recent response to this request contains "
-"information or not. If you are <a href=\"/user/%(user_id)s/\">%(user_name)s</"
-"a>, please sign in and let everyone know."
-msgstr ""
-"Nie wiemy, czy najnowsza odpowiedź na to zapytanie zawiera poszukiwaną "
-"informację. Jeśli<a href=\"/user/%(user_id)s/\">%(user_name)s</a> to Ty, "
-"zaloguj się proszę i daj nam znać."
-
-#: apps/backend/__init__.py:533
-msgid ""
-"We don't know whether the most recent response to this request contains "
-"information or not."
-msgstr ""
-"Nie wiemy, czy najnowsza odpowiedź na to zapytanie zawiera poszukiwaną "
-"informację. "
-
-#: apps/backend/__init__.py:536
-#, python-format
-msgid "Failed to create a Reqiest draft. System error is: %s"
-msgstr "Nie udało się stworzyć szkicu zapytania: %s"
-
-#: apps/backend/__init__.py:539
-#, python-format
-msgid "Failed to discard a Reqiest draft. System error is: %s"
-msgstr "Nie udało się odrzucić szkicu zapytania: %s"
-
-#: apps/backend/__init__.py:542
-#, python-format
-msgid "Failed to remove a draft, while sending Request. System error is: %s"
-msgstr "Nie udało się usunąć szkicu zapytania podczas wysyłania wniosku: %s"
-
-#: apps/backend/__init__.py:545
-#, python-format
-msgid ""
-"Failed to save a Request draft, while sending PIA Request. System error is: "
-"%s"
-msgstr "Nie udało się usunąć szkicu zapytania podczas wysyłania wniosku: %s"
-
-#: apps/backend/__init__.py:548
-msgid "Cannot process attachment! See the original message!"
-msgstr ""
-"Nie udało się przeanalizować załączników. Sprawdź oryginalną wiadomość."
-
-#: apps/backend/__init__.py:551
-#, python-format
-msgid "Failed to save attachments: %s"
-msgstr "Nie udało się zapisać załączników: %s"
-
-#: apps/backend/__init__.py:554
-#, python-format
-msgid "Attachment %s exceeds maximum filesize!"
-msgstr "Załącznik %s jest za duży."
-
-#: apps/backend/__init__.py:557
-#, python-format
-msgid "Error sending notification: %s"
-msgstr "Nie udało się wysłać powiadomienia: %s"
-
-#: apps/backend/__init__.py:560
-#, python-format
-msgid ""
-"Athority <strong>%s</strong> successfully saved in the db! <br/>It will "
-"remain inactive until our moderator finish reviewing and confirming the "
-"record. We will notify you upon this by email. <p>Thanks a lot for your "
-"participation!</p>"
-msgstr ""
-"Instytucja o nazwie <strong>%s</strong> została dodana do bazy. <br /> "
-"Pozostanie nieaktywna, dopóki moderator nie potwierdzi prawidłowości danych. "
-"Poinformujemy o tym drogą mailową. <p>Dziękujemy za pomoc w uzupełnianiu "
-"bazu!</p>"
-
-#: apps/backend/__init__.py:563
-#, python-format
-msgid ""
-"<h5>Status was updated successfully.</h5><p>If you have any additional "
-"information concerning this request (for example, an answer sent via snail "
-"mail), and feel like adding something would help users to find the right "
-"answer to their requests in the future, please, use <a href=\"%(url)s\">this "
-"form</a>.<br/>Thank you!</p>"
-msgstr ""
-"<h5>Status został pomyślnie zaktualizowany.</h5><p>Jeśli masz dodatkowe "
-"informacje dotyczące wniosku (na przykład, odpowiedź wysłano tradycyjną "
-"pocztą) i uważasz, że dodatkowe dane pomogą innym w znalezieniu "
-"poszukiwanych informacji, użyj proszę <a href=\"%(url)s\">tego formularza</"
-"a>.<br/>Dziękujemy!</p>"
-
-#: apps/backend/__init__.py:566
-msgid ""
-"You cannot follow your own request. As its author you are getting all "
-"updates anyway."
-msgstr ""
-"Nie możesz śledzić swojego własnego wniosku - jako autor otrzymujesz już "
-"komplet informacji."
-
-#: apps/backend/models.py:16
-msgid "New message in thread"
-msgstr "Nowa wiadomość w wątku"
-
-#: apps/backend/models.py:17
-msgid "Message was annotated"
-msgstr "Dodano uwagi do wiadomości"
-
-#: apps/backend/models.py:18
-msgid "Request to the Authority"
-msgstr "Wniosek do instytucji"
-
-#: apps/backend/models.py:19
-msgid "Response from the Authority"
-msgstr "Odpowiedź od instytucji"
-
-#: apps/backend/models.py:20
-msgid "Record has become active"
-msgstr "Wpis został uaktywniony"
-
-#: apps/backend/models.py:33 apps/backend/models.py:58
-#: apps/vocabulary/models.py:167 apps/vocabulary/models.py:264
-#: sezam/templates/includes/authority_list_unit.html:32
-msgid "Created"
-msgstr "Utworzono"
-
-#: apps/backend/models.py:34
-msgid "Last changed"
-msgstr "Ostatnio zmieniony"
-
-#: apps/backend/models.py:36
-msgid "Summary"
-msgstr "Podsumowanie"
-
-#: apps/backend/models.py:47
-msgid "Body"
-msgstr "Treść"
-
-#: apps/backend/models.py:60 apps/pia_request/forms.py:17
-#: apps/pia_request/forms.py:93
-msgid "Subject"
-msgstr "Temat"
-
-#: apps/backend/models.py:69 apps/backend/models.py:124
-msgid "To e-mail"
-msgstr "Adres odbiorcy"
-
-#: apps/backend/models.py:70
-msgid "From e-mail"
-msgstr "Adres nadawcy"
-
-#: apps/backend/models.py:80
-msgid "File type"
-msgstr "Rodzaj pliku"
-
-#: apps/backend/models.py:81
-msgid "File name"
-msgstr "Nazwa pliku"
-
-#: apps/backend/models.py:82
-msgid "File size"
-msgstr "Rozmiar pliku"
-
-#: apps/backend/models.py:84
-msgid "Path to file (relative to site_media)"
-msgstr "Ścieżka do pliku (relatywna do site_media)"
-
-#: apps/backend/models.py:115
-msgid "Item"
-msgstr ""
-
-#: apps/backend/models.py:117
-msgid "Notify about action"
-msgstr "Notyfikacja o działaniu"
-
-#: apps/backend/models.py:118
-msgid "Awaiting"
-msgstr "Oczekuje"
-
-#: apps/backend/models.py:123
-msgid "Registered User"
-msgstr "Zarejestrowany użytkownik"
-
-#: apps/browser/forms.py:14 apps/browser/forms.py:16 apps/browser/views.py:46
-#: sezam/templates/authorities.html:15 sezam/templates/authorities.html:18
-#: sezam/templates/search/search.html:9 sezam/templates/search/search.html:12
-msgid "Search"
-msgstr "Szukaj"
-
-#: apps/browser/views.py:26
-#: djcelery/templates/admin/djcelery/change_list.html:7
-#: djcelery/templates/djcelery/confirm_rate_limit.html:6
-#: sezam/templates/includes/navbar.html:13
-msgid "Home"
-msgstr ""
-
-#: apps/pia_request/forms.py:8
-#, python-format
-msgid "Dear %(name)s, %(space3)sYours faithfully, %(space1)s%(user_name)s"
-msgstr "Szanowny %(name)s, %(space3)sZ poważaniem, %(space1)s%(user_name)s"
-
-#: apps/pia_request/forms.py:13 apps/pia_request/forms.py:100
-msgid "You are sending a request to"
-msgstr "Wysyłasz wniosek do"
-
-#: apps/pia_request/forms.py:16
-msgid "Request summary"
-msgstr "Podsumowanie wniosku"
-
-#: apps/pia_request/forms.py:18
-msgid "Your request"
-msgstr "Twój wniosek"
-
-#: apps/pia_request/forms.py:20 apps/pia_request/forms.py:97
-#: apps/pia_request/models.py:75 apps/pia_request/models.py:107
-#: apps/vocabulary/models.py:228
-msgid "User"
-msgstr "Użytkownik"
-
-#: apps/pia_request/forms.py:95
-#: sezam/templates/includes/pia_thread_reply_form.html:49
-msgid "Reply"
-msgstr "Odpowiedź"
-
-#: apps/pia_request/forms.py:127
-msgid "Your comment here"
-msgstr "Twój komentarz"
-
-#: apps/pia_request/forms.py:135 apps/pia_request/forms.py:136
-msgid "Keywords"
-msgstr "Słowa kluczowe"
-
-#: apps/pia_request/forms.py:137
-msgid "Made between"
-msgstr "Utworzony pomiędzy"
-
-#: apps/pia_request/forms.py:140 sezam/templates/index.html:17
-msgid "and"
-msgstr "i"
-
-#: apps/pia_request/models.py:20
-msgid "In progress"
-msgstr "W toku"
-
-#: apps/pia_request/models.py:21
-msgid "Successful"
-msgstr "Zakończony pomyślnie"
-
-#: apps/pia_request/models.py:22
-msgid "Partially successful"
-msgstr "Częściowo zakończony"
-
-#: apps/pia_request/models.py:23
-msgid "Refused"
-msgstr "Odmowa"
-
-#: apps/pia_request/models.py:24
-msgid "Overdue"
-msgstr "Opóźniony"
-
-#: apps/pia_request/models.py:25
-msgid "Long overdue"
-msgstr "Poważnie opóźniony"
-
-#: apps/pia_request/models.py:26
-msgid "Information not held"
-msgstr "Instytucja nie posiada informacji"
-
-#: apps/pia_request/models.py:27
-msgid "Withdrawn by the requester"
-msgstr "Wycofany przez wnioskodawcę"
-
-#: apps/pia_request/models.py:28
-msgid "Awaiting classification"
-msgstr "Oczekuje na klasyfikację"
-
-#: apps/pia_request/models.py:77
-msgid "Authority"
-msgstr "Instytucja"
-
-#: apps/pia_request/models.py:79
-msgid "Request status"
-msgstr "Status wniosku"
-
-#: apps/pia_request/models.py:81
-msgid "latest message"
-msgstr "najnowsza wiadomość"
-
-#: apps/pia_request/models.py:93
-msgid "request"
-msgstr "wniosek"
-
-#: apps/pia_request/models.py:95
-msgid "Is it a response?"
-msgstr "Czy odpowiedź jest satysfakcjonująca?"
-
-#: apps/pia_request/models.py:106 apps/pia_request/models.py:132
-msgid "Message"
-msgstr "Wiadomość"
-
-#: apps/pia_request/models.py:108
-msgid "Posted"
-msgstr "Wysłano"
-
-#: apps/pia_request/models.py:128
-msgid "Authority(ies)"
-msgstr "Instytucja"
-
-#: apps/pia_request/models.py:129
-msgid "Request from user"
-msgstr "Wniosek użytkownika"
-
-#: apps/pia_request/models.py:130
-msgid "Updated"
-msgstr "Zaktualizowany"
-
-#: apps/pia_request/models.py:134
-msgid "Is it a response from authority?"
-msgstr "Czy to jest odpowiedź od instytucji?"
-
-#: apps/pia_request/tasks.py:244
-msgid "Public Information Request "
-msgstr "Wniosek o Informację Publiczną"
-
-#: apps/pia_request/tasks.py:244
-msgid " is overdue from "
-msgstr "jest opóźniony od"
-
-#: apps/pia_request/tasks.py:245
-msgid "The response received for the Public Information Request "
-msgstr "Odpowiedź wniosek o informację publiczną "
-
-#: apps/pia_request/tasks.py:246
-msgid " from "
-msgstr "od"
-
-#: apps/pia_request/views.py:61
-msgid "View and search requests"
-msgstr "Przeglądaj i przeszukuj wnioski"
-
-#: apps/pia_request/views.py:319 apps/pia_request/views.py:918
-msgid "Draft saved successfully."
-msgstr "Szkic zapisany pomyślnie"
-
-#: apps/pia_request/views.py:543
-#, python-format
-msgid "Successfully sent request(s) to: %s"
-msgstr "Wysłanio wniosek do %s"
-
-#: apps/pia_request/views.py:547
-#, python-format
-msgid "Request(s) sending failed: %s"
-msgstr "Wysyłanie wniosku nie powiodło się: %s"
-
-#: apps/pia_request/views.py:742
-#, python-format
-msgid "There are errors in the template <pre>%s</pre>"
-msgstr "W szablonie są błędy <pre>%s</pre>"
-
-#: apps/pia_request/views.py:818
-msgid "Browse similar requests"
-msgstr "Przejrzyj podobne wnioski"
-
-#: apps/pia_request/views.py:847
-msgid "Reply to: "
-msgstr "Odpowiedz do:"
-
-#: apps/pia_request/views.py:953
-#, python-format
-msgid "Error sending reply! System error: %s"
-msgstr "Wystąpił błąd przy wysyłaniu odpowiedzi: %s"
-
-#: apps/pia_request/views.py:965
-msgid "Reply sent successfully."
-msgstr "Odpowiedź wysłana"
-
-#: apps/pia_request/views.py:979
-msgid "Reply saved successfully."
-msgstr "Odpowiedź zapisana"
-
-#: apps/pia_request/views.py:988
-msgid "Error saving message in the thread!"
-msgstr "Wystąpił błąd przy dodawaniu wiadomości do wątku"
-
-#: apps/pia_request/views.py:1019
-msgid "You cannot update status of the request made by other user!"
-msgstr ""
-"Nie możesz zmieniać statusu wniosków złożonych przez innych użytkowników!"
-
-#: apps/pia_request/views.py:1027
-msgid "Error updating status!"
-msgstr "Wystąpił błąd przy aktualizacji statusu."
-
-#: apps/pia_request/views.py:1054
-msgid "Annotate request: "
-msgstr "Dodaj notatkę:"
-
-#: apps/pia_request/views.py:1070
-msgid "Cannot save annotation!"
-msgstr "Nie mogę zapisać notatki."
-
-#: apps/pia_request/views.py:1073
-msgid "Draft saving failed! See details below."
-msgstr "Wystąpił błąd przy zapisywaniu szkicu. Zobacz poniżej."
-
-#: apps/userprofile/forms.py:10
-msgid "About you"
-msgstr "O Tobie"
-
-#: apps/userprofile/forms.py:12
-msgid "Company"
-msgstr "Firma"
-
-#: apps/userprofile/forms.py:14 apps/vocabulary/models.py:232
-msgid "Company/organizaion"
-msgstr "Firma/organizacja"
-
-#: apps/userprofile/forms.py:16
-#: sezam/templates/includes/authority_info.html:30
-#: sezam/templates/includes/authority_list_unit.html:16
-msgid "Address"
-msgstr "Adres"
-
-#: apps/userprofile/forms.py:18 apps/vocabulary/models.py:238
-msgid "Street name, building and office number"
-msgstr "Ulica i numer domu"
-
-#: apps/userprofile/forms.py:19
-msgid "Address line 1"
-msgstr "Adres - 1 linijka"
-
-#: apps/userprofile/forms.py:21
-msgid "Address line 2"
-msgstr "Adres - 2 linijka"
-
-#: apps/userprofile/forms.py:27 apps/vocabulary/models.py:247
-msgid "Country"
-msgstr "Państwo"
-
-#: apps/userprofile/forms.py:30
-msgid "Tel code"
-msgstr "Numer kierunkowy"
-
-#: apps/userprofile/forms.py:31
-msgid "code"
-msgstr "kod"
-
-#: apps/userprofile/forms.py:32
-msgid "Tel."
-msgstr "Telefon"
-
-#: apps/userprofile/forms.py:33
-msgid "number"
-msgstr "numer"
-
-#: apps/userprofile/forms.py:35
-#: sezam/templates/includes/authority_info.html:41
-#: sezam/templates/includes/authority_info.html:44
-#: sezam/templates/includes/authority_info.html:47
-#: sezam/templates/includes/user_info.html:55
-msgid "internal"
-msgstr "wewnętrzny"
-
-#: apps/userprofile/forms.py:37 apps/vocabulary/models.py:154
-#: apps/vocabulary/models.py:258
-#: sezam/templates/includes/authority_info.html:19
-msgid "Web-site"
-msgstr "strona internetowa"
-
-#: apps/userprofile/forms.py:39
-msgid "http://"
-msgstr ""
-
-#: apps/userprofile/forms.py:41 apps/vocabulary/models.py:261
-msgid "Choose a picture"
-msgstr "Wybierz zdjęcie"
-
-#: apps/userprofile/forms.py:47
-msgid "Photo of you"
-msgstr "Twoje zdjęcie"
-
-#: apps/userprofile/views.py:100
-msgid "Failed to update user profile."
-msgstr "Nie udało się uaktualnić profilu użytkownika."
-
-#: apps/userprofile/views.py:103 apps/userprofile/views.py:140
-msgid "Correct the errors: "
-msgstr "Popraw błędy:"
-
-#: apps/userprofile/views.py:111
-msgid "Update profile "
-msgstr "Zaktualizuj profil"
-
-#: apps/userprofile/views.py:137
-msgid "Failed to update userpic."
-msgstr "Nie udało się zaktualizować zdjęcia."
-
-#: apps/userprofile/views.py:148
-msgid "Update userpic "
-msgstr "Aktualizacja zdjęcia"
-
-#: apps/vocabulary/models.py:20 apps/vocabulary/models.py:55
-msgid "Order"
-msgstr "Porządek"
-
-#: apps/vocabulary/models.py:34
-msgid "Slug"
-msgstr ""
-
-#: apps/vocabulary/models.py:80
-msgid "Name tp display"
-msgstr ""
-
-#: apps/vocabulary/models.py:93
-msgid "Territory Code"
-msgstr ""
-
-#: apps/vocabulary/models.py:95
-msgid "Territory Type"
-msgstr ""
-
-#: apps/vocabulary/models.py:112
-#: sezam/templates/includes/authority_info.html:26
-msgid "Notes"
-msgstr "Uwagi"
-
-#: apps/vocabulary/models.py:114
-msgid "Authority category"
-msgstr "Kategoria instytucji"
-
-#: apps/vocabulary/models.py:116 apps/vocabulary/models.py:237
-msgid "Street"
-msgstr "Ulica"
-
-#: apps/vocabulary/models.py:117
-msgid "Office"
-msgstr "biuro"
-
-#: apps/vocabulary/models.py:118
-msgid "Building and office number"
-msgstr "Numer budynku i biura"
-
-#: apps/vocabulary/models.py:120 apps/vocabulary/models.py:240
-msgid "Address (additional line 1)"
-msgstr "Adres (dodatkowa linia nr 1)"
-
-#: apps/vocabulary/models.py:122 apps/vocabulary/models.py:242
-msgid "Address (additional line 2)"
-msgstr "Adres (dodatkowa linia nr 2)"
-
-#: apps/vocabulary/models.py:124 apps/vocabulary/models.py:244
-msgid "Digits only!"
-msgstr "Tylko cyfry!"
-
-#: apps/vocabulary/models.py:128 apps/vocabulary/models.py:250
-msgid "tel code"
-msgstr "kod telefoniczny"
-
-#: apps/vocabulary/models.py:129 apps/vocabulary/models.py:250
-msgid "Example: 45"
-msgstr "np: 45"
-
-#: apps/vocabulary/models.py:130 apps/vocabulary/models.py:252
-msgid "Telephone"
-msgstr "Telefon"
-
-#: apps/vocabulary/models.py:131
-msgid "Digits only! Example: 4430976"
-msgstr "Tylko cyfry - na przykład 4430976"
-
-#: apps/vocabulary/models.py:135
-msgid "Tel 1 code"
-msgstr "Kierunkowy telefonu 1"
-
-#: apps/vocabulary/models.py:137
-msgid "Telephone 1"
-msgstr "Telefon 1"
-
-#: apps/vocabulary/models.py:139
-msgid "Tel 2 code"
-msgstr "Kierunkowy telefonu 2"
-
-#: apps/vocabulary/models.py:141
-msgid "Telephone 2"
-msgstr "Telefon 2"
-
-#: apps/vocabulary/models.py:143
-msgid "Fax code"
-msgstr "Kierunkowy fax"
-
-#: apps/vocabulary/models.py:145
-#: sezam/templates/includes/authority_info.html:54
-msgid "Fax"
-msgstr "Fax"
-
-#: apps/vocabulary/models.py:147
-msgid "E-mail"
-msgstr "E-mail"
-
-#: apps/vocabulary/models.py:149
-msgid "secretary e-mail"
-msgstr "E-mail sekretariatu"
-
-#: apps/vocabulary/models.py:151
-msgid "info e-mail"
-msgstr "e-mail ogólny"
-
-#: apps/vocabulary/models.py:155
-msgid "Web-site 1"
-msgstr "Strona internetowa"
-
-#: apps/vocabulary/models.py:159
-#: sezam/templates/includes/authority_info.html:16
-#: sezam/templates/includes/authority_list_unit.html:15
-msgid "Official"
-msgstr "Urzędnik"
-
-#: apps/vocabulary/models.py:160
-msgid "Title of official position"
-msgstr "Tytuł urzędnika"
-
-#: apps/vocabulary/models.py:162
-msgid "Official representative name"
-msgstr "Imię urzędnika"
-
-#: apps/vocabulary/models.py:164
-msgid "Official representative last name"
-msgstr "Nazwisko urzędnika"
-
-#: apps/vocabulary/models.py:170
-msgid "Active"
-msgstr "Aktywny"
-
-#: apps/vocabulary/models.py:171
-msgid "Should this item appear in lists and search results?"
-msgstr ""
-"Czy ten wpis powinien pojawiać się na liście i w wynikach wyszukiwania?"
-
-#: apps/vocabulary/models.py:230
-msgid "About"
-msgstr "O"
-
-#: apps/vocabulary/models.py:233
-msgid "Trusted"
-msgstr "Zaufany"
-
-#: apps/vocabulary/models.py:234
-msgid "Trusted users have access to extended functions"
-msgstr "Zaufani użytkownicy mają dostęp do rozszerzonej funkcjonalności"
-
-#: apps/vocabulary/models.py:253
-msgid "Digits only! Example: 504566462"
-msgstr "Wyłącznie cyfry! Na przyŻlad: 504566462"
-
-#: apps/vocabulary/models.py:261
-msgid "Userpic"
-msgstr "Zdjęcie użytkownika"
-
-#: djcelery/admin.py:43 djcelery/admin.py:50 djcelery/models.py:26
-#: djcelery/models.py:297
-msgid "state"
-msgstr "stan"
-
-#: djcelery/admin.py:57 djcelery/models.py:307
-msgid "ETA"
-msgstr ""
-
-#: djcelery/admin.py:64
-msgid "when"
-msgstr "kiedy"
-
-#: djcelery/admin.py:70 djcelery/models.py:190 djcelery/models.py:302
-msgid "name"
-msgstr "nazwa"
-
-#: djcelery/admin.py:102
-msgid "Task detail"
-msgstr "Opis zadania"
-
-#: djcelery/admin.py:103
-msgid "Tasks"
-msgstr "Zadanie"
-
-#: djcelery/admin.py:117 djcelery/models.py:300
-msgid "UUID"
-msgstr ""
-
-#: djcelery/admin.py:135
-msgid "Revoke selected tasks"
-msgstr "Anuluj wybrane zadania"
-
-#: djcelery/admin.py:141
-msgid "Terminate selected tasks"
-msgstr "Przerwij wybrane zadania"
-
-#: djcelery/admin.py:147
-msgid "Kill selected tasks"
-msgstr "Zatrzymaj całkowicie wybrane zadania"
-
-#: djcelery/admin.py:154 djcelery/templates/djcelery/confirm_rate_limit.html:9
-msgid "Rate limit selected tasks"
-msgstr "Ogranicz wybrane zadania"
-
-#: djcelery/admin.py:167
-msgid "Rate limit selection"
-msgstr ""
-
-#: djcelery/admin.py:190
-msgid "Node detail"
-msgstr ""
-
-#: djcelery/admin.py:191
-msgid "Worker Nodes"
-msgstr ""
-
-#: djcelery/admin.py:198
-msgid "Shutdown selected worker nodes"
-msgstr ""
-
-#: djcelery/admin.py:202
-msgid "Enable event mode for selected nodes."
-msgstr ""
-
-#: djcelery/admin.py:207
-msgid "Disable event mode for selected nodes."
-msgstr ""
-
-#: djcelery/admin.py:237
-msgid "Task (registered)"
-msgstr ""
-
-#: djcelery/admin.py:239
-msgid "Task (custom)"
-msgstr ""
-
-#: djcelery/admin.py:251
-msgid "Need name of task"
-msgstr ""
-
-#: djcelery/humanize.py:8
-#, fuzzy
-msgid "just now"
-msgstr "właśnie"
-
-#: djcelery/humanize.py:9
-#, python-format
-msgid "%(seconds)d second ago"
-msgstr ""
-
-#: djcelery/humanize.py:9
-#, python-format
-msgid "%(seconds)d seconds ago"
-msgstr ""
-
-#: djcelery/humanize.py:10
-#, python-format
-msgid "%(minutes)d minute ago"
-msgstr ""
-
-#: djcelery/humanize.py:10
-#, python-format
-msgid "%(minutes)d minutes ago"
-msgstr ""
-
-#: djcelery/humanize.py:11
-#, python-format
-msgid "%(hours)d hour ago"
-msgstr ""
-
-#: djcelery/humanize.py:11
-#, python-format
-msgid "%(hours)d hours ago"
-msgstr ""
-
-#: djcelery/humanize.py:12
-#, python-format
-msgid "yesterday at %(time)s"
-msgstr ""
-
-#: djcelery/humanize.py:13
-msgid "year"
-msgstr "rok"
-
-#: djcelery/humanize.py:13
-msgid "years"
-msgstr "lata"
-
-#: djcelery/humanize.py:14
-msgid "month"
-msgstr "miesiąc"
-
-#: djcelery/humanize.py:14
-msgid "months"
-msgstr "miesiące"
-
-#: djcelery/humanize.py:15
-msgid "week"
-msgstr "tydzień"
-
-#: djcelery/humanize.py:15
-msgid "weeks"
-msgstr "tygodnie"
-
-#: djcelery/humanize.py:16
-msgid "day"
-msgstr "dzień"
-
-#: djcelery/humanize.py:16
-msgid "days"
-msgstr "dni"
-
-#: djcelery/humanize.py:23
-#, python-format
-msgid "%(number)d %(type)s ago"
-msgstr ""
-
-#: djcelery/models.py:25
-msgid "task id"
-msgstr ""
-
-#: djcelery/models.py:29
-msgid "done at"
-msgstr ""
-
-#: djcelery/models.py:30 djcelery/models.py:311
-msgid "traceback"
-msgstr ""
-
-#: djcelery/models.py:32
-msgid "meta"
-msgstr ""
-
-#: djcelery/models.py:38
-msgid "task state"
-msgstr ""
-
-#: djcelery/models.py:39
-msgid "task states"
-msgstr ""
-
-#: djcelery/models.py:56
-msgid "group id"
-msgstr ""
-
-#: djcelery/models.py:58
-msgid "created at"
-msgstr ""
-
-#: djcelery/models.py:65
-msgid "saved group result"
-msgstr ""
-
-#: djcelery/models.py:66
-msgid "saved group results"
-msgstr ""
-
-#: djcelery/models.py:78
-msgid "Days"
-msgstr ""
-
-#: djcelery/models.py:79
-msgid "Hours"
-msgstr ""
-
-#: djcelery/models.py:80
-msgid "Minutes"
-msgstr ""
-
-#: djcelery/models.py:81
-msgid "Seconds"
-msgstr ""
-
-#: djcelery/models.py:82
-msgid "Microseconds"
-msgstr ""
-
-#: djcelery/models.py:86
-msgid "every"
-msgstr ""
-
-#: djcelery/models.py:87
-msgid "period"
-msgstr ""
-
-#: djcelery/models.py:91 djcelery/models.py:194
-msgid "interval"
-msgstr ""
-
-#: djcelery/models.py:92
-msgid "intervals"
-msgstr ""
-
-#: djcelery/models.py:111
-#, python-format
-msgid "every %(period)s"
-msgstr ""
-
-#: djcelery/models.py:112
-#, python-format
-msgid "every %(every)s %(period)s"
-msgstr ""
-
-#: djcelery/models.py:117
-msgid "minute"
-msgstr ""
-
-#: djcelery/models.py:120
-msgid "hour"
-msgstr ""
-
-#: djcelery/models.py:123
-msgid "day of week"
-msgstr ""
-
-#: djcelery/models.py:126
-msgid "day of month"
-msgstr ""
-
-#: djcelery/models.py:129
-msgid "month of year"
-msgstr ""
-
-#: djcelery/models.py:134 djcelery/models.py:196
-msgid "crontab"
-msgstr ""
-
-#: djcelery/models.py:135
-msgid "crontabs"
-msgstr ""
-
-#: djcelery/models.py:191
-msgid "Useful description"
-msgstr ""
-
-#: djcelery/models.py:192
-msgid "task name"
-msgstr ""
-
-#: djcelery/models.py:197
-msgid "Use one of interval/crontab"
-msgstr ""
-
-#: djcelery/models.py:198 djcelery/models.py:305
-msgid "Arguments"
-msgstr ""
-
-#: djcelery/models.py:200
-msgid "JSON encoded positional arguments"
-msgstr ""
-
-#: djcelery/models.py:201 djcelery/models.py:306
-msgid "Keyword arguments"
-msgstr ""
-
-#: djcelery/models.py:203
-msgid "JSON encoded keyword arguments"
-msgstr ""
-
-#: djcelery/models.py:204
-msgid "queue"
-msgstr ""
-
-#: djcelery/models.py:207
-msgid "Queue defined in CELERY_QUEUES"
-msgstr ""
-
-#: djcelery/models.py:208
-msgid "exchange"
-msgstr ""
-
-#: djcelery/models.py:211
-msgid "routing key"
-msgstr ""
-
-#: djcelery/models.py:214 djcelery/models.py:309
-msgid "expires"
-msgstr ""
-
-#: djcelery/models.py:216
-msgid "enabled"
-msgstr ""
-
-#: djcelery/models.py:222
-msgid "description"
-msgstr ""
-
-#: djcelery/models.py:228
-msgid "periodic task"
-msgstr ""
-
-#: djcelery/models.py:229
-msgid "periodic tasks"
-msgstr ""
-
-#: djcelery/models.py:267
-msgid "hostname"
-msgstr ""
-
-#: djcelery/models.py:268
-msgid "last heartbeat"
-msgstr ""
-
-#: djcelery/models.py:275 djcelery/models.py:316
-msgid "worker"
-msgstr ""
-
-#: djcelery/models.py:276
-msgid "workers"
-msgstr ""
-
-#: djcelery/models.py:304
-msgid "event received at"
-msgstr ""
-
-#: djcelery/models.py:310
-msgid "result"
-msgstr ""
-
-#: djcelery/models.py:312
-msgid "execution time"
-msgstr ""
-
-#: djcelery/models.py:313
-msgid "in seconds if task successful"
-msgstr ""
-
-#: djcelery/models.py:314
-msgid "number of retries"
-msgstr ""
-
-#: djcelery/models.py:323
-msgid "task"
-msgstr ""
-
-#: djcelery/models.py:324
-msgid "tasks"
-msgstr ""
-
-#: djcelery/templates/djcelery/confirm_rate_limit.html:22
-msgid "Rate limit"
-msgstr ""
-
-#: mptt/admin.py:90 mptt/admin.py:92
-msgid "Add child"
-msgstr ""
-
-#: mptt/admin.py:98 mptt/admin.py:100
-msgid "View on site"
-msgstr ""
-
-#: mptt/admin.py:112
-#, python-format
-msgid "Successfully deleted %s items."
-msgstr ""
-
-#: mptt/admin.py:117
-#, python-format
-msgid "Delete selected %(verbose_name_plural)s"
-msgstr ""
-
-#: mptt/forms.py:68
-msgid "First child"
-msgstr ""
-
-#: mptt/forms.py:69
-msgid "Last child"
-msgstr ""
-
-#: mptt/forms.py:70
-msgid "Left sibling"
-msgstr ""
-
-#: mptt/forms.py:71
-msgid "Right sibling"
-msgstr ""
-
-#: mptt/forms.py:173
-msgid "Invalid parent"
-msgstr ""
-
-#: mptt/managers.py:327
-msgid "Cannot insert a node which has already been saved."
-msgstr ""
-
-#: mptt/managers.py:536 mptt/managers.py:708 mptt/managers.py:744
-#: mptt/managers.py:902
-#, python-format
-msgid "An invalid position was given: %s."
-msgstr ""
-
-#: mptt/managers.py:694 mptt/managers.py:882
-msgid "A node may not be made a sibling of itself."
-msgstr ""
-
-#: mptt/managers.py:861 mptt/managers.py:983
-msgid "A node may not be made a child of itself."
-msgstr ""
-
-#: mptt/managers.py:863 mptt/managers.py:985
-msgid "A node may not be made a child of any of its descendants."
-msgstr ""
-
-#: mptt/managers.py:884
-msgid "A node may not be made a sibling of any of its descendants."
-msgstr ""
-
-#: mptt/models.py:273
-msgid "register() expects a Django model class argument"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:28
-#, python-format
-msgid "full_tree_for_model tag was given an invalid model: %s"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:52
-#, python-format
-msgid "drilldown_tree_for_node tag was given an invalid model: %s"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:59
-#, python-format
-msgid "drilldown_tree_for_node tag was given an invalid model field: %s"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:86
-#, python-format
-msgid "%s tag requires three arguments"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:88 mptt/templatetags/mptt_tags.py:143
-#, python-format
-msgid "second argument to %s tag must be 'as'"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:140
-#, python-format
-msgid "%s tag requires either three, seven or eight arguments"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:147
-#, python-format
-msgid "if seven arguments are given, fourth argument to %s tag must be 'with'"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:150
-#, python-format
-msgid "if seven arguments are given, sixth argument to %s tag must be 'in'"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:155
-#, python-format
-msgid ""
-"if eight arguments are given, fourth argument to %s tag must be 'cumulative'"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:158
-#, python-format
-msgid "if eight arguments are given, fifth argument to %s tag must be 'count'"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:161
-#, python-format
-msgid "if eight arguments are given, seventh argument to %s tag must be 'in'"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:251
-msgid "cache_tree_children was passed nodes in the wrong order!"
-msgstr ""
-
-#: mptt/templatetags/mptt_tags.py:312
-#, python-format
-msgid "%s tag requires a queryset"
-msgstr ""
-
-#: registration/admin.py:23
-msgid "Activate users"
-msgstr "Aktywuj użytkowników"
-
-#: registration/admin.py:43
-msgid "Re-send activation emails"
-msgstr "Ponownie wyślij e-mail aktywacyjny"
-
-#: registration/forms.py:37
-msgid "Username"
-msgstr "Nazwa użytkownika"
-
-#: registration/forms.py:38
-msgid "This value must contain only letters, numbers and underscores."
-msgstr "Możesz wpisać wyłącznie litery, cyfry oraz znak podkreślenia."
-
-#: registration/forms.py:40
-msgid "Email address"
-msgstr "Address e-mail"
-
-#: registration/forms.py:45
-msgid "Password"
-msgstr "Hasło"
-
-#: registration/forms.py:46
-msgid ""
-"Too weak! Password must include special characters and numbers and be at "
-"least 8 symbols long."
-msgstr ""
-"Hasło musi składać się z conajmniej 8 znaków i zawierać litery oraz cyfry."
-
-#: registration/forms.py:48
-msgid "Password (again)"
-msgstr "Hasło (powtórz)"
-
-#: registration/forms.py:60
-msgid "A user with that username already exists."
-msgstr "Użytkownik o takiej nazwie już istnieje"
-
-#: registration/forms.py:74
-msgid "The two password fields didn't match."
-msgstr "Wprowadzone hasła różnią się"
-
-#: registration/forms.py:85 registration/forms.py:103
-msgid "I have read and agree to the Terms of Service"
-msgstr "Przeczytałem i zgadzam się na regulamin usługi"
-
-#: registration/forms.py:86 registration/forms.py:104
-msgid "You must agree to the terms to register"
-msgstr "Musisz się zgodzić na regulamin, by móc założyć konto"
-
-#: registration/forms.py:98
-msgid "First name"
-msgstr "Imię"
-
-#: registration/forms.py:113
-msgid ""
-"This email address is already in use. Please supply a different email "
-"address."
-msgstr "Istnieje już konto z tym adresem e-mail."
-
-#: registration/forms.py:140
-msgid ""
-"Registration using free email addresses is prohibited. Please supply a "
-"different email address."
-msgstr ""
-"Rejestracja przy wykorzystaniu darmowych emaili jest niedozwolona. Użyj "
-"proszę innego adresu e-mail."
-
-#: registration/models.py:171
-msgid "user"
-msgstr "użytkownik"
-
-#: registration/models.py:172
-msgid "activation key"
-msgstr "klucz aktywacyjny"
-
-#: registration/models.py:177
-msgid "registration profile"
-msgstr "profil rejestracji"
-
-#: registration/models.py:178
-msgid "registration profiles"
-msgstr "profile rejestracji"
-
-#: registration/views.py:190
-msgid "This email is fake! Please, type a true one."
-msgstr "To nie jest prawdziwy adres e-mail. Podaj proszę właściwy."
-
-#: sezam/templates/404.html:9
+#: templates/404.html:9
 msgid "404"
 msgstr "Strona nie istnieje"
 
-#: sezam/templates/404.html:10
+#: templates/404.html:10
 msgid "empty space around here"
-msgstr ""
+msgstr "to nie jest strona, której szukacie"
 
-#: sezam/templates/404.html:12
+#: templates/404.html:12
 msgid "Statistically there are hundreds of thousands of 404 hits every day."
 msgstr ""
+"Z tak wielu istniejących adresów, udało Ci się trafić na nieistniejący."
 
-#: sezam/templates/404.html:13
+#: templates/404.html:13
 msgid ""
 "This makes it one of the most popular pages in the internet regardless of "
 "the web-sites' content, user's sex, age, health or religious views."
-msgstr ""
+msgstr "Nie jest to zaskakujące - internet zmienia się z dnia na dzień."
 
-#: sezam/templates/404.html:14
+#: templates/404.html:14
 msgid ""
 "So, nothing exceptional if you ended up here. Simply go to any of the "
 "available links in the menu above or foot bar below, and avoid using your "
 "creativity while surfing the internet. Preserve it for the real creative "
 "purposes!"
-msgstr ""
+msgstr "Proponujemy powrót na stronę główną naszego serwisu."
 
-#: sezam/templates/404.html:15
+#: templates/404.html:15
 msgid ""
 "If you still think that it's our fault you see this page and not any "
 "sensible information, please, contact us"
 msgstr ""
+"Jeśli zaś to odnośnik na naszym serwisie Cię tu przywiódł - prosimy o "
+"kontakt pod adresem info(na)zapytajpanstwo.pl, byśmy mieli szansę "
+"naprawić błąd."
 
-#: sezam/templates/404.html:16
+#: templates/404.html:16
 msgid "Home, sweet home"
 msgstr "Powrót na stronę główną"
 
-#: sezam/templates/500.html:10
+#: templates/500.html:10
 msgid "now, this is serious!"
 msgstr "Coś nie zadziałało tak, jak powinno."
 
-#: sezam/templates/500.html:12
+#: templates/500.html:12
 msgid ""
 "and embarrassing: something wrong has passed through the wires. We got the "
 "report about it, and there is already a troop of <a href='http://muppet."
@@ -2456,65 +77,105 @@ msgstr ""
 "Czujemy się bardzo zakłopotani wystąpieniem problemu. Daj nam proszę znać, "
 "jeśli sytuacja się nie poprawi w ciągu kwadransa lub dwóch."
 
-#: sezam/templates/500.html:13
+#: templates/500.html:13
 msgid "Back home, recover from the shock"
-msgstr ""
+msgstr "Powróć na główną stronę."
 
-#: sezam/templates/authorities.html:10
+#: templates/authorities.html:10
 msgid "Find the authority"
 msgstr "Znajdź instytucję"
 
-#: sezam/templates/authorities.html:12
+#: templates/authorities.html:12
 msgid "Before going on with the request, you must find the Authority."
 msgstr "Przed wypełnieniem wniosku, musisz wybrać instytucję."
 
-#: sezam/templates/authorities.html:18
+#: templates/authorities.html:15 templates/authorities.html.py:18
+#: templates/search/search.html:9 templates/search/search.html.py:12
+msgid "Search"
+msgstr "Szukaj"
+
+#: templates/authorities.html:18
 msgid ""
 "Type the name of the public authority you'd like information from, and press"
 msgstr ""
 "Podaj nazwę instytucji, od której chciałbyś uzyskać informację, i naciśnij"
 
-#: sezam/templates/authorities.html:19
+#: templates/authorities.html:19
 msgid "You can also use a tree of categories"
 msgstr "Możesz też użyć drzewa kategorii"
 
-#: sezam/templates/authorities.html:20
+#: templates/authorities.html:20
 msgid "Open the tree"
 msgstr "Otwórz drzewo"
 
-#: sezam/templates/authorities.html:33
+#: templates/authorities.html:33
 msgid "Can't find authority?"
 msgstr "Nie możesz znaleźć instytucji?"
 
-#: sezam/templates/authorities.html:35
+#: templates/authorities.html:37
 msgid "List of ALL authorities"
 msgstr "Lista wszystkich instytucji"
 
-#: sezam/templates/base.html:58
+#: templates/authorities.html:58
+msgid "Public Authorities"
+msgstr "Administracja publiczna"
+
+#: templates/base.html:80
 msgid "Read the blog"
 msgstr "Czytaj bloga"
 
-#: sezam/templates/base.html:59
-#: sezam/templates/includes/authority_profile_form.html:95
-#: sezam/templates/includes/pia_thread_annotate_form.html:15
-#: sezam/templates/includes/user_info_form.html:51
-#: sezam/templates/includes/user_pic.html:24
+#: templates/base.html:81 templates/includes/authority_profile_form.html:95
+#: templates/includes/pia_thread_annotate_form.html:15
+#: templates/includes/user_info_form.html:51
+#: templates/includes/user_pic.html:24
 msgid "Submit"
 msgstr "Wyślij"
 
-#: sezam/templates/base.html:60
+#: templates/base.html:82
 msgid "Links"
 msgstr "Odnośniki"
 
-#: sezam/templates/coming_soon.html:8
+#: templates/coming_soon.html:8
 msgid "Coming soon"
 msgstr "Już wkrótce"
 
-#: sezam/templates/index.html:9
+#: templates/help.html:9
+msgid "About"
+msgstr "Czym jest informacja publiczna?"
+
+#: templates/help.html:10
+msgid "About text"
+msgstr ""
+"Informacja publiczna to każda informacja o sprawach publicznych. Sposób jej "
+"udostępnienia reguluje Ustawa o dostępie do informacji publicznej. Prawo "
+"dostępu do niej przysługuje każdemu zainteresowanemu. Wnioskujący o "
+"informację publiczną nie musi wykazywać faktycznego lub prawnego interesu "
+"związanego z daną informacją.<p>Informacją publiczną są na przykład umowy, "
+"budżety, informacje o średnich zarobkach w urzędzie, zdjęcia zrobione w "
+"postępowaniu administracyjnym, analizy przygotowane przez instytucje "
+"publiczne itp.<p>Warto pamiętać, że informacja publiczna dotyczy wyłącznie "
+"sfery faktów - odrzucony zostanie np. wniosek o informację \"jak czuje się "
+"przewodniczący Rady Miasta po podjęciu takiej, a nie innej decyzji\". Ale "
+"informacja, ile kosztuje utrzymanie psów przez Straż Miejską w danym mieście "
+"czy jakich dofinansowań udzieliła gmina, informacją publiczną już jest."
+"<p>Nie można automatycznie odmówić udzielenia informacji publicznej "
+"powołując się na ochronę danych osobowych. W uzasadnionych wypadkach, "
+"instytucja publiczna może np. zanonimizować przekazywane dokumenty, "
+"\"zaczerniając\" odpowiednie miejsca. Ograniczenie prawa do informacji "
+"publicznej związane z ochroną prywatności nie dotyczy informacji o osobach "
+"pełniących funkcje publiczne, mających związek z pełnieniem tych funkcji "
+"(art. 5 ust. 2 Ustawy).<p>Informacja publiczna udzielana jest bezpłatnie. "
+"Jeśli z jej przygotowaniem wiąże się konieczność poniesienia przez "
+"instytucję publiczną dodatkowych kosztów - na przykład ze względu na to, że "
+"danej informacji nie ma w formie żądanej przez wnioskodawcę - wnioskodawca "
+"zostanie w ciągu 14 dni poinformowany o tym fakcie i może zadecydować, czy "
+"pokryje koszt przygotowania danych."
+
+#: templates/index.html:9
 msgid "Public Information for everyone!"
 msgstr "Informacja publiczna dla wszystkich"
 
-#: sezam/templates/index.html:10
+#: templates/index.html:10
 msgid ""
 "The Law on Access to Public Information allows anyone to demand access to "
 "public information, public data and public assets held by public bodies, "
@@ -2528,25 +189,33 @@ msgstr ""
 "prywatnych , związków zawodowych oraz partii politycznych. Odpowiedź na "
 "wniosek musi zostać udzielona w ciągu 14 dni."
 
-#: sezam/templates/index.html:16
+#: templates/index.html:16
 msgid "Search over"
 msgstr "Przeszukaj"
 
-#: sezam/templates/index.html:17
-#: sezam/templates/includes/authority_list_mini.html:8
-#: sezam/templates/search/search.html:19
+#: templates/index.html:17 templates/includes/authority_list_mini.html:8
+#: templates/search/search.html:19
 msgid "requests"
 msgstr "wnioski"
 
-#: sezam/templates/index.html:17 sezam/templates/search/search.html:18
+#: templates/index.html:17
+msgid "and"
+msgstr "i"
+
+#: templates/index.html:17 templates/search/search.html:18
 msgid "authorities"
 msgstr "instytucje"
 
-#: sezam/templates/emails/authority_added.txt:3
+#: templates/print.html:71
+msgid "This is download version of the web-page"
+msgstr "To jest wersja do ściągnięcia."
+
+#: templates/emails/authority_added.txt:3
+#: templates/emails/report_request.txt:3
 msgid "Dear manager of"
 msgstr "Szanowny zarządzający"
 
-#: sezam/templates/emails/authority_added.txt:4
+#: templates/emails/authority_added.txt:4
 msgid ""
 "there is a new Authority in the database entered by the user. It is inactive "
 "at the moment, and waiting for your review. Please, give it a look"
@@ -2554,19 +223,23 @@ msgstr ""
 "do bazy adresowej została dodana nowa instytucja. Obecnie jest nieaktywna i "
 "czeka na akceptację. Proszę, sprawdź ją."
 
-#: sezam/templates/emails/authority_added.txt:7
+#: templates/emails/authority_added.txt:7
 msgid "The details are below."
 msgstr "Poniżej są dodatkowe informacje."
 
-#: sezam/templates/emails/authority_added.txt:8
+#: templates/emails/authority_added.txt:8
 msgid "Id"
 msgstr ""
 
-#: sezam/templates/emails/authority_added.txt:10
+#: templates/emails/authority_added.txt:9
+msgid "Name"
+msgstr "Imię"
+
+#: templates/emails/authority_added.txt:10
 msgid "Categorized as"
 msgstr "Skategoryzowany jako"
 
-#: sezam/templates/emails/authority_added.txt:12
+#: templates/emails/authority_added.txt:12
 msgid ""
 "You have to decide, whether new Authority can stay in the database or not. "
 "If it stays, you have to change its status to 'active'. In this case the "
@@ -2576,76 +249,65 @@ msgstr ""
 "pozostać, należy zmienić status na \"aktywny\". W tym przypadku użytkownik, "
 "który dodał instytucję do bazu, dostanie odpowiednią wiadomość."
 
-#: sezam/templates/emails/authority_added.txt:14
+#: templates/emails/authority_added.txt:14
+#, fuzzy
 msgid ""
-"If you decide that the Authority shouldn't stay in the database, remote it "
+"If you decide that the Authority shouldn't stay in the database, remove it "
 "and write a personal message to the User"
 msgstr ""
 "Jeśli zdecydujesz, że Instytucja nie powinna pozostać w bazie danych, usuń "
 "ją i napisz indywidualną wiadomość do Użytkownika"
 
-#: sezam/templates/emails/authority_added.txt:14
+#: templates/emails/authority_added.txt:14
 msgid "with explanations. To do this, simply reply to this email."
 msgstr "z wyjaśnieniem. Żeby to zrobić, po prostu odpisz na tę wiadomość."
 
-#: sezam/templates/emails/authority_added.txt:16
+#: templates/emails/authority_added.txt:16
 msgid "Please, react ASAP."
 msgstr "Prosimy o pilną reakcję."
 
-#: sezam/templates/emails/authority_reply.txt:1
-msgid "The reply from"
-msgstr "Formularz odpowiedzi"
-
-#: sezam/templates/emails/authority_reply.txt:9
-msgid ""
-"This is a reply from Authority to the public information request, obtained "
-"other way than e-mail and entered manually."
-msgstr ""
-"To jest odpowiedź na wniosek o informację publiczną, która została uzyskana "
-"w inny sposób niż drogą e-mailową, i dodana ręcznie."
-
-#: sezam/templates/emails/notification_active.txt:3
-#: sezam/templates/emails/notification_annotation.txt:3
-#: sezam/templates/emails/notification_new_message.txt:3
-#: sezam/templates/emails/notification_request_to.txt:3
-#: sezam/templates/emails/notification_response_from.txt:3
+#: templates/emails/notification_active.txt:3
+#: templates/emails/notification_annotation.txt:3
+#: templates/emails/notification_new_message.txt:3
+#: templates/emails/notification_request_to.txt:3
+#: templates/emails/notification_response_from.txt:3
 msgid "Dear "
 msgstr "Szanowny"
 
-#: sezam/templates/emails/notification_active.txt:5
+#: templates/emails/notification_active.txt:5
 msgid "Please, visit our page"
 msgstr "Proszę, zobacz naszą stronę"
 
-#: sezam/templates/emails/notification_active.txt:7
+#: templates/emails/notification_active.txt:7
 msgid "You received this email because you performed an action at our service"
 msgstr ""
 "Otrzymałeś tę wiadomość, ponieważ wykonałeś działanie przy pomocy naszego "
 "serwisu"
 
-#: sezam/templates/emails/notification_active.txt:7
+#: templates/emails/notification_active.txt:7
 msgid "that requires notification"
 msgstr "które wymaga notyfikacji"
 
-#: sezam/templates/emails/notification_active.txt:9
-#: sezam/templates/emails/notification_annotation.txt:9
-#: sezam/templates/emails/notification_new_message.txt:9
-#: sezam/templates/emails/notification_request_to.txt:9
-#: sezam/templates/emails/notification_response_from.txt:9
+#: templates/emails/notification_active.txt:9
+#: templates/emails/notification_annotation.txt:9
+#: templates/emails/notification_new_message.txt:9
+#: templates/emails/notification_request_to.txt:9
+#: templates/emails/notification_response_from.txt:9
 msgid "With best regards"
 msgstr "Z poważaniem"
 
-#: sezam/templates/emails/notification_active.txt:10
-#: sezam/templates/emails/notification_annotation.txt:10
-#: sezam/templates/emails/notification_new_message.txt:10
-#: sezam/templates/emails/notification_request_to.txt:10
-#: sezam/templates/emails/notification_response_from.txt:10
+#: templates/emails/notification_active.txt:10
+#: templates/emails/notification_annotation.txt:10
+#: templates/emails/notification_new_message.txt:10
+#: templates/emails/notification_request_to.txt:10
+#: templates/emails/notification_response_from.txt:10
 msgid "Management of"
 msgstr "Zarządzający"
 
-#: sezam/templates/emails/notification_annotation.txt:7
-#: sezam/templates/emails/notification_new_message.txt:7
-#: sezam/templates/emails/notification_request_to.txt:7
-#: sezam/templates/emails/notification_response_from.txt:7
+#: templates/emails/notification_annotation.txt:7
+#: templates/emails/notification_new_message.txt:7
+#: templates/emails/notification_request_to.txt:7
+#: templates/emails/notification_response_from.txt:7
 msgid ""
 "You received this email because you are subscribed to the updates in our "
 "service"
@@ -2653,85 +315,160 @@ msgstr ""
 "Otrzymałeś ten list, ponieważ Twój adres jest wskazany do otrzymywania "
 "informacji o działaniach w naszym serwisie"
 
-#: sezam/templates/emails/notification_annotation.txt:7
-#: sezam/templates/emails/notification_new_message.txt:7
-#: sezam/templates/emails/notification_request_to.txt:7
-#: sezam/templates/emails/notification_response_from.txt:7
+#: templates/emails/notification_annotation.txt:7
+#: templates/emails/notification_new_message.txt:7
+#: templates/emails/notification_request_to.txt:7
+#: templates/emails/notification_response_from.txt:7
 msgid "that require notification"
 msgstr "które wymagają notyfikacji"
 
-#: sezam/templates/emails/reminder_overdue.txt:3
+#: templates/emails/reminder_long_overdue.txt:3
+#: templates/emails/reminder_overdue.txt:3
 msgid "Dear Sir/Madam"
 msgstr "Szanowni Państwo,"
 
-#: sezam/templates/emails/reminder_overdue.txt:4
+#: templates/emails/reminder_long_overdue.txt:4
+#: templates/emails/reminder_overdue.txt:4
 msgid "this is a reminder about a Public Information Request number"
 msgstr "E-mail ten jest przypomnieniem o wniosku o informację publiczną,"
 
-#: sezam/templates/emails/reminder_overdue.txt:4
+#: templates/emails/reminder_long_overdue.txt:4
+#: templates/emails/reminder_overdue.txt:4
 msgid "that was sent to you on"
 msgstr "który był do Państwa wysłany"
 
-#: sezam/templates/emails/reminder_overdue.txt:6
+#: templates/emails/reminder_long_overdue.txt:4
+msgid "We have not heard from you since then."
+msgstr "Od tego czasu nie otrzymaliśmy od Państwa odpowiedzi."
+
+#: templates/emails/reminder_long_overdue.txt:6
+#: templates/emails/report_long_overdue_to_user.txt:6
+msgid ""
+"Please, note that the answer is missing for twice as long as it is allowed "
+"by the law. The request is marked as Long Overdue now!"
+msgstr ""
+"Proszę zwrócić uwagę na fakt, że czekamy już dwukrotnie dłużej, niż jest to "
+"przewidziane przez Ustawę o dostępie do informacji publicznej."
+
+#: templates/emails/reminder_long_overdue.txt:8
+msgid ""
+"This gives a person, who requires the information, the right to apply to the "
+"court!"
+msgstr ""
+"To daje prawo autorowi wniosku o informację publiczną prawo zwrócenia się o "
+"pomoc do sądu."
+
+#: templates/emails/reminder_long_overdue.txt:10
+#: templates/emails/reminder_overdue.txt:8
+msgid "This reminder sent to"
+msgstr "Ten list wysyłany jest na adres"
+
+#: templates/emails/reminder_long_overdue.txt:10
+#: templates/emails/reminder_overdue.txt:8
+#: templates/emails/report_long_overdue_to_user.txt:10
+#: templates/emails/report_overdue_to_user.txt:8
+#: templates/emails/response_received.txt:8
+msgid "which belongs to"
+msgstr " - jego odbiorcą jest"
+
+#: templates/emails/reminder_long_overdue.txt:10
+#: templates/emails/reminder_overdue.txt:8
+#: templates/emails/report_long_overdue_to_user.txt:10
+#: templates/emails/report_overdue_to_user.txt:8
+#: templates/emails/response_received.txt:8
+msgid "about the Public Information Request."
+msgstr " - i dotyczy Wniosku o Informację Publiczną."
+
+#: templates/emails/reminder_long_overdue.txt:11
+#: templates/emails/reminder_overdue.txt:9
+#: templates/emails/report_long_overdue_to_user.txt:11
+#: templates/emails/report_overdue_to_user.txt:9
+#: templates/emails/response_received.txt:9
+msgid "Please, send all your questions to"
+msgstr "W razie pytań prosimy o wiadomość pod adres"
+
+#: templates/emails/reminder_overdue.txt:6
 msgid ""
 "We have not heard from you since then. This gives a person, who requires the "
 "information, the right to apply to the court!"
 msgstr ""
 "Od tego czasu nie otrzymaliśmy od Państwa przewidzianej prawem odpowiedzi. "
 
-#: sezam/templates/emails/reminder_overdue.txt:8
-msgid "This reminder sent to"
-msgstr ""
-
-#: sezam/templates/emails/reminder_overdue.txt:8
-#: sezam/templates/emails/report_overdue_to_user.txt:8
-#: sezam/templates/emails/response_received.txt:8
-msgid "which belongs to"
-msgstr "jej odbiorcą jest"
-
-#: sezam/templates/emails/reminder_overdue.txt:8
-#: sezam/templates/emails/report_overdue_to_user.txt:8
-#: sezam/templates/emails/response_received.txt:8
-msgid "about the Public Information Request."
-msgstr "i dotyczy Wniosku o Informację Publiczną."
-
-#: sezam/templates/emails/reminder_overdue.txt:9
-#: sezam/templates/emails/report_overdue_to_user.txt:9
-#: sezam/templates/emails/response_received.txt:9
-msgid "Please, send all your questions to"
-msgstr "W razie pytań prosimy o wiadomość pod adres"
-
-#: sezam/templates/emails/report_overdue_to_user.txt:3
-#: sezam/templates/emails/response_received.txt:3
+#: templates/emails/report_long_overdue_to_user.txt:3
+#: templates/emails/report_overdue_to_user.txt:3
+#: templates/emails/response_received.txt:3
 msgid "Dear"
 msgstr "Szanowny/Szanowna"
 
-#: sezam/templates/emails/report_overdue_to_user.txt:4
+#: templates/emails/report_long_overdue_to_user.txt:4
+#: templates/emails/report_overdue_to_user.txt:4
 msgid "there was no answer to your Public Information Request number"
 msgstr ""
 "nie otrzymaliśmy odpowiedzi na Twój wniosek o udostępnienie informacji "
 "publicznej nr"
 
-#: sezam/templates/emails/report_overdue_to_user.txt:4
-#: sezam/templates/emails/response_received.txt:4
+#: templates/emails/report_long_overdue_to_user.txt:4
+#: templates/emails/report_overdue_to_user.txt:4
+#: templates/emails/response_received.txt:4
 msgid "that was sent to"
 msgstr "który był wysłany do"
 
-#: sezam/templates/emails/report_overdue_to_user.txt:4
-#: sezam/templates/emails/response_received.txt:4
+#: templates/emails/report_long_overdue_to_user.txt:4
+#: templates/emails/report_overdue_to_user.txt:4
+#: templates/emails/response_received.txt:4
 msgid "on"
 msgstr "dnia"
 
-#: sezam/templates/emails/report_overdue_to_user.txt:6
+#: templates/emails/report_long_overdue_to_user.txt:8
+#: templates/emails/report_overdue_to_user.txt:6
 msgid "This gives you the right to apply to the court!"
 msgstr "Brak odpowiedzi daje Ci prawo żądania jej na drodze sądowej."
 
-#: sezam/templates/emails/report_overdue_to_user.txt:8
-#: sezam/templates/emails/response_received.txt:8
+#: templates/emails/report_long_overdue_to_user.txt:10
+#: templates/emails/report_overdue_to_user.txt:8
+#: templates/emails/response_received.txt:8
 msgid "This report is sent to"
 msgstr "Wiadomość została wysłana na adres"
 
-#: sezam/templates/emails/request_to_authority.txt:6
+#: templates/emails/report_request.txt:4
+#, fuzzy
+msgid "The request number"
+msgstr "Wniosek do"
+
+#: templates/emails/report_request.txt:4
+msgid "with the subject"
+msgstr "o tytule"
+
+#: templates/emails/report_request.txt:4
+msgid "is being reported as offensive or unsuitable by user"
+msgstr ""
+"jest zgłoszony jako niewłaściwy, obrażający lub zawierający prywatne "
+"informacje przez użytkownika"
+
+#: templates/emails/report_request.txt:6
+#, fuzzy
+msgid "You can find the request message thread here:"
+msgstr ""
+"Nie możesz zmieniać statusu wniosków złożonych przez innych użytkowników!"
+
+#: templates/emails/report_request.txt:8
+msgid "Please, react ASAP: investigate the case and take necessary actions!"
+msgstr "Proszę, sprawdź to jak najszybciej i podejmij odpowiednie kroki!"
+
+#: templates/emails/report_request.txt:9
+#, fuzzy
+msgid "If you want to send user a message, simply reply to this email"
+msgstr "z wyjaśnieniem. Żeby to zrobić, po prostu odpisz na tę wiadomość."
+
+#: templates/emails/request_to_authority.txt:3
+msgid "Please, reply to the address"
+msgstr "Proszę, odpowiedz na adres"
+
+#: templates/emails/request_to_authority.txt:4
+msgid "---------"
+msgstr ""
+
+#: templates/emails/request_to_authority.txt:7
 msgid ""
 "This is a public information request. The user who sent it, has agreed with "
 "the terms of Public Information Access. You have 14 days to answer this "
@@ -2741,26 +478,26 @@ msgstr ""
 "Ustawy o dostępie do informacji publicznej. Zgodnie z prawem, odpowiedź "
 "powinna zostać udzielona w ciągu 14 dni."
 
-#: sezam/templates/emails/request_to_authority.txt:7
-#: sezam/templates/emails/user_reply.txt:10
+#: templates/emails/request_to_authority.txt:8
+#: templates/emails/user_reply.txt:11
 msgid "Please, send all your questions to "
 msgstr "Ewentualne pytania prosimy kierować do"
 
-#: sezam/templates/emails/response_received.txt:4
+#: templates/emails/response_received.txt:4
 msgid "there is an answer to your Public Information Request number"
 msgstr ""
 "otrzymaliśmy odpowiedź na Twój wniosek o udzielenie informacji publicznej nr "
 
-#: sezam/templates/emails/response_received.txt:6
+#: templates/emails/response_received.txt:6
 msgid "Please, go to the following link to see the updated thread: "
 msgstr "Aby zobaczyć zaktualizowany wątek, wejdź na stronę "
 
-#: sezam/templates/emails/user_reply.txt:8
+#: templates/emails/user_reply.txt:9
 msgid "This is a user's reply to the public information request to"
 msgstr ""
 "To jest odpowiedź użytkownika na wniosek o informację publiczną kierowany do"
 
-#: sezam/templates/emails/user_reply.txt:9
+#: templates/emails/user_reply.txt:10
 msgid ""
 "The user who sent it, has agreed with the terms of Public Information "
 "Access. You have 14 days to answer this request."
@@ -2769,37 +506,66 @@ msgstr ""
 "Ustawy o dostępie do informacji publicznej. Zgodnie z prawem, odpowiedź "
 "powinna zostać udzielona w ciągu 14 dni."
 
-#: sezam/templates/includes/authority_info.html:7
+#: templates/includes/authority_info.html:8
 msgid "Un-follow this authority"
 msgstr "Przestań śledzić instytucję"
 
-#: sezam/templates/includes/authority_info.html:9
+#: templates/includes/authority_info.html:10
 msgid "Follow this authority"
 msgstr "Śledź instytucję"
 
-#: sezam/templates/includes/authority_info.html:11
-#: sezam/templates/includes/pia_request.html:65
+#: templates/includes/authority_info.html:12
+#: templates/includes/pia_request.html:65
 msgid "Send request"
 msgstr "Wyślij wniosek"
 
-#: sezam/templates/includes/authority_info.html:20
+#: templates/includes/authority_info.html:17
+#: templates/includes/authority_list_unit.html:18
+msgid "Official"
+msgstr "Urzędnik"
+
+#: templates/includes/authority_info.html:20
+msgid "Web-site"
+msgstr "strona internetowa"
+
+#: templates/includes/authority_info.html:21
 msgid "Buletin of public information"
 msgstr "Biuletyn informacji publicznej"
 
-#: sezam/templates/includes/authority_info.html:39
+#: templates/includes/authority_info.html:27
+msgid "Notes"
+msgstr "Uwagi"
+
+#: templates/includes/authority_info.html:31
+#: templates/includes/authority_list_unit.html:19
+msgid "Address"
+msgstr "Adres"
+
+#: templates/includes/authority_info.html:40
 msgid "Telephones"
 msgstr "Telefony"
 
-#: sezam/templates/includes/authority_list.html:18
+#: templates/includes/authority_info.html:42
+#: templates/includes/authority_info.html:45
+#: templates/includes/authority_info.html:48
+#: templates/includes/user_info.html:57
+msgid "internal"
+msgstr "wewnętrzny"
+
+#: templates/includes/authority_info.html:55
+msgid "Fax"
+msgstr "Fax"
+
+#: templates/includes/authority_list.html:18
 msgid ""
 "You can select several Authorities, and then send a request to all of them."
 msgstr "Możesz wybrać kilka instytucji i wysłać wniosek do wszystkich."
 
-#: sezam/templates/includes/authority_list.html:19
+#: templates/includes/authority_list.html:19
 msgid "Make requests"
 msgstr "Wyślij wnioski"
 
-#: sezam/templates/includes/authority_list.html:20
+#: templates/includes/authority_list.html:20
 msgid ""
 "For each selected authority a separate request will be sent, so that you can "
 "trace them separately."
@@ -2807,44 +573,47 @@ msgstr ""
 "Dla każdej wybranej instytucji będzie wysłany osobny wniosek, możliwe więc "
 "jest indywidualne śledzenie każdego z nich."
 
-#: sezam/templates/includes/authority_list.html:31
-#: sezam/templates/search/search.html:32
+#: templates/includes/authority_list.html:31 templates/search/search.html:32
 msgid "No results found"
 msgstr "Nie znaleziono"
 
-#: sezam/templates/includes/authority_list_mini.html:4
+#: templates/includes/authority_list_mini.html:4
 msgid "Who can I request information from?"
 msgstr "Od kogo mogę żądać informacji?"
 
-#: sezam/templates/includes/authority_list_mini.html:5
+#: templates/includes/authority_list_mini.html:5
 msgid "covers requests to"
 msgstr "pozwala wysłać wnioski do"
 
-#: sezam/templates/includes/authority_list_mini.html:5
+#: templates/includes/authority_list_mini.html:5
 msgid "authorities, including"
 msgstr "instytucji, w tym"
 
-#: sezam/templates/includes/authority_list_mini.html:12
+#: templates/includes/authority_list_mini.html:12
 msgid "Browse all authorities"
 msgstr "Przeglądaj wszystkie instytucje"
 
-#: sezam/templates/includes/authority_list_unit.html:20
+#: templates/includes/authority_list_unit.html:23
 msgid "Make Request"
 msgstr "Złóż wniosek"
 
-#: sezam/templates/includes/authority_list_unit.html:30
+#: templates/includes/authority_list_unit.html:33
 msgid "Requests made"
 msgstr "Złożone wnioski"
 
-#: sezam/templates/includes/authority_profile_form.html:5
+#: templates/includes/authority_list_unit.html:35
+msgid "Created"
+msgstr "Utworzono"
+
+#: templates/includes/authority_profile_form.html:5
 msgid "Describe new authority"
 msgstr "Opisz nową instytucję"
 
-#: sezam/templates/includes/authority_profile_form.html:6
+#: templates/includes/authority_profile_form.html:6
 msgid "Please, do not enter untruthful data!"
 msgstr "Proszę, nie podawaj niesprawdzonych informacji!"
 
-#: sezam/templates/includes/authority_profile_form.html:7
+#: templates/includes/authority_profile_form.html:7
 msgid ""
 "Before going active and available for requests a new Authority will be "
 "checked by our personnel."
@@ -2852,118 +621,124 @@ msgstr ""
 "Nim nowa instytucja zostanie dopisana dodana, musi zostać sprawdzona przez "
 "moderatora."
 
-#: sezam/templates/includes/authority_profile_form.html:8
+#: templates/includes/authority_profile_form.html:8
 msgid "We will notify you on our decision asap."
 msgstr "Poinformujemy Cię o tym mailem."
 
-#: sezam/templates/includes/authority_profile_form.html:9
+#: templates/includes/authority_profile_form.html:9
 msgid "Required fields are marked by the red star "
 msgstr "Obowiązkowe pola zostały oznaczone gwiazdką."
 
-#: sezam/templates/includes/authority_profile_form.html:26
+#: templates/includes/authority_profile_form.html:26
 msgid "The Authority is represented by the official"
 msgstr "Instytucja reprezentowana jest przez"
 
-#: sezam/templates/includes/authority_profile_form.html:32
+#: templates/includes/authority_profile_form.html:32
 msgid "In order to find an authority easy and fast"
 msgstr "Aby szybko znaleźć instytucję"
 
-#: sezam/templates/includes/authority_profile_form.html:33
+#: templates/includes/authority_profile_form.html:33
 msgid "it should belong to one of the given categories"
 msgstr "powinno się przypisać ją do jednej z kategorii"
 
-#: sezam/templates/includes/authority_profile_form.html:38
+#: templates/includes/authority_profile_form.html:38
 msgid "Authority address"
 msgstr "Adres instytucji"
 
-#: sezam/templates/includes/authority_profile_form.html:54
+#: templates/includes/authority_profile_form.html:54
 msgid "Authority telephones"
 msgstr "Telefony do instytucji"
 
-#: sezam/templates/includes/authority_profile_form.html:71
+#: templates/includes/authority_profile_form.html:71
 msgid "Emails"
 msgstr "Adresy e-mail"
 
-#: sezam/templates/includes/authority_profile_form.html:79
+#: templates/includes/authority_profile_form.html:79
 msgid "Web-sites"
 msgstr "Strony internetowe"
 
-#: sezam/templates/includes/authority_profile_form.html:96
-#: sezam/templates/includes/pia_thread_annotate_form.html:16
-#: sezam/templates/includes/user_info_form.html:52
-#: sezam/templates/includes/user_pic.html:25
+#: templates/includes/authority_profile_form.html:96
+#: templates/includes/pia_thread_annotate_form.html:16
+#: templates/includes/user_info_form.html:52
+#: templates/includes/user_message.html:31 templates/includes/user_pic.html:25
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: sezam/templates/includes/navbar.html:14
+#: templates/includes/navbar.html:13
+msgid "Home"
+msgstr "Początek"
+
+#: templates/includes/navbar.html:14
 msgid "Make request"
 msgstr "Złóż wniosek"
 
-#: sezam/templates/includes/navbar.html:15
+#: templates/includes/navbar.html:15
 msgid "View requests"
 msgstr "Przejrzyj wnioski"
 
-#: sezam/templates/includes/navbar.html:16
+#: templates/includes/navbar.html:16
 msgid "Authorities"
 msgstr "Instytucje"
 
-#: sezam/templates/includes/navbar.html:29
+#: templates/includes/navbar.html:29
 msgid "My profile"
 msgstr "Mój profil"
 
-#: sezam/templates/includes/navbar.html:30
+#: templates/includes/navbar.html:30
 msgid "Make a request"
 msgstr "Złóż wniosek"
 
-#: sezam/templates/includes/navbar.html:31
-#: sezam/templates/registration/password_change_form.html:6
+#: templates/includes/navbar.html:31
+#: templates/registration/password_change_form.html:6
 msgid "Password change"
 msgstr "Zmiana hasła"
 
-#: sezam/templates/includes/navbar.html:32
+#: templates/includes/navbar.html:32
 msgid "Help"
 msgstr "Pomoc"
 
-#: sezam/templates/includes/pagin.html:8
-#: sezam/templates/includes/pagin.html:10
+#: templates/includes/pagin.html:8 templates/includes/pagin.html.py:10
 msgid " Previous "
 msgstr "Poprzedni"
 
-#: sezam/templates/includes/pagin.html:12
+#: templates/includes/pagin.html:12
 msgid "Page"
 msgstr "Strona"
 
-#: sezam/templates/includes/pagin.html:12
-#: sezam/templates/includes/pagin_header.html:2
+#: templates/includes/pagin.html:12 templates/includes/pagin_header.html:8
 msgid "of"
 msgstr "z"
 
-#: sezam/templates/includes/pagin.html:14
-#: sezam/templates/includes/pagin.html:16
+#: templates/includes/pagin.html:14 templates/includes/pagin.html.py:16
 msgid " Next "
 msgstr "Następny"
 
-#: sezam/templates/includes/pagin_header.html:2
+#: templates/includes/pagin_header.html:3
+#, fuzzy
+msgid "Nothing found"
+msgstr "Nie znaleziono"
+
+#: templates/includes/pagin_header.html:5
 msgid "Found"
 msgstr "Znaleziono"
 
-#: sezam/templates/includes/pagin_header.html:2
+#: templates/includes/pagin_header.html:5
 msgid "records"
 msgstr "rekordów"
 
-#: sezam/templates/includes/pagin_header.html:2
+#: templates/includes/pagin_header.html:8
 msgid "Showing"
 msgstr "Pokazuję"
 
-#: sezam/templates/includes/pagin_header.html:2
+#: templates/includes/pagin_header.html:8
 msgid "results on page"
 msgstr "rezultatów na stronie"
 
-#: sezam/templates/includes/pia_request.html:34
+#: templates/includes/pia_request.html:34
 msgid "Write your request in <strong>simple, precise language</strong>."
 msgstr " Napisz wniosek <strong>precyzyjnie, w prosty sposób</strong>."
 
-#: sezam/templates/includes/pia_request.html:35
+#: templates/includes/pia_request.html:35
 msgid ""
 "Ask for <strong>specific</strong> documents or information, this site is not "
 "suitable for general enquiries."
@@ -2971,49 +746,49 @@ msgstr ""
 "Poproś o <strong>konkretne</strong> dokumenty lub informacje. Wniosek o "
 "informację publiczną to nie sposób na zadawanie ogólnikowych pytań."
 
-#: sezam/templates/includes/pia_request.html:36
+#: templates/includes/pia_request.html:36
 msgid ""
 "Keep it <strong>focused</strong>, you'll be more likely to get what you want"
 msgstr ""
 "Wniosek powinien być konkretny, wtedy jest większa szansa na to, że w "
 "odpowiedzi uzyskać to, czego potrzebujesz"
 
-#: sezam/templates/includes/pia_request.html:36
-#: sezam/templates/includes/pia_request.html:70
+#: templates/includes/pia_request.html:36
+#: templates/includes/pia_request.html:70
 msgid "why?"
 msgstr "dlaczego?"
 
-#: sezam/templates/includes/pia_request.html:39
-#: sezam/templates/includes/pia_request.html:57
+#: templates/includes/pia_request.html:39
+#: templates/includes/pia_request.html:57
 msgid "Preview request"
 msgstr "Podgląd wniosku"
 
-#: sezam/templates/includes/pia_request.html:66
-#: sezam/templates/includes/pia_thread_reply_form.html:51
+#: templates/includes/pia_request.html:66
+#: templates/includes/pia_thread_reply_form.html:51
 msgid "Save draft"
 msgstr "Zapisz szkic"
 
-#: sezam/templates/includes/pia_request.html:67
-#: sezam/templates/includes/pia_thread_reply_form.html:52
+#: templates/includes/pia_request.html:67
+#: templates/includes/pia_thread_reply_form.html:52
 msgid "Discard"
 msgstr "Odrzuć"
 
-#: sezam/templates/includes/pia_request.html:69
+#: templates/includes/pia_request.html:69
 msgid "Check you haven't included any personal information."
 msgstr ""
 "Sprawdź, czy nie zamieściłeś chronionych danych osobowych - wnioski są "
 "publiczne."
 
-#: sezam/templates/includes/pia_request.html:70
+#: templates/includes/pia_request.html:70
 msgid "Your name, request and any responses will appear in search engines"
 msgstr ""
 "Twoje nazwisko, wniosek i wszystkie odpowiedzi będą dostępne dla wszystkich"
 
-#: sezam/templates/includes/pia_request_attachment.html:8
+#: templates/includes/pia_request_attachment.html:8
 msgid "Warning!"
 msgstr "Ostrzeżenie!"
 
-#: sezam/templates/includes/pia_request_attachment.html:8
+#: templates/includes/pia_request_attachment.html:8
 msgid ""
 "You have exceeded the limit of attachments. To attach new files you have to "
 "delete some first"
@@ -3021,9 +796,10 @@ msgstr ""
 "Przekroczyłeś dopuszczalny limit załączników. Przed dodaniem nowych, musisz "
 "usunąć poprzednie."
 
-#: sezam/templates/includes/pia_request_attachment.html:15
+#: templates/includes/pia_request_attachment.html:15
+#, fuzzy
 msgid ""
-"You can upload up to 5 files. Only ceratin types of files are allowed (PDF, "
+"You can upload up to 5 files. Only certain types of files are allowed (PDF, "
 "MS Office, Apache OpenOffice and images). The size of each file should not "
 "exceed"
 msgstr ""
@@ -3031,159 +807,177 @@ msgstr ""
 "Office, Open/LibreOffice i zdjęcia) są dopuszczalne. Rozmiar każdego z "
 "plików nie powinien przekroczyć"
 
-#: sezam/templates/includes/pia_request_attachment.html:28
+#: templates/includes/pia_request_attachment.html:28
 msgid "Files attached so far. Uncheck to remove file from the draft."
 msgstr "Dołączone pliki. Odznacz plik, by go usunąć."
 
-#: sezam/templates/includes/pia_request_list.html:4
+#: templates/includes/pia_request_list.html:8
 msgid "Requests to"
 msgstr "Wnioski do"
 
-#: sezam/templates/includes/pia_request_list.html:5
+#: templates/includes/pia_request_list.html:9
 msgid "Public Information Access Requests"
 msgstr "Wnioski o dostęp do informacji publicznej"
 
-#: sezam/templates/includes/pia_request_list.html:18
+#: templates/includes/pia_request_list.html:20
 msgid "Filter"
 msgstr "Filtr"
 
-#: sezam/templates/includes/pia_request_list.html:20
+#: templates/includes/pia_request_list.html:23
 msgid "Requests"
 msgstr "Wnioski"
 
-#: sezam/templates/includes/pia_request_list.html:22
-#: sezam/templates/search/search.html:17
+#: templates/includes/pia_request_list.html:25 templates/search/search.html:17
 msgid "all"
 msgstr "wszystkie"
 
-#: sezam/templates/includes/pia_request_list.html:23
+#: templates/includes/pia_request_list.html:26
 msgid "successful"
 msgstr "udane"
 
-#: sezam/templates/includes/pia_request_list.html:24
+#: templates/includes/pia_request_list.html:27
 msgid "unsuccessful"
 msgstr "nieudane"
 
-#: sezam/templates/includes/pia_request_list.html:25
+#: templates/includes/pia_request_list.html:28
 msgid "unresolved"
 msgstr "niezakończone"
 
-#: sezam/templates/includes/pia_request_list.html:34
-#: sezam/templates/search/result_object.html:13
+#: templates/includes/pia_request_list.html:38
+#: templates/search/result_object.html:13
 msgid "sent"
 msgstr "wysłane"
 
-#: sezam/templates/includes/pia_request_list.html:34
-#: sezam/templates/search/result_object.html:16
-msgid "last update"
-msgstr "ostatnia aktualizacja"
+#: templates/includes/pia_request_list.html:38
+#: templates/includes/pia_thread_sidebar.html:53
+msgid "by"
+msgstr "przez"
 
-#: sezam/templates/includes/pia_request_list.html:43
-msgid "There are no requests so far. "
-msgstr "Nie ma jeszcze żadnych wniosków."
-
-#: sezam/templates/includes/pia_request_list.html:43
-msgid "Make the first"
-msgstr "Złóż pierwszy"
-
-#: sezam/templates/includes/pia_request_list.html:45
-msgid "There are no requests matching the query."
-msgstr "Nie ma wniosków odpowiadających tym warunkom."
-
-#: sezam/templates/includes/pia_request_list_mini.html:4
-msgid "What information has been released?"
-msgstr "Jaka informacja została opublikowana?"
-
-#: sezam/templates/includes/pia_request_list_mini.html:5
-msgid "has made so far"
-msgstr "do tej pory złożył"
-
-#: sezam/templates/includes/pia_request_list_mini.html:5
-msgid "requests, including"
-msgstr "wniosków, w tym"
-
-#: sezam/templates/includes/pia_request_list_mini.html:7
-msgid "The request to"
-msgstr "Wniosek do"
-
-#: sezam/templates/includes/pia_request_list_mini.html:7
-msgid "about"
-msgstr "dotyczący"
-
-#: sezam/templates/includes/pia_request_list_mini.html:7
-msgid "Sent"
-msgstr "Wysłany"
-
-#: sezam/templates/includes/pia_request_list_mini.html:7
-msgid "last changed"
-msgstr "ostatnio zaktualizowany"
-
-#: sezam/templates/includes/pia_request_list_mini.html:11
-msgid "More requests"
-msgstr "Więcej wniosków"
-
-#: sezam/templates/includes/pia_request_similar_items.html:6
-msgid "Requests that may already have your answer"
-msgstr "Wnioski które mogą odpowiadać na Twoje pytanie"
-
-#: sezam/templates/includes/pia_request_similar_items.html:11
-#: sezam/templates/includes/pia_thread_sidebar.html:52
-msgid "To"
-msgstr "Do"
-
-#: sezam/templates/includes/pia_thread.html:17
-msgid "Request from"
-msgstr "Wniosek od"
-
-#: sezam/templates/includes/pia_thread.html:17
+#: templates/includes/pia_request_list.html:38
+#: templates/includes/pia_thread.html:15
 msgid "to"
 msgstr "do"
 
-#: sezam/templates/includes/pia_thread.html:26
+#: templates/includes/pia_request_list.html:38
+#: templates/search/result_object.html:16
+msgid "last update"
+msgstr "ostatnia aktualizacja"
+
+#: templates/includes/pia_request_list.html:47
+msgid "There are no requests so far. "
+msgstr "Nie ma jeszcze żadnych wniosków."
+
+#: templates/includes/pia_request_list.html:47
+msgid "Make the first"
+msgstr "Złóż pierwszy"
+
+#: templates/includes/pia_request_list.html:49
+msgid "There are no requests matching the query."
+msgstr "Nie ma wniosków odpowiadających tym warunkom."
+
+#: templates/includes/pia_request_list_mini.html:5
+msgid "What information has been released?"
+msgstr "Jaka informacja została opublikowana?"
+
+#: templates/includes/pia_request_list_mini.html:6
+msgid "has made so far"
+msgstr "do tej pory złożył"
+
+#: templates/includes/pia_request_list_mini.html:6
+msgid "requests, including"
+msgstr "wniosków, w tym"
+
+#: templates/includes/pia_request_list_mini.html:8
+msgid "The request to"
+msgstr "Wniosek do"
+
+#: templates/includes/pia_request_list_mini.html:8
+msgid "about"
+msgstr "dotyczący"
+
+#: templates/includes/pia_request_list_mini.html:8
+msgid "Sent"
+msgstr "Wysłany"
+
+#: templates/includes/pia_request_list_mini.html:8
+msgid "last changed"
+msgstr "ostatnio zaktualizowany"
+
+#: templates/includes/pia_request_list_mini.html:12
+msgid "More requests"
+msgstr "Więcej wniosków"
+
+#: templates/includes/pia_request_similar_items.html:6
+msgid "Requests that may already have your answer"
+msgstr "Wnioski które mogą odpowiadać na Twoje pytanie"
+
+#: templates/includes/pia_request_similar_items.html:11
+#: templates/includes/pia_thread_sidebar.html:52
+msgid "To"
+msgstr "Do"
+
+#: templates/includes/pia_thread.html:15
+msgid "Request from"
+msgstr "Wniosek od"
+
+#: templates/includes/pia_thread.html:24
 msgid "From"
 msgstr "Od"
 
-#: sezam/templates/includes/pia_thread_reply_form.html:47
+#: templates/includes/pia_thread_reply_form.html:47
 msgid "Save reply"
 msgstr "Zapisz odpowiedź"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:4
+#: templates/includes/pia_thread_reply_form.html:49
+msgid "Reply"
+msgstr "Odpowiedź"
+
+#: templates/includes/pia_thread_sidebar.html:4
 msgid "Actions"
 msgstr "Działania"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:7
+#: templates/includes/pia_thread_sidebar.html:7
 msgid "Anyone"
 msgstr "Ktokolwiek"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:10
+#: templates/includes/pia_thread_sidebar.html:10
 msgid "Un-follow this request"
 msgstr "Przestań śledzić wniosek"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:12
+#: templates/includes/pia_thread_sidebar.html:12
 msgid "Follow this request"
 msgstr "Śledź wniosek"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:15
+#: templates/includes/pia_thread_sidebar.html:15
 msgid "Add an annotation "
 msgstr "Dodaj komentarz"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:16
+#: templates/includes/pia_thread_sidebar.html:16
 msgid "Print current thread"
-msgstr "Wydrukują wątek"
+msgstr "Wydrukuj wątek"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:17
+#: templates/includes/pia_thread_sidebar.html:17
 msgid "Download a zip file of all correspondence"
 msgstr "Ściągnij całą korespondencję"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:20
+#: templates/includes/pia_thread_sidebar.html:20
 msgid "Only"
 msgstr "Wyłącznie"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:38
+#: templates/includes/pia_thread_sidebar.html:21
+#, fuzzy
+msgid "Write a reply"
+msgstr "Zapisz odpowiedź"
+
+#: templates/includes/pia_thread_sidebar.html:24
+msgid "Update the status of this request"
+msgstr "Zaktualizuj status wniosku"
+
+#: templates/includes/pia_thread_sidebar.html:38
 msgid "Offensive? Unsuitable?"
 msgstr "Obraźliwy? Niewłaściwy?"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:39
+#: templates/includes/pia_thread_sidebar.html:39
 msgid ""
 "Requests for personal information and vexatious requests are not considered "
 "valid for FOI purposes"
@@ -3191,11 +985,11 @@ msgstr ""
 "Wnioski wysyłane w celach innych niż uzyskanie informacji publicznej mogą "
 "zostać odrzucone przed adresata"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:39
+#: templates/includes/pia_thread_sidebar.html:39
 msgid "read more"
 msgstr "czytaj więcej"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:40
+#: templates/includes/pia_thread_sidebar.html:40
 msgid ""
 "If you believe this request is not suitable, you can report it for attention "
 "by the site administrators."
@@ -3203,80 +997,81 @@ msgstr ""
 "Jeśli uważasz, że ten wniosek nie jest właściwy, możesz go zgłosić naszym "
 "moderatorom."
 
-#: sezam/templates/includes/pia_thread_sidebar.html:47
+#: templates/includes/pia_thread_sidebar.html:43
+#, fuzzy
+msgid "Report this request"
+msgstr "Śledź wniosek"
+
+#: templates/includes/pia_thread_sidebar.html:47
 msgid "Similar requests"
 msgstr "Podobne wnioski"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:53
-msgid "by"
-msgstr "przez"
-
-#: sezam/templates/includes/pia_thread_sidebar.html:61
+#: templates/includes/pia_thread_sidebar.html:61
 msgid "More similar requests"
 msgstr "Więcej podobnych wniosków"
 
-#: sezam/templates/includes/pia_thread_sidebar.html:67
+#: templates/includes/pia_thread_sidebar.html:67
 msgid "We couldn't find any request similar to this one, sorry..."
 msgstr "Przepraszamy, nie znaleźliśmy żadnych wniosków podobnych do tego."
 
-#: sezam/templates/includes/user_drafts.html:6
+#: templates/includes/user_drafts.html:8
 msgid "My drafts"
 msgstr "Moje szkice"
 
-#: sezam/templates/includes/user_drafts.html:32
+#: templates/includes/user_drafts.html:34
 msgid "Discard selected"
 msgstr "Odrzuć zaznaczone"
 
-#: sezam/templates/includes/user_drafts.html:35
+#: templates/includes/user_drafts.html:37
 msgid "There are no drafts saved."
 msgstr "Nie ma zapisanych szkiców."
 
-#: sezam/templates/includes/user_info.html:9
+#: templates/includes/user_info.html:11
 msgid "Update profile information"
 msgstr "Zaktualizuj profil"
 
-#: sezam/templates/includes/user_info.html:19
-#: sezam/templates/includes/user_info_form.html:6
+#: templates/includes/user_info.html:21
+#: templates/includes/user_info_form.html:6
 msgid "Change pic"
 msgstr "Zmień zdjęcie"
 
-#: sezam/templates/includes/user_info.html:25
+#: templates/includes/user_info.html:27
 msgid "Joined:"
 msgstr "Dołączył:"
 
-#: sezam/templates/includes/user_info.html:26
+#: templates/includes/user_info.html:28
 msgid "requests:"
 msgstr "liczba złożonych wniosków:"
 
-#: sezam/templates/includes/user_info.html:28
+#: templates/includes/user_info.html:30
 msgid "About me"
 msgstr "O mnie"
 
-#: sezam/templates/includes/user_info.html:33
+#: templates/includes/user_info.html:35
 msgid "My web-site"
 msgstr "Moja strona"
 
-#: sezam/templates/includes/user_info.html:35
+#: templates/includes/user_info.html:37
 msgid "Check out my web-site"
 msgstr "Odwiedź moją stronę"
 
-#: sezam/templates/includes/user_info.html:45
+#: templates/includes/user_info.html:47
 msgid "Address:"
 msgstr "Adres:"
 
-#: sezam/templates/includes/user_info.html:54
+#: templates/includes/user_info.html:56
 msgid "Telephone:"
 msgstr "Telefon:"
 
-#: sezam/templates/includes/user_info.html:61
+#: templates/includes/user_info.html:63
 msgid "Website:"
 msgstr "Strona internetowa:"
 
-#: sezam/templates/includes/user_info_form.html:9
+#: templates/includes/user_info_form.html:9
 msgid "All the fields are optional."
 msgstr "Wszystkie pola są opcjonalne."
 
-#: sezam/templates/includes/user_info_form.html:24
+#: templates/includes/user_info_form.html:24
 msgid ""
 "None of the following data will appear publicly. We do not sell or give away "
 "personal information."
@@ -3284,21 +1079,25 @@ msgstr ""
 "Żadne z poniższych danych nie zostaną upublicznione. Nie sprzedajemy ani nie "
 "udostępniamy danych osobowych."
 
-#: sezam/templates/includes/user_pic.html:8
+#: templates/includes/user_message.html:30
+msgid "Proceed"
+msgstr "Kontynuuj"
+
+#: templates/includes/user_pic.html:8
 msgid "Choose your profile photo."
 msgstr "Wybierz zdjęcie profilowe."
 
-#: sezam/templates/includes/user_pic.html:9
+#: templates/includes/user_pic.html:9
 msgid ""
 "Note that we do not save your photo in the original size, but only its "
 "thumbnail."
 msgstr "Nie zapisujemy zdjęcia w pełnej wielkości, lecz jedynie miniaturkę."
 
-#: sezam/templates/includes/user_pic.html:20
+#: templates/includes/user_pic.html:20
 msgid "Your photo will be shown <strong>in public</strong> on the Internet."
 msgstr "Twoje zdjęcie będzie dostępne publicznie w sieci."
 
-#: sezam/templates/includes/user_pic.html:21
+#: templates/includes/user_pic.html:21
 msgid ""
 "Please do not upload offensive pictures. We will take down images that we "
 "consider inappropriate."
@@ -3306,87 +1105,87 @@ msgstr ""
 "Proszę, nie wysyłaj zdjęć, które mogą być uznane za niewłaściwe - "
 "zastrzegamy sobie prawo do ich usunięcia."
 
-#: sezam/templates/registration/login.html:7
-#: sezam/templates/registration/password_reset_complete.html:17
+#: templates/registration/login.html:7
+#: templates/registration/password_reset_complete.html:17
 msgid "Log in"
 msgstr "Zaloguj się"
 
-#: sezam/templates/registration/login.html:30
+#: templates/registration/login.html:30
 msgid "E-mail address"
 msgstr "Adres email"
 
-#: sezam/templates/registration/login.html:48
+#: templates/registration/login.html:48
 msgid "Remember Me"
 msgstr "Zapamiętaj mnie"
 
-#: sezam/templates/registration/login.html:65
+#: templates/registration/login.html:65
 msgid "Forgotten your password?"
 msgstr "Zapomniałeś hasła?"
 
-#: sezam/templates/registration/login.html:65
+#: templates/registration/login.html:65
 msgid "Click to reset"
 msgstr "Kliknij, by zresetować"
 
-#: sezam/templates/registration/login.html:66
+#: templates/registration/login.html:66
 msgid "If you do not have an account, you can"
 msgstr "Jeśli nie masz konta, możesz"
 
-#: sezam/templates/registration/login.html:66
+#: templates/registration/login.html:66
 msgid "sign up"
 msgstr "je"
 
-#: sezam/templates/registration/login.html:66
+#: templates/registration/login.html:66
 msgid "for one."
 msgstr "założyć."
 
-#: sezam/templates/registration/password_change_done.html:8
+#: templates/registration/password_change_done.html:8
 msgid "Password change successful"
 msgstr "Hasło zostało zmienione"
 
-#: sezam/templates/registration/password_change_done.html:16
+#: templates/registration/password_change_done.html:16
 msgid "Your password was changed."
 msgstr "Hasło zostało zmienione."
 
-#: sezam/templates/registration/password_change_form.html:14
+#: templates/registration/password_change_form.html:14
 msgid ""
 "Please enter your old password, for security's sake, and then enter your new "
 "password twice so we can verify you typed it in correctly."
 msgstr ""
 "Dla celów bezpieczeństwa, wpisz swoje stare hasło oraz, dwukrotnie, nowe."
 
-#: sezam/templates/registration/password_change_form.html:52
-#: sezam/templates/registration/password_reset_confirm.html:48
+#: templates/registration/password_change_form.html:52
+#: templates/registration/password_reset_confirm.html:48
 msgid "Change my password"
 msgstr "Zmień hasło"
 
-#: sezam/templates/registration/password_reset_complete.html:8
+#: templates/registration/password_reset_complete.html:8
 msgid "Password reset complete"
 msgstr "Zakończono resetowanie hasła"
 
-#: sezam/templates/registration/password_reset_complete.html:16
+#: templates/registration/password_reset_complete.html:16
 msgid "Your password has been set.  You may go ahead and log in now."
 msgstr "Twoje hasło zostało ustawione. Możesz się zalogować."
 
-#: sezam/templates/registration/password_reset_confirm.html:8
-#: sezam/templates/registration/password_reset_form.html:8
+#: templates/registration/password_reset_confirm.html:8
+#: templates/registration/password_reset_form.html:8
 msgid "Password reset"
 msgstr "Resetowanie hasła"
 
-#: sezam/templates/registration/password_reset_confirm.html:19
+#: templates/registration/password_reset_confirm.html:19
 msgid "Enter new password"
 msgstr "Podaj nowe hasło"
 
-#: sezam/templates/registration/password_reset_confirm.html:20
+#: templates/registration/password_reset_confirm.html:20
 msgid ""
 "Please enter your new password twice so we can verify you typed it in "
 "correctly."
 msgstr "Wpisz hasło dwukrotnie, żeby uniknąć pomyłek."
 
-#: sezam/templates/registration/password_reset_confirm.html:62
+#: templates/registration/password_reset_confirm.html:62
 msgid "Password reset unsuccessful"
 msgstr "Nie udało się zresetować hasła"
 
-#: sezam/templates/registration/password_reset_confirm.html:63
+#: templates/registration/password_reset_confirm.html:63
 msgid ""
 "The password reset link was invalid, possibly because it has already been "
 "used.  Please request a new password reset."
@@ -3394,43 +1193,43 @@ msgstr ""
 "Odnośnik do resetowania hasła jest niewłaściwy - być może już został użyty? "
 "Jeśli potrzebujesz, rozpocznij procedurę resetowania od nowa."
 
-#: sezam/templates/registration/password_reset_done.html:8
+#: templates/registration/password_reset_done.html:8
 msgid "Password reset successful"
 msgstr "Udało się zresetować hasło"
 
-#: sezam/templates/registration/password_reset_done.html:16
+#: templates/registration/password_reset_done.html:16
 msgid ""
 "We've e-mailed you instructions for setting your password to the e-mail "
 "address you submitted. You should be receiving it shortly."
 msgstr "Wysłaliśmy mailem instrukcję dotyczącą ustawiania hasła."
 
-#: sezam/templates/registration/password_reset_email.html:2
+#: templates/registration/password_reset_email.html:2
 msgid "You're receiving this e-mail because you requested a password reset"
 msgstr "Otrzymujesz ten email, ponieważ zażądałeś zresetowania hasła"
 
-#: sezam/templates/registration/password_reset_email.html:3
+#: templates/registration/password_reset_email.html:3
 #, python-format
 msgid "for your user account at %(site_name)s"
 msgstr "dla twojego konta na serwisie %(site_name)s"
 
-#: sezam/templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:5
 msgid "Please go to the following page and choose a new password:"
 msgstr "Proszę, wejdź na poniższą stronę i wybierz nowe hasło:"
 
-#: sezam/templates/registration/password_reset_email.html:9
+#: templates/registration/password_reset_email.html:9
 msgid "Your username, in case you've forgotten:"
 msgstr "Twoja nazwa użytkownika, jeśli jej nie pamiętasz:"
 
-#: sezam/templates/registration/password_reset_email.html:11
+#: templates/registration/password_reset_email.html:11
 msgid "Thanks for using our site!"
 msgstr "Dziękujemy za korzystanie z naszego serwisu!"
 
-#: sezam/templates/registration/password_reset_email.html:13
+#: templates/registration/password_reset_email.html:13
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "Ekipa %(site_name)s"
 
-#: sezam/templates/registration/password_reset_form.html:16
+#: templates/registration/password_reset_form.html:16
 msgid ""
 "Forgotten your password? Enter your e-mail address below, and we'll e-mail "
 "instructions for setting a new one."
@@ -3438,15 +1237,15 @@ msgstr ""
 "Zapomniałeś hasła? Podaj swój adres e-mail i wyślemy Ci instrukcję dotyczącą "
 "ustawiania nowego."
 
-#: sezam/templates/registration/password_reset_form.html:31
+#: templates/registration/password_reset_form.html:31
 msgid "Reset my password"
 msgstr "Resetuj hasło"
 
-#: sezam/templates/registration/registration_form.html:8
+#: templates/registration/registration_form.html:8
 msgid "Register with Sezam"
 msgstr "Zarejestruj się"
 
-#: sezam/templates/registration/registration_form.html:22
+#: templates/registration/registration_form.html:22
 msgid ""
 "Registering with Sezam is free and open to anyone. With site membership you "
 "can create a profile page and send requests to the authorities."
@@ -3454,7 +1253,7 @@ msgstr ""
 "Rejestracja jest darmowa dla każdego. Posiadacze kont mogą składać wnioski o "
 "informację publiczną."
 
-#: sezam/templates/registration/registration_form.html:90
+#: templates/registration/registration_form.html:90
 msgid ""
 "Fill out the form (all fields are required), and your account will be "
 "created; you will be sent an email with instructions of how to finish your "
@@ -3464,29 +1263,702 @@ msgstr ""
 "konto. Po utworzeniu, otrzymasz e-mailem informację dotyczącą jego "
 "aktywowania."
 
-#: sezam/templates/registration/registration_form.html:91
+#: templates/registration/registration_form.html:91
 msgid ""
 "We will only use your email to send you signup instructions. We hate spam as "
 "much as you do."
 msgstr ""
 "Twój adres e-mail nie będzie rozdawany - nie cierpimy spamu podobnie jak Ty."
 
-#: sezam/templates/search/result_object.html:27
+#: templates/search/result_object.html:27
 msgid "Authority record"
 msgstr "Informacje o instytucji"
 
-#: sezam/templates/search/result_object.html:28
+#: templates/search/result_object.html:28
 msgid "created"
 msgstr "utworzone"
 
-#: sezam/templates/search/result_object.html:29
+#: templates/search/result_object.html:29
 msgid "official"
 msgstr "urzędnik"
 
-#: sezam/templates/search/result_object.html:30
+#: templates/search/result_object.html:30
 msgid "address"
 msgstr "adres"
 
-#: sezam/templates/search/search.html:15
+#: templates/search/search.html:15
 msgid "Filter results"
 msgstr "Rezultat wyszukiwania"
+
+#~ msgid "Position"
+#~ msgstr "Stanowisko"
+
+#~ msgid "Last name"
+#~ msgstr "Nazwisko"
+
+#~ msgid "Street name"
+#~ msgstr "Ulica"
+
+#~ msgid "Building, floor, office"
+#~ msgstr "Budynek, piętro, biuro"
+
+#~ msgid "More address data"
+#~ msgstr "Dodatkowe dane adresowe"
+
+#~ msgid "Line 1"
+#~ msgstr "Linia 1"
+
+#~ msgid "Line 2"
+#~ msgstr "Linia 2"
+
+#~ msgid "Postal code"
+#~ msgstr "Kod pocztowy"
+
+#~ msgid "City"
+#~ msgstr "Miasto"
+
+#~ msgid "Code"
+#~ msgstr "Kod"
+
+#~ msgid "Primary number"
+#~ msgstr "Główny numer"
+
+#~ msgid "Number"
+#~ msgstr "Numer"
+
+#~ msgid "Internal"
+#~ msgstr "Wewnętrzny"
+
+#~ msgid "More telephones"
+#~ msgstr "Dodatkowe numery"
+
+#~ msgid "Fax number"
+#~ msgstr "Fax"
+
+#~ msgid "Primary email"
+#~ msgstr "Główny e-mail"
+
+#~ msgid "Secretary e-mail"
+#~ msgstr "E-mail do sekretariatu"
+
+#~ msgid "Info e-mail"
+#~ msgstr "Ogólny email"
+
+#~ msgid "Official web-site"
+#~ msgstr "Strona internetowa"
+
+#~ msgid "Public Information Bulletin"
+#~ msgstr "Strona BIP"
+
+#~ msgid "Description"
+#~ msgstr "Opis"
+
+#~ msgid "Look for the authority"
+#~ msgstr "Szukaj instytucji"
+
+#~ msgid "New authority in the db: "
+#~ msgstr "Nowa instytucja w bazie"
+
+#~ msgid "Add authority"
+#~ msgstr "Dodaj instytucję"
+
+#~ msgid ""
+#~ "Mailbox with the specified name not found! Check MAILBOXES dict in the "
+#~ "main project settings!"
+#~ msgstr ""
+#~ "Nie istnieje wskazana skrzynka pocztowa. Sprawdź ustawienie MAILBOXES w "
+#~ "głównych ustawieniach projektu."
+
+#~ msgid ""
+#~ "Message with no proper recipient e-mail address! Possible spam? Please, "
+#~ "check the inbox."
+#~ msgstr ""
+#~ "Wiadomość nie posiada prawidłowego adresata. Spam? Sprawdź proszę "
+#~ "zawartość skrzynki pocztowej."
+
+#~ msgid "Cannot find in the database the Request with given ID!"
+#~ msgstr "W bazie nie istnieje wpis o podanym numerze ID."
+
+#~ msgid ""
+#~ "Cannot create new Message in the Thread for the Request with given ID!"
+#~ msgstr "Nie można stworzyć nowej wiadomości w wątku o podanym ID."
+
+#~ msgid "We do not have an e-mail of this authority in our database"
+#~ msgstr "Nie posiadamy adresu e-mail tej instytucji."
+
+#~ msgid "Cannot find e-mail address of this user in our database"
+#~ msgstr "Nie posiadamy adresu e-mail tego użytkownika."
+
+#~ msgid "Sending e-mail message failed: %s"
+#~ msgstr "Nie udało się wysłać wiadomości: %s"
+
+#~ msgid "Creating e-mail message failed"
+#~ msgstr "Nie udało się utworzyć wiadomości e-mail"
+
+#~ msgid "Cannot save attachment %(filename)s: %(error)s"
+#~ msgstr "Nie mogę zapisać załącznika %(filename)s: %(error)s"
+
+#~ msgid "Email check complete, received %s messages"
+#~ msgstr "Zakończono sprawdzanie poczty, otrzymano %s wiadomości"
+
+#~ msgid ""
+#~ "Complete checking overdue requests. Total number of overdue requests: "
+#~ msgstr ""
+#~ "Zakończono sprawdzanie przeterminowanych wniosków. Łączna liczba "
+#~ "przeterminowanych wniosków:"
+
+#~ msgid ""
+#~ "The response from the Authority has not been classified yet. If you are "
+#~ "satisfied or unsatisfied with the response, set the appropriate status, "
+#~ "please."
+#~ msgstr ""
+#~ "Nie sklasyfikowano jeszcze odpowiedzi. Prosimy o wskazanie, czy odpowiedź "
+#~ "była satysfakcjonująca poprzez ustawienie odpowiedniego statusu."
+
+#~ msgid ""
+#~ "We don't know whether the most recent response to this request contains "
+#~ "information or not. If you are <a href=\"/user/%(user_id)s/\">%(user_name)"
+#~ "s</a>, please sign in and let everyone know."
+#~ msgstr ""
+#~ "Nie wiemy, czy najnowsza odpowiedź na to zapytanie zawiera poszukiwaną "
+#~ "informację. Jeśli<a href=\"/user/%(user_id)s/\">%(user_name)s</a> to Ty, "
+#~ "zaloguj się proszę i daj nam znać."
+
+#~ msgid ""
+#~ "We don't know whether the most recent response to this request contains "
+#~ "information or not."
+#~ msgstr ""
+#~ "Nie wiemy, czy najnowsza odpowiedź na to zapytanie zawiera poszukiwaną "
+#~ "informację. "
+
+#~ msgid "Failed to create a Reqiest draft. System error is: %s"
+#~ msgstr "Nie udało się stworzyć szkicu zapytania: %s"
+
+#~ msgid "Failed to discard a Reqiest draft. System error is: %s"
+#~ msgstr "Nie udało się odrzucić szkicu zapytania: %s"
+
+#~ msgid "Failed to remove a draft, while sending Request. System error is: %s"
+#~ msgstr "Nie udało się usunąć szkicu zapytania podczas wysyłania wniosku: %s"
+
+#~ msgid ""
+#~ "Failed to save a Request draft, while sending PIA Request. System error "
+#~ "is: %s"
+#~ msgstr "Nie udało się usunąć szkicu zapytania podczas wysyłania wniosku: %s"
+
+#~ msgid "Cannot process attachment! See the original message!"
+#~ msgstr ""
+#~ "Nie udało się przeanalizować załączników. Sprawdź oryginalną wiadomość."
+
+#~ msgid "Failed to save attachments: %s"
+#~ msgstr "Nie udało się zapisać załączników: %s"
+
+#~ msgid "Attachment %s exceeds maximum filesize!"
+#~ msgstr "Załącznik %s jest za duży."
+
+#~ msgid "Error sending notification: %s"
+#~ msgstr "Nie udało się wysłać powiadomienia: %s"
+
+#~ msgid ""
+#~ "Athority <strong>%s</strong> successfully saved in the db! <br/>It will "
+#~ "remain inactive until our moderator finish reviewing and confirming the "
+#~ "record. We will notify you upon this by email. <p>Thanks a lot for your "
+#~ "participation!</p>"
+#~ msgstr ""
+#~ "Instytucja o nazwie <strong>%s</strong> została dodana do bazy. <br /> "
+#~ "Pozostanie nieaktywna, dopóki moderator nie potwierdzi prawidłowości "
+#~ "danych. Poinformujemy o tym drogą mailową. <p>Dziękujemy za pomoc w "
+#~ "uzupełnianiu bazu!</p>"
+
+#~ msgid ""
+#~ "<h5>Status was updated successfully.</h5><p>If you have any additional "
+#~ "information concerning this request (for example, an answer sent via "
+#~ "snail mail), and feel like adding something would help users to find the "
+#~ "right answer to their requests in the future, please, use <a href=\"%(url)"
+#~ "s\">this form</a>.<br/>Thank you!</p>"
+#~ msgstr ""
+#~ "<h5>Status został pomyślnie zaktualizowany.</h5><p>Jeśli masz dodatkowe "
+#~ "informacje dotyczące wniosku (na przykład, odpowiedź wysłano tradycyjną "
+#~ "pocztą) i uważasz, że dodatkowe dane pomogą innym w znalezieniu "
+#~ "poszukiwanych informacji, użyj proszę <a href=\"%(url)s\">tego "
+#~ "formularza</a>.<br/>Dziękujemy!</p>"
+
+#~ msgid ""
+#~ "You cannot follow your own request. As its author you are getting all "
+#~ "updates anyway."
+#~ msgstr ""
+#~ "Nie możesz śledzić swojego własnego wniosku - jako autor otrzymujesz już "
+#~ "komplet informacji."
+
+#~ msgid "New message in thread"
+#~ msgstr "Nowa wiadomość w wątku"
+
+#~ msgid "Message was annotated"
+#~ msgstr "Dodano uwagi do wiadomości"
+
+#~ msgid "Request to the Authority"
+#~ msgstr "Wniosek do instytucji"
+
+#~ msgid "Response from the Authority"
+#~ msgstr "Odpowiedź od instytucji"
+
+#~ msgid "Record has become active"
+#~ msgstr "Wpis został uaktywniony"
+
+#~ msgid "Last changed"
+#~ msgstr "Ostatnio zmieniony"
+
+#~ msgid "Summary"
+#~ msgstr "Podsumowanie"
+
+#~ msgid "Body"
+#~ msgstr "Treść"
+
+#~ msgid "Subject"
+#~ msgstr "Temat"
+
+#~ msgid "To e-mail"
+#~ msgstr "Adres odbiorcy"
+
+#~ msgid "From e-mail"
+#~ msgstr "Adres nadawcy"
+
+#~ msgid "File type"
+#~ msgstr "Rodzaj pliku"
+
+#~ msgid "File name"
+#~ msgstr "Nazwa pliku"
+
+#~ msgid "File size"
+#~ msgstr "Rozmiar pliku"
+
+#~ msgid "Path to file (relative to site_media)"
+#~ msgstr "Ścieżka do pliku (relatywna do site_media)"
+
+#~ msgid "Notify about action"
+#~ msgstr "Notyfikacja o działaniu"
+
+#~ msgid "Awaiting"
+#~ msgstr "Oczekuje"
+
+#~ msgid "Registered User"
+#~ msgstr "Zarejestrowany użytkownik"
+
+#~ msgid "Dear %(name)s, %(space3)sYours faithfully, %(space1)s%(user_name)s"
+#~ msgstr "Szanowny %(name)s, %(space3)sZ poważaniem, %(space1)s%(user_name)s"
+
+#~ msgid "You are sending a request to"
+#~ msgstr "Wysyłasz wniosek do"
+
+#~ msgid "Request summary"
+#~ msgstr "Podsumowanie wniosku"
+
+#~ msgid "Your request"
+#~ msgstr "Twój wniosek"
+
+#~ msgid "User"
+#~ msgstr "Użytkownik"
+
+#~ msgid "Your comment here"
+#~ msgstr "Twój komentarz"
+
+#~ msgid "Keywords"
+#~ msgstr "Słowa kluczowe"
+
+#~ msgid "Made between"
+#~ msgstr "Utworzony pomiędzy"
+
+#~ msgid "In progress"
+#~ msgstr "W toku"
+
+#~ msgid "Successful"
+#~ msgstr "Zakończony pomyślnie"
+
+#~ msgid "Partially successful"
+#~ msgstr "Częściowo zakończony"
+
+#~ msgid "Refused"
+#~ msgstr "Odmowa"
+
+#~ msgid "Overdue"
+#~ msgstr "Opóźniony"
+
+#~ msgid "Long overdue"
+#~ msgstr "Poważnie opóźniony"
+
+#~ msgid "Information not held"
+#~ msgstr "Instytucja nie posiada informacji"
+
+#~ msgid "Withdrawn by the requester"
+#~ msgstr "Wycofany przez wnioskodawcę"
+
+#~ msgid "Awaiting classification"
+#~ msgstr "Oczekuje na klasyfikację"
+
+#~ msgid "Authority"
+#~ msgstr "Instytucja"
+
+#~ msgid "Request status"
+#~ msgstr "Status wniosku"
+
+#~ msgid "latest message"
+#~ msgstr "najnowsza wiadomość"
+
+#~ msgid "request"
+#~ msgstr "wniosek"
+
+#~ msgid "Is it a response?"
+#~ msgstr "Czy odpowiedź jest satysfakcjonująca?"
+
+#~ msgid "Message"
+#~ msgstr "Wiadomość"
+
+#~ msgid "Posted"
+#~ msgstr "Wysłano"
+
+#~ msgid "Authority(ies)"
+#~ msgstr "Instytucja"
+
+#~ msgid "Request from user"
+#~ msgstr "Wniosek użytkownika"
+
+#~ msgid "Updated"
+#~ msgstr "Zaktualizowany"
+
+#~ msgid "Is it a response from authority?"
+#~ msgstr "Czy to jest odpowiedź od instytucji?"
+
+#~ msgid "Public Information Request "
+#~ msgstr "Wniosek o Informację Publiczną"
+
+#~ msgid " is overdue from "
+#~ msgstr "jest opóźniony od"
+
+#~ msgid "The response received for the Public Information Request "
+#~ msgstr "Odpowiedź wniosek o informację publiczną "
+
+#~ msgid " from "
+#~ msgstr "od"
+
+#~ msgid "View and search requests"
+#~ msgstr "Przeglądaj i przeszukuj wnioski"
+
+#~ msgid "Draft saved successfully."
+#~ msgstr "Szkic zapisany pomyślnie"
+
+#~ msgid "Successfully sent request(s) to: %s"
+#~ msgstr "Wysłanio wniosek do %s"
+
+#~ msgid "Request(s) sending failed: %s"
+#~ msgstr "Wysyłanie wniosku nie powiodło się: %s"
+
+#~ msgid "There are errors in the template <pre>%s</pre>"
+#~ msgstr "W szablonie są błędy <pre>%s</pre>"
+
+#~ msgid "Browse similar requests"
+#~ msgstr "Przejrzyj podobne wnioski"
+
+#~ msgid "Reply to: "
+#~ msgstr "Odpowiedz do:"
+
+#~ msgid "Error sending reply! System error: %s"
+#~ msgstr "Wystąpił błąd przy wysyłaniu odpowiedzi: %s"
+
+#~ msgid "Reply sent successfully."
+#~ msgstr "Odpowiedź wysłana"
+
+#~ msgid "Reply saved successfully."
+#~ msgstr "Odpowiedź zapisana"
+
+#~ msgid "Error saving message in the thread!"
+#~ msgstr "Wystąpił błąd przy dodawaniu wiadomości do wątku"
+
+#~ msgid "Error updating status!"
+#~ msgstr "Wystąpił błąd przy aktualizacji statusu."
+
+#~ msgid "Annotate request: "
+#~ msgstr "Dodaj notatkę:"
+
+#~ msgid "Cannot save annotation!"
+#~ msgstr "Nie mogę zapisać notatki."
+
+#~ msgid "Draft saving failed! See details below."
+#~ msgstr "Wystąpił błąd przy zapisywaniu szkicu. Zobacz poniżej."
+
+#~ msgid "About you"
+#~ msgstr "O Tobie"
+
+#~ msgid "Company"
+#~ msgstr "Firma"
+
+#~ msgid "Company/organizaion"
+#~ msgstr "Firma/organizacja"
+
+#~ msgid "Street name, building and office number"
+#~ msgstr "Ulica i numer domu"
+
+#~ msgid "Address line 1"
+#~ msgstr "Adres - 1 linijka"
+
+#~ msgid "Address line 2"
+#~ msgstr "Adres - 2 linijka"
+
+#~ msgid "Country"
+#~ msgstr "Państwo"
+
+#~ msgid "Tel code"
+#~ msgstr "Numer kierunkowy"
+
+#~ msgid "code"
+#~ msgstr "kod"
+
+#~ msgid "Tel."
+#~ msgstr "Telefon"
+
+#~ msgid "number"
+#~ msgstr "numer"
+
+#~ msgid "Choose a picture"
+#~ msgstr "Wybierz zdjęcie"
+
+#~ msgid "Photo of you"
+#~ msgstr "Twoje zdjęcie"
+
+#~ msgid "Failed to update user profile."
+#~ msgstr "Nie udało się uaktualnić profilu użytkownika."
+
+#~ msgid "Correct the errors: "
+#~ msgstr "Popraw błędy:"
+
+#~ msgid "Update profile "
+#~ msgstr "Zaktualizuj profil"
+
+#~ msgid "Failed to update userpic."
+#~ msgstr "Nie udało się zaktualizować zdjęcia."
+
+#~ msgid "Update userpic "
+#~ msgstr "Aktualizacja zdjęcia"
+
+#~ msgid "Order"
+#~ msgstr "Porządek"
+
+#~ msgid "Authority category"
+#~ msgstr "Kategoria instytucji"
+
+#~ msgid "Street"
+#~ msgstr "Ulica"
+
+#~ msgid "Office"
+#~ msgstr "biuro"
+
+#~ msgid "Building and office number"
+#~ msgstr "Numer budynku i biura"
+
+#~ msgid "Address (additional line 1)"
+#~ msgstr "Adres (dodatkowa linia nr 1)"
+
+#~ msgid "Address (additional line 2)"
+#~ msgstr "Adres (dodatkowa linia nr 2)"
+
+#~ msgid "Digits only!"
+#~ msgstr "Tylko cyfry!"
+
+#~ msgid "tel code"
+#~ msgstr "kod telefoniczny"
+
+#~ msgid "Example: 45"
+#~ msgstr "np: 45"
+
+#~ msgid "Telephone"
+#~ msgstr "Telefon"
+
+#~ msgid "Digits only! Example: 4430976"
+#~ msgstr "Tylko cyfry - na przykład 4430976"
+
+#~ msgid "Tel 1 code"
+#~ msgstr "Kierunkowy telefonu 1"
+
+#~ msgid "Telephone 1"
+#~ msgstr "Telefon 1"
+
+#~ msgid "Tel 2 code"
+#~ msgstr "Kierunkowy telefonu 2"
+
+#~ msgid "Telephone 2"
+#~ msgstr "Telefon 2"
+
+#~ msgid "Fax code"
+#~ msgstr "Kierunkowy fax"
+
+#~ msgid "E-mail"
+#~ msgstr "E-mail"
+
+#~ msgid "secretary e-mail"
+#~ msgstr "E-mail sekretariatu"
+
+#~ msgid "info e-mail"
+#~ msgstr "e-mail ogólny"
+
+#~ msgid "Web-site 1"
+#~ msgstr "Strona internetowa"
+
+#~ msgid "Title of official position"
+#~ msgstr "Tytuł urzędnika"
+
+#~ msgid "Official representative name"
+#~ msgstr "Imię urzędnika"
+
+#~ msgid "Official representative last name"
+#~ msgstr "Nazwisko urzędnika"
+
+#~ msgid "Active"
+#~ msgstr "Aktywny"
+
+#~ msgid "Should this item appear in lists and search results?"
+#~ msgstr ""
+#~ "Czy ten wpis powinien pojawiać się na liście i w wynikach wyszukiwania?"
+
+#~ msgid "Trusted"
+#~ msgstr "Zaufany"
+
+#~ msgid "Trusted users have access to extended functions"
+#~ msgstr "Zaufani użytkownicy mają dostęp do rozszerzonej funkcjonalności"
+
+#~ msgid "Digits only! Example: 504566462"
+#~ msgstr "Wyłącznie cyfry! Na przyŻlad: 504566462"
+
+#~ msgid "Userpic"
+#~ msgstr "Zdjęcie użytkownika"
+
+#~ msgid "state"
+#~ msgstr "stan"
+
+#~ msgid "when"
+#~ msgstr "kiedy"
+
+#~ msgid "name"
+#~ msgstr "nazwa"
+
+#~ msgid "Task detail"
+#~ msgstr "Opis zadania"
+
+#~ msgid "Tasks"
+#~ msgstr "Zadanie"
+
+#~ msgid "Revoke selected tasks"
+#~ msgstr "Anuluj wybrane zadania"
+
+#~ msgid "Terminate selected tasks"
+#~ msgstr "Przerwij wybrane zadania"
+
+#~ msgid "Kill selected tasks"
+#~ msgstr "Zatrzymaj całkowicie wybrane zadania"
+
+#~ msgid "Rate limit selected tasks"
+#~ msgstr "Ogranicz wybrane zadania"
+
+#, fuzzy
+#~ msgid "just now"
+#~ msgstr "właśnie"
+
+#~ msgid "year"
+#~ msgstr "rok"
+
+#~ msgid "years"
+#~ msgstr "lata"
+
+#~ msgid "month"
+#~ msgstr "miesiąc"
+
+#~ msgid "months"
+#~ msgstr "miesiące"
+
+#~ msgid "week"
+#~ msgstr "tydzień"
+
+#~ msgid "weeks"
+#~ msgstr "tygodnie"
+
+#~ msgid "day"
+#~ msgstr "dzień"
+
+#~ msgid "days"
+#~ msgstr "dni"
+
+#~ msgid "Activate users"
+#~ msgstr "Aktywuj użytkowników"
+
+#~ msgid "Re-send activation emails"
+#~ msgstr "Ponownie wyślij e-mail aktywacyjny"
+
+#~ msgid "Username"
+#~ msgstr "Nazwa użytkownika"
+
+#~ msgid "This value must contain only letters, numbers and underscores."
+#~ msgstr "Możesz wpisać wyłącznie litery, cyfry oraz znak podkreślenia."
+
+#~ msgid "Email address"
+#~ msgstr "Address e-mail"
+
+#~ msgid "Password"
+#~ msgstr "Hasło"
+
+#~ msgid ""
+#~ "Too weak! Password must include special characters and numbers and be at "
+#~ "least 8 symbols long."
+#~ msgstr ""
+#~ "Hasło musi składać się z conajmniej 8 znaków i zawierać litery oraz cyfry."
+
+#~ msgid "Password (again)"
+#~ msgstr "Hasło (powtórz)"
+
+#~ msgid "A user with that username already exists."
+#~ msgstr "Użytkownik o takiej nazwie już istnieje"
+
+#~ msgid "The two password fields didn't match."
+#~ msgstr "Wprowadzone hasła różnią się"
+
+#~ msgid "I have read and agree to the Terms of Service"
+#~ msgstr "Przeczytałem i zgadzam się na regulamin usługi"
+
+#~ msgid "You must agree to the terms to register"
+#~ msgstr "Musisz się zgodzić na regulamin, by móc założyć konto"
+
+#~ msgid "First name"
+#~ msgstr "Imię"
+
+#~ msgid ""
+#~ "This email address is already in use. Please supply a different email "
+#~ "address."
+#~ msgstr "Istnieje już konto z tym adresem e-mail."
+
+#~ msgid ""
+#~ "Registration using free email addresses is prohibited. Please supply a "
+#~ "different email address."
+#~ msgstr ""
+#~ "Rejestracja przy wykorzystaniu darmowych emaili jest niedozwolona. Użyj "
+#~ "proszę innego adresu e-mail."
+
+#~ msgid "user"
+#~ msgstr "użytkownik"
+
+#~ msgid "activation key"
+#~ msgstr "klucz aktywacyjny"
+
+#~ msgid "registration profile"
+#~ msgstr "profil rejestracji"
+
+#~ msgid "registration profiles"
+#~ msgstr "profile rejestracji"
+
+#~ msgid "This email is fake! Please, type a true one."
+#~ msgstr "To nie jest prawdziwy adres e-mail. Podaj proszę właściwy."
+
+#~ msgid "The reply from"
+#~ msgstr "Formularz odpowiedzi"
+
+#~ msgid ""
+#~ "This is a reply from Authority to the public information request, "
+#~ "obtained other way than e-mail and entered manually."
+#~ msgstr ""
+#~ "To jest odpowiedź na wniosek o informację publiczną, która została "
+#~ "uzyskana w inny sposób niż drogą e-mailową, i dodana ręcznie."
