@@ -4,12 +4,30 @@
 {% load i18n %}
 
 <div class="container">
-  <div class="row span7">
-    <span name="about"/>
-    <h2>{% trans 'About' %} {{ resource_name }}</h2>
-    <p>{% trans 'About text' %}</p>
-  </div>
+    <div class="row span7">
+        <span name="about_short"/>
+        <h2>{% trans 'About short' %}</h2>
+        <p>{% trans 'About short text' %}</p>
+    </div>
 </div>
+
+<div class="container">
+    <div class="row span7">
+        <span name="howitworks"/>
+        <h2>{% trans 'How it works' %}</h2>
+        <p>{% trans 'How it works text' %}</p>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row span7">
+        <span name="willtheyreply"/>
+        <h2>{% trans 'Will they reply' %}</h2>
+        <p>{% trans 'Will they reply text' %}</p>
+    </div>
+</div>
+
 
 <div class="container">
     <div class="row span7">
@@ -26,6 +44,26 @@
         <p>{% trans 'Requesting text' %}</p>
     </div>
 </div>
+
+
+<div class="container">
+    <div class="row span7">
+        <span name="about"/>
+        <h2>{% trans 'About' %} {{ resource_name }}</h2>
+        <p>{% trans 'About text' %}</p>
+    </div>
+</div>
+
+
+
+<div class="container">
+    <div class="row span7">
+        <span name="contact"/>
+        <h2>{% trans 'Who created ZapytajPanstwo' %}</h2>
+        <p>{% trans 'Who created ZapytajPanstwo text' %}</p>
+    </div>
+</div>
+
 
 
 {% endblock %}
