@@ -47,7 +47,12 @@
 	<div class="row">
 		<div class="span4" id="wnioski">
 			<h1>Sprawdź, co się dzieje z Twoimi wnioskami</h1>
-			<a href="#" class="orange_button">Rany boskie jestem wnioskiem</a>
+{% if user.is_authenticated %}
+	<a href="/user/{{user.id}}/" class="orange_button">Przejrzyj wnioski</a>
+{% else %}
+	<a href="/accounts/login" class="orange_button">{% trans 'Log in' %}</a>
+{% endif %}
+
 		</div>
 		<div class="span7 gradientbg">
 			<h1>Mamy ponad <span class="orange">2500</span> adresów w bazie aktualizowanej na bieżąco.</h1>
