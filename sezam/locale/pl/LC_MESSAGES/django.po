@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ZapytajPanstwo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-13 21:26+0200\n"
-"PO-Revision-Date: 2013-04-13 21:45+0100\n"
+"PO-Revision-Date: 2013-04-13 22:53+0100\n"
 "Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
 "Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpolske.pl>\n"
 "Language: Polish\n"
@@ -125,7 +125,7 @@ msgstr "Szukaj instytucji"
 
 #: apps/authority/views.py:289
 msgid "New authority in the db: "
-msgstr "Nowa instytucja w bazie"
+msgstr "Nowa instytucja w bazie: "
 
 #: apps/authority/views.py:314
 msgid "Add authority"
@@ -1364,7 +1364,7 @@ msgstr "Początek"
 
 #: apps/pia_request/forms.py:8
 msgid "Dear Sir/Madam, %(space3)sYours faithfully %(space1)s%(user_name)s"
-msgstr "Szanowny %(name)s, %(space3)sZ poważaniem, %(space1)s%(user_name)s"
+msgstr "Szanowni Państwo, %(space3)sZ poważaniem, %(space1)s%(user_name)s"
 
 #: apps/pia_request/forms.py:13 apps/pia_request/forms.py:99
 msgid "You are sending a request to"
@@ -3179,7 +3179,7 @@ msgstr "Wnioski o dostęp do informacji publicznej"
 
 #: sezam/templates/includes/pia_request_list.html:20
 msgid "Filter"
-msgstr "Filtr"
+msgstr "Filtruj"
 
 #: sezam/templates/includes/pia_request_list.html:23
 msgid "Requests"
@@ -3646,13 +3646,6 @@ msgstr "Wyszukiwanie"
 msgid "The reply from"
 msgstr "Odpowiedź od"
 
-#~ msgid ""
-#~ "This is a reply from Authority to the public information request, "
-#~ "obtained other way than e-mail and entered manually."
-#~ msgstr ""
-#~ "To jest odpowiedź na wniosek o informację publiczną, która została "
-#~ "uzyskana w inny sposób niż drogą e-mailową, i dodana ręcznie."
-
 msgid "Old password"
 msgstr "Stare hasło"
 
@@ -3662,3 +3655,18 @@ msgstr "Nowe hasło"
 msgid "New password confirmation"
 msgstr "Powtórz nowe hasło"
 
+msgid "The report sent to the managers!"
+msgstr "Informacja została przekazana administratorom."
+
+msgid "Register"
+msgstr "Zarejestruj się"
+
+msgid "Log out"
+msgstr "Wyloguj się"
+
+#~ msgid ""
+#~ "This is a reply from Authority to the public information request, "
+#~ "obtained other way than e-mail and entered manually."
+#~ msgstr ""
+#~ "To jest odpowiedź na wniosek o informację publiczną, która została "
+#~ "uzyskana w inny sposób niż drogą e-mailową, i dodana ręcznie."
