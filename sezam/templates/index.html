@@ -1,33 +1,57 @@
-{% extends "base.html" %}
-{% block content %}
-{% load i18n %}
-
-<div class="container container-fluid">
-  <div class="index-unit">
-    <div class="row">
-      <div class="span6">
-        <h1>{% trans 'Public Information for everyone!' %}</h1>
-        <p>{% trans 'The Law on Access to Public Information allows anyone to demand access to public information, public data and public assets held by public bodies, private bodies that exercise public tasks, trade unions and political parties. The requests can be oral or written. The bodies must respond within 14 days.' %}</p>
-        <a class="btn btn-primary btn-large" href="/authority/find/">Make request now! &#187;</a>
-      </div>
-      <div class="span5">
-        <img src="{{ STATIC_URL }}img/free_info_logo.jpg">
-        <form class="well well-lightgray" action="/search/" method="get">
-          {{ form.q }} <input class="btn btn-inverse" type="submit" value="{% trans 'Search over' %} &#187;">
-          <h3>{{ data.requests_count }} {% trans 'requests' %} {% trans 'and' %} {{ data.authorities_count }} {% trans 'authorities' %}</h3>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="span6">
-      {% include 'includes/authority_list_mini.html' %}
-    </div>
-    <div class="span6">
-      {% include 'includes/pia_request_list_mini.html' %}
-    </div>
-  </div>
+          {% extends "base.html" %}
+          {% block content %}
+          {% load i18n %}
+          
+<div class="container">
+	<div class="row">
+		<div id="big_info">
+			<div class="info_box i1">
+				<span>Znajdź instytucję</span>
+				<a href="/authority/">Lista &#187;</a>
+			</div>
+			<div class="info_box i2">
+				<span>Przygotuj treść wniosku</span>
+			</div>
+			<div class="info_box i3">
+				<span>My zajmiemy się resztą</span>
+			</div>
+			<a href="/authority/find/" class="yellow_button" style="float: right; margin-top: 165px; margin-right: 30px;">Zacznij teraz &#187;</a>		
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="span4 graybg">
+			<h1>O co możesz zapytać?</h1>
+			<p>Now I rock a house party at the drop of a hat
+				And I beat a body down with an aluminum bat
+				A lot of people they be Jonesin' just to hear me rock the mic
+				They'll be staring at the radio staying up all night</p>
+			<p>So like a pimp, I'm pimpin'
+				I got a boat to eat shrimp in
+				Nothing wrong with my leg just B-boy limpin'
+				Got arrested at the Mardi Gras for jumping on a float
+				My man MCA's got a beard like a billy goat</p>
+			<a href="#" class="orange_button">Browse all &#187;</a>
+		</div>
+		
+		<div class="span7 gradientbg">
+			<h1>Dlaczego my?</h1>
+			<ul class="chevrons">
+				<li>Ułatwiamy złożenie wniosku</li>
+				<li>Pomagamy w pilnowaniu ustawowych terminów</li>
+				<li>Umożliwiamy publiczne monitorowanie odpowiedzi...</li>
+			</ul>
+			<span class="right big">...i przez to trudniej nas zignorować.</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span4" id="wnioski">
+			<h1>Sprawdź, co się dzieje z Twoimi wnioskami</h1>
+			<a href="#" class="orange_button">Rany boskie jestem wnioskiem</a>
+		</div>
+		<div class="span7 gradientbg">
+			<h1>Mamy ponad <span class="orange">2500</span> adresów w bazie aktualizowanej na bieżąco.</h1>
+			<p class="bold">Jesteśmy przejrzyści. Wszyscy użytkownicy mogą monitorować status odpowiedzi.</p>
+		</div>
+	</div>
 </div>
-
-{% endblock %}

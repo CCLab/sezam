@@ -1,0 +1,157 @@
+.header-title{
+	background: none !important;
+	padding-left: 0px;
+}
+
+ul.nav.pull-right{
+	margin-right: 3px !important;
+	}
+	
+.footer{
+	padding: 20px !important;
+	min-height: 50px;
+	width: 960px;
+	margin: 0 auto;
+	color: #ccc;
+	}
+	
+.footer div{
+	float:left;
+	margin-right: 15px;
+	font-size: 12px;
+	line-height: 14px;
+	}
+	
+.r150{
+	margin-right: 150px !important;
+	}
+
+#big_info{
+	width: 922px;
+	height: 250px;
+	background-image:url('/static/img/big_info.png');
+	margin-bottom: 40px;
+}
+.info_box{
+	width: 113px;
+	height: 82px;
+	float: left;
+	margin-top: 120px;
+	margin-right: 10px;
+	padding: 30px 30px 0px 70px;
+	font-size: 22px;
+	}
+	
+.info_box a:link, .info_box a:visited{
+	font-size: 15px;
+	color: black;
+	text-transform: uppercase;
+	text-decoration: none;
+	font-weight: bold;
+	font-style: italic;
+	}
+	
+.info_box a:hover{
+	text-decoration: underline;
+	}
+	
+.info_box.i1{
+	margin-left: 20px;
+	background: url('/static/img/i1.png');
+	
+}
+
+.info_box.i2{
+	background: url('/static/img/i2.png');
+}
+
+.info_box.i3{
+	background: url('/static/img/i3.png');
+	}
+	
+a.yellow_button:link, a.yellow_button:visited{
+	display:block;
+	padding: 5px 20px;
+	background: yellow;
+	border: 1px solid black;
+	border-radius: 5px;
+	box-shadow: 0px 0px 10px black;
+	text-transform: uppercase;
+	font-size: 18px;
+	font-weight: bold;
+	}
+	
+a.orange_button:link, a.orange_button:visited{
+	display:block;
+	padding: 5px 20px;
+	background: #FF7D00;
+	color: white;
+	border-radius: 5px;
+	text-transform: uppercase;
+	font-size: 15px;
+	font-weight: bold;
+	width: auto;
+	float: left;
+}
+	
+.span4 h1, .span7 h1{
+	font-size: 22px;
+	line-height: 28px !important;
+	}
+	
+.graybg{
+	background: url('/static/img/graybg.png') top right no-repeat white;
+	border: 1px #ccc solid;
+	padding: 10px 20px 10px 20px;
+	width: 400px !important;
+	margin-bottom: 30px;
+	}
+	
+.gradientbg{
+	padding: 10px 20px 10px 20px;
+	width: 400px !important;
+	background: linear-gradient(45deg, #e5e5e5 5%, #fff 70%) repeat scroll 0 0 transparent !important;
+	margin-bottom: 30px;
+	font-size: 16px;
+	}
+	
+span.right.big{
+	text-align: right;
+	float: right;
+	font-weight: bold;
+	font-size: 19px;
+	}
+	
+span.orange{
+	color: #ff7d00;
+	}
+	
+.bold{
+	font-weight: bold;
+}	
+	
+ul.chevrons > li{
+	margin: 25px 0px;
+	font-size: 19px;
+	color: #555;
+	list-style-image: url('/static/img/li.png');
+	list-style-position: inside;
+	}
+	
+#wnioski{
+	background: url('/static/img/ranyboskie.png') no-repeat top left;
+	height: 148px !important;
+	}
+	
+#wnioski > h1{
+	display: block;
+	width: 300px;
+	float: right;
+	font-size: 28px;
+	}
+	
+#wnioski > .orange_button{
+	float: right;
+	margin-right: 15px;
+	margin-top: 30px;
+	}
