@@ -1367,8 +1367,8 @@ msgid "Dear Sir/Madam, %(space3)sYours faithfully %(space1)s%(user_name)s"
 msgstr ""
 "Szanowni Państwo, %(space2)sNa podstawie artykułu 61 Konstytucji RP oraz na "
 "podstawie Ustawy o dostępie do informacji publicznej wnoszę o udostępnienie: "
-"%(space3)sOdpowiedź proszę przesłać drogą elektroniczną. "
-"%(space3)sZ poważaniem %(space1)s%(user_name)s"
+" %(space3)sOdpowiedź proszę przesłać drogą elektroniczną. "
+" %(space3)sZ poważaniem %(space1)s%(user_name)s"
 
 #: apps/pia_request/forms.py:13 apps/pia_request/forms.py:99
 msgid "You are sending a request to"
