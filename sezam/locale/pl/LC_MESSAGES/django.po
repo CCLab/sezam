@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ZapytajPanstwo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-13 21:26+0200\n"
-"PO-Revision-Date: 2013-04-14 21:46+0100\n"
+"PO-Revision-Date: 2013-04-15 21:10+0100\n"
 "Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
 "Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpolske.pl>\n"
 "Language: Polish\n"
@@ -1503,11 +1503,11 @@ msgstr "jest bardzo opóźniony - od "
 
 #: apps/pia_request/tasks.py:275
 msgid "The response received for the Public Information Request "
-msgstr "Odpowiedź wniosek o informację publiczną "
+msgstr "Odpowiedź na wniosek o informację publiczną "
 
 #: apps/pia_request/tasks.py:276
 msgid " from "
-msgstr "od"
+msgstr "z"
 
 #: apps/pia_request/views.py:68
 msgid "View and search requests"
@@ -3787,26 +3787,40 @@ msgstr ""
 "Society in Central and Eastern Europe</a>.  Z twórcami można się "
 "skontaktować pod adresem info&nbsp;@&nbsp;zapytajpanstwo.pl."
 
+msgid ""
+"The item you are following on our service was updated: there is a new "
+"message in the thread. Please, have a look at"
+msgstr ""
+"Pojawił się nowy komunikat w wątku, który obserwujesz. Możesz go zobaczyć na "
+"stronie"
+
+msgid ""
+"There is a new request or a message to the authority, that you are following "
+"on our service. Please, have a look at"
+msgstr ""
+"Pojawił się nowy wniosek kierowany do obserwowanej przez Ciebie instytucji. "
+"Możesz go zobaczyć na stronie"
+
+msgid ""
+"There is a response in the thread from authority, that you are following on "
+"our service. Please, have a look at"
+msgstr ""
+"Pojawiła się nowa odpowiedź w wątku związanym z instytucją, którą "
+"obserwujesz. Możesz ją zobaczyć na stronie"
+
+msgid "Update status"
+msgstr "Uaktualnij status"
+
+msgid ""
+"The request or the message thread to the Authority you are following on our "
+"service, has been annotated. Please, have a look at"
+msgstr ""
+"Wniosek lub wątek związany z instytucją, którą obserwujesz, został "
+"uzupełniony o komentarz. Możesz go zobaczyć na stronie"
+
 #~ msgid ""
 #~ "This is a reply from Authority to the public information request, "
 #~ "obtained other way than e-mail and entered manually."
 #~ msgstr ""
 #~ "To jest odpowiedź na wniosek o informację publiczną, która została "
 #~ "uzyskana w inny sposób niż drogą e-mailową, i dodana ręcznie."
-
-msgid "The item you are following on our service was updated: there is a new message in the thread. Please, have a look at"
-msgstr "Pojawił się nowy komunikat w wątku, który obserwujesz. Możesz go zobaczyć na stronie"
-
-msgid "There is a new request or a message to the authority, that you are following on our service. Please, have a look at"
-msgstr "Pojawił się nowy wniosek kierowany do obserwowanej przez Ciebie instytucji. Możesz go zobaczyć na stronie"
-
-msgid "There is a response in the thread from authority, that you are following on our service. Please, have a look at"
-msgstr "Pojawiła się nowa odpowiedź w wątku związanym z instytucją, którą obserwujesz. Możesz ją zobaczyć na stronie"
-
-msgid "Update status"
-msgstr "Uaktualnij status"
-
-msgid "The request or the message thread to the Authority you are following on our service, has been annotated. Please, have a look at"
-msgstr "Wniosek lub wątek związany z instytucją, którą obserwujesz, został uzupełniony o komentarz. Możesz go zobaczyć na stronie"
-
-
