@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load i18n %}
-{% trans 'Dear' %} {{ user.get_full_name }},
+Szanowni Państwo,
+
 {% trans 'there was no answer to your Public Information Request number' %} {{ request_id }}, {% trans 'that was sent to' %} {{ authority.name }} {% trans 'on' %} {{ request_date }}.
 
 {% trans 'This gives you the right to apply to the court!' %}

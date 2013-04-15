@@ -1,6 +1,6 @@
 {% load humanize %}
 {% load i18n %}
-{% trans 'Dear ' %} {% if notification.receiver %}{{ notification.receiver.first_name }}{% else %}{{ notification.receiver_email }}{% endif %},
+Szanowni Państwo,
 
 {% trans "There is a new request or a message to the authority, that you are following on our service. Please, have a look at" %} http://{{ domain }}/authority/{{ notification.item.content_object.slug }}/
 

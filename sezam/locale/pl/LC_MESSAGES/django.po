@@ -3806,3 +3806,7 @@ msgstr "Pojawiła się nowa odpowiedź w wątku związanym z instytucją, któr�
 msgid "Update status"
 msgstr "Uaktualnij status"
 
+msgid "The request or the message thread to the Authority you are following on our service, has been annotated. Please, have a look at"
+msgstr "Wniosek lub wątek związany z instytucją, którą obserwujesz, został uzupełniony o komentarz. Możesz go zobaczyć na stronie"
+
+

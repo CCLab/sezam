@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load i18n %}
-{% trans 'Dear Sir/Madam' %},
+Szanowni Państwo,
+
 {% trans 'this is a reminder about a Public Information Request number' %} {{ request_id }}, {% trans 'that was sent to you on' %} {{ request_date }}. {% trans 'We have not heard from you since then.' %}
 
 {% trans "Please, note that the answer is missing for twice as long as it is allowed by the law. The request is marked as Long Overdue now!" %}
