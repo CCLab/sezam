@@ -2,7 +2,7 @@
 {% load i18n %}
 {% trans 'Dear ' %} {% if notification.receiver %}{{ notification.receiver.first_name }}{% else %}{{ notification.receiver_email }}{% endif %},
 
-The item you are following on our service was updated: there is a new message in the thread. Please, have a look at http://{{ domain }}/request/{{ notification.item.content_object.id }}/
+{$ trans "The item you are following on our service was updated: there is a new message in the thread. Please, have a look at" %} http://{{ domain }}/request/{{ notification.item.content_object.id }}/
 
 {% trans "You received this email because you are subscribed to the updates in our service" %} {{ PROJECT_TITLE }}, {% trans "that require notification" %}.
 

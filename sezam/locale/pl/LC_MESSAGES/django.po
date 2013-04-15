@@ -3790,3 +3790,7 @@ msgstr ""
 #~ msgstr ""
 #~ "To jest odpowiedź na wniosek o informację publiczną, która została "
 #~ "uzyskana w inny sposób niż drogą e-mailową, i dodana ręcznie."
+
+msgid "The item you are following on our service was updated: there is a new message in the thread. Please, have a look at"
+msgstr "Pojawił się nowy komunikat w wątku, który obserwujesz. Możesz go zobaczyć na stronie"
+
