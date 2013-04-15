@@ -61,10 +61,10 @@
                 {% if forloop.last %}
                   {% if not form %}
               <div class="row btn-group pull-right">
-                  <a class="btn btn-small" href="/request/{{ msg.request.id }}/annotate/#form_annotate">Add an annotation</a>
+                  <a class="btn btn-small" href="/request/{{ msg.request.id }}/annotate/#form_annotate">{% trans "Add an annotation" %}</a>
                     {% ifequal user msg.request.user %}
-                  <a class="btn btn-small" href="/request/{{ request_id }}/reply#form_reply">Write a reply</a>
-                  <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">Update status <span class="caret"></span></button>
+                  <a class="btn btn-small" href="/request/{{ request_id }}/reply#form_reply">{% trans "Write a reply" %}</a>
+                  <button class="btn btn-small dropdown-toggle" data-toggle="dropdown">{% trans "Update status" %} <span class="caret"></span></button>
                   <ul class="dropdown-menu">
                       {% for status in request_status %}
                       <li><a href="/request/{{ msg.request.id }}/status/{{ status.0 }}">{{ status.1 }}</a></li>

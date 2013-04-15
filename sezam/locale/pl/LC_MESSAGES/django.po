@@ -3794,3 +3794,12 @@ msgstr ""
 msgid "The item you are following on our service was updated: there is a new message in the thread. Please, have a look at"
 msgstr "Pojawił się nowy komunikat w wątku, który obserwujesz. Możesz go zobaczyć na stronie"
 
+msgid "There is a new request or a message to the authority, that you are following on our service. Please, have a look at"
+msgstr "Pojawił się nowy wniosek kierowany do obserwowanej przez Ciebie instytucji. Możesz go zobaczyć na stronie"
+
+msgid "There is a response in the thread from authority, that you are following on our service. Please, have a look at"
+msgstr "Pojawiła się nowa odpowiedź w wątku związanym z instytucją, którą obserwujesz. Możesz ją zobaczyć na stronie"
+
+msgstr "Update status"
+msgstr "Uaktualnij status"
+
