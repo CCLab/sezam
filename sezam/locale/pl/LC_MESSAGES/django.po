@@ -3800,6 +3800,6 @@ msgstr "Pojawił się nowy wniosek kierowany do obserwowanej przez Ciebie instyt
 msgid "There is a response in the thread from authority, that you are following on our service. Please, have a look at"
 msgstr "Pojawiła się nowa odpowiedź w wątku związanym z instytucją, którą obserwujesz. Możesz ją zobaczyć na stronie"
 
-msgstr "Update status"
+msgid "Update status"
 msgstr "Uaktualnij status"
 
