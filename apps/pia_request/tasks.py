@@ -268,7 +268,7 @@ def get_message_subject(status, **kwargs):
     date= kwargs.get('date', None)
     if date is None:
         date= datetime.strftime(
-            datetime.utcnow().replace(tzinfo=utc), '%d %B %Y')
+            datetime.utcnow().replace(tzinfo=utc), '%d/%b/%Y')
     subjects= {
         'overdue': _(u'Public Information Request ') + str(number) + _(u' is overdue from ') + date,
         'long_overdue': _(u'Public Information Request ') + str(number) + _(u' is long overdue - from ') + date,
