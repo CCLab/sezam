@@ -20,7 +20,7 @@
           </small></p>
         </div>
         <div class="container span2 pull-right">
-          <a class="btn btn-small btn-primary" href="/request/{{ result.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Make Request' %}</a>
+          <a class="btn btn-small btn-primary" style="margin-left: 20px;" href="/request/{{ result.slug }}/"><i class="icon-envelope icon-white"></i> {% trans 'Make Request' %}</a>
           {% if user.is_authenticated %}
             {% if user.profile.trusted %}
           <input class="action-select" type="checkbox" name="authority_slug" value="{{ result.slug }}" />
@@ -28,7 +28,7 @@
           {% endif %}
 
           <small>
-            <p></p><p>
+            <p></p><p style="padding-left: 20px;">
             {% with result.authority_requests.count as request_count %}
               {% if request_count = 0 %} {% else %} <strong>{% trans 'Requests made' %}:</strong> {{ request_count }}<br/> {% endif %}
             {% endwith %}
