@@ -235,7 +235,7 @@ def send_report(pia_request, status, **kwargs):
     message_subject= kwargs.get('subject', None)
     report_date= kwargs.get('report_date', None)
     if report_date is None:
-        report_date= datetime.strftime(pia_request.created, '%d %B %Y')
+        report_date= datetime.strftime(pia_request.created, '%d %m %Y')
     authority= pia_request.authority
     user= pia_request.user
     try:

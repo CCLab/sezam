@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ZapytajPanstwo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-13 21:26+0200\n"
-"PO-Revision-Date: 2013-04-15 21:10+0100\n"
+"PO-Revision-Date: 2013-04-15 21:47+0100\n"
 "Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
 "Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpolske.pl>\n"
 "Language: Polish\n"
@@ -1507,7 +1507,7 @@ msgstr "Odpowiedź na wniosek o informację publiczną "
 
 #: apps/pia_request/tasks.py:276
 msgid " from "
-msgstr "z"
+msgstr "z "
 
 #: apps/pia_request/views.py:68
 msgid "View and search requests"
@@ -2878,7 +2878,7 @@ msgstr "Ewentualne pytania prosimy kierować do"
 #: sezam/templates/emails/response_received.txt:4
 msgid "there is an answer to your Public Information Request number"
 msgstr ""
-"otrzymaliśmy odpowiedź na Twój wniosek o udzielenie informacji publicznej nr "
+"otrzymaliśmy odpowiedź na wniosek o udzielenie informacji publicznej nr "
 
 #: sezam/templates/emails/response_received.txt:6
 msgid "Please, go to the following link to see the updated thread: "
