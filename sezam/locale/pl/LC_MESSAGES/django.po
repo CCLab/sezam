@@ -3305,11 +3305,14 @@ msgstr "Śledź wniosek"
 
 #: sezam/templates/includes/pia_thread_sidebar.html:15
 msgid "Add an annotation "
+msgstr "Dodaj komentarz "
+
+msgid "Add an annotation"
 msgstr "Dodaj komentarz"
 
 #: sezam/templates/includes/pia_thread_sidebar.html:16
 msgid "Print current thread"
-msgstr "Wydrukują wątek"
+msgstr "Wydrukuj wątek"
 
 #: sezam/templates/includes/pia_thread_sidebar.html:17
 msgid "Download a zip file of all correspondence"
