@@ -1,1 +1,1 @@
-Activate your {{ site }} account - you have {{ expiration_days }} days!
+Aktywuj konto na {{ site }} account - masz na to {{ expiration_days }} dni!
