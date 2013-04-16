@@ -85,10 +85,10 @@ a:hover { color:#252525; }
 
 .header { height:60px; position:relative; z-index:50; background:#f5f5f5; }
 .header-inner{ position:relative; z-index:1; }
-.header-title { font-size:40px; line-height:60px; color:#000; background:url(/static/img/logo_03.png) no-repeat left; padding-left:90px; margin-left:20px; display:block; float:left; }
+.header-title { font-size:40px; line-height:60px; color:#000; no-repeat left; padding-left:90px; margin-left:20px; display:block; float:left; }
 .header-title .orange { color:#ff7d00; }
 .header-title .grey { color:#808080; }
-.header-right { width:138px; height:60px; background:url(/static/img/centrum_03.png) no-repeat center; float:right; display:block; margin-right: 20px; }
+.header-right { width:138px; height:60px; no-repeat center; float:right; display:block; margin-right: 20px; }
 
 .navbar  { background:#e5e5e5; margin-bottom:25px; width:940px; margin:auto; margin-bottom:20px; }
 .navbar-fixed-top { position:relative; }
