@@ -1,4 +1,4 @@
-{% extends "registration/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Aktywacja konta{% endblock %}
 
@@ -8,6 +8,6 @@
   {% if account %}
     <p>Dziękujemy za założenie konta - możesz się teraz <a href="/accounts/login/">zalogować</a>.</p>
   {% else %}
-    <p>Przepraszamy, kod aktywacyjny nie jest prawidłowy. Albo wklejono niepełny adres strony internetowej, albo klucz już wygasł. Konto może być aktywowane tylko przez {{ expiration_days }} dni po rejestracji.</p>
+    <p>Przepraszamy, kod aktywacyjny nie jest prawidłowy. Albo wklejono niepełny adres strony internetowej, albo klucz już wygasł. Konto może być aktywowane tylko przez pewien czas po rejestracji.</p>
   {% endif %}
 {% endblock %}
