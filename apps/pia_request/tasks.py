@@ -200,7 +200,7 @@ def send_reminder(pia_request, overdue_date=None, **kwargs):
     """
     template= kwargs.get('email_template', 'emails/reminder_overdue.txt')
     if overdue_date is None:
-        overdue_date= datetime.strftime(pia_request.created, '%d %B %Y')
+        overdue_date= datetime.strftime(pia_request.created, '%d.%m.%Y')
     authority= pia_request.authority
     try:
         email_to= authority.email
@@ -235,7 +235,7 @@ def send_report(pia_request, status, **kwargs):
     message_subject= kwargs.get('subject', None)
     report_date= kwargs.get('report_date', None)
     if report_date is None:
-        report_date= datetime.strftime(pia_request.created, '%d %m %Y')
+        report_date= datetime.strftime(pia_request.created, '%d.%m.%Y')
     authority= pia_request.authority
     user= pia_request.user
     try:
@@ -268,7 +268,7 @@ def get_message_subject(status, **kwargs):
     date= kwargs.get('date', None)
     if date is None:
         date= datetime.strftime(
-            datetime.utcnow().replace(tzinfo=utc), '%d/%b/%Y')
+            datetime.utcnow().replace(tzinfo=utc), '%d.%m.%Y')
     subjects= {
         'overdue': _(u'Public Information Request ') + str(number) + _(u' is overdue from ') + date,
         'long_overdue': _(u'Public Information Request ') + str(number) + _(u' is long overdue - from ') + date,
