@@ -3087,7 +3087,7 @@ msgstr "rekordów"
 
 #: sezam/templates/includes/pagin_header.html:8
 msgid "Showing"
-msgstr "Pokazuję"
+msgstr "<br />Pokazuję"
 
 #: sezam/templates/includes/pagin_header.html:8
 msgid "results on page"
