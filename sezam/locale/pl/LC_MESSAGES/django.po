@@ -43,7 +43,7 @@ msgstr "Ulica"
 
 #: apps/authority/forms.py:18
 msgid "Building, floor, office"
-msgstr "Budynek, piętro, biuro"
+msgstr "Numer budynku"
 
 #: apps/authority/forms.py:20
 msgid "More address data"
@@ -60,7 +60,7 @@ msgstr "Linia 2"
 #: apps/authority/forms.py:25 apps/userprofile/forms.py:23
 #: apps/vocabulary/models.py:124 apps/vocabulary/models.py:259
 msgid "Postal code"
-msgstr "Kod pocztowy"
+msgstr "Kod"
 
 #: apps/authority/forms.py:27 apps/userprofile/forms.py:25
 #: apps/vocabulary/models.py:125 apps/vocabulary/models.py:261
