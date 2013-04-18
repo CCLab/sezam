@@ -5,7 +5,7 @@ from apps.vocabulary.models import AuthorityProfile
 
 class AuthorityProfileForm(forms.ModelForm):
     name= forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'span5', 'placeholder': _(u'Name')}))
+        attrs={'class': 'span5', 'placeholder': _(u'Authority name')}))
     official= forms.CharField(widget=forms.TextInput(
         attrs={'class': 'span2', 'placeholder': _(u'Position')}))
     official_name= forms.CharField(widget=forms.TextInput(
