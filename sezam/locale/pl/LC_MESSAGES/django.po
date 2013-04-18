@@ -23,7 +23,7 @@ msgstr ""
 #: apps/vocabulary/models.py:19 apps/vocabulary/models.py:52
 #: apps/vocabulary/models.py:161 sezam/templates/emails/authority_added.txt:9
 msgid "Name"
-msgstr "Imię"
+msgstr "Nazwa"
 
 #: apps/authority/forms.py:10
 msgid "Position"
