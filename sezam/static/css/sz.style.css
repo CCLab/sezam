@@ -205,3 +205,5 @@ ul.jqtree-tree{ margin:0; list-style:none; }
 	.requests .span5 blockquote { border:0; background:url(/static/img/quote.png) no-repeat left 3px; padding-left:60px; min-height:43px; font-style:italic; }
 	
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input { border-radius:8px; }
+
+.spanwide{ margin:0; width:940px;}
