@@ -2987,7 +2987,7 @@ msgstr "Poinformujemy Cię o tym mailem."
 
 #: sezam/templates/includes/authority_profile_form.html:9
 msgid "Required fields are marked by the red star "
-msgstr "Obowiązkowe pola zostały oznaczone gwiazdką."
+msgstr "Obowiązkowe pola zostały oznaczone gwiazdką "
 
 #: sezam/templates/includes/authority_profile_form.html:26
 msgid "The Authority is represented by the official"
