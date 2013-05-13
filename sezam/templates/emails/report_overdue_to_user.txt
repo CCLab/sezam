@@ -7,4 +7,4 @@ Szanowni Państwo,
 {% trans 'This gives you the right to apply to the court!' %}
 
 {% trans 'This report is sent to' %} {{ email_to }}, {% trans 'which belongs to' %} {{ user.get_full_name }} {% trans 'about the Public Information Request.' %}
-{% trans 'Please, send all your questions to' %} {{ info_email }}
+{% trans 'Please, send all your questions to' %} info@zapytajpanstwo.pl.

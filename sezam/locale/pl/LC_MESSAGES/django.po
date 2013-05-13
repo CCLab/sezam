@@ -1494,11 +1494,11 @@ msgstr "Czy to jest odpowiedź od instytucji?"
 
 #: apps/pia_request/tasks.py:273 apps/pia_request/tasks.py:274
 msgid "Public Information Request "
-msgstr "Wniosek o Informację Publiczną"
+msgstr "Wniosek o Informację Publiczną "
 
 #: apps/pia_request/tasks.py:273
 msgid " is overdue from "
-msgstr "jest opóźniony od"
+msgstr "jest opóźniony od "
 
 #: apps/pia_request/tasks.py:274
 msgid " is long overdue - from "
@@ -2723,12 +2723,12 @@ msgstr "które wymagają notyfikacji"
 #: sezam/templates/emails/reminder_long_overdue.txt:3
 #: sezam/templates/emails/reminder_overdue.txt:3
 msgid "Dear Sir/Madam"
-msgstr "Szanowni Państwo,"
+msgstr "Szanowni Państwo"
 
 #: sezam/templates/emails/reminder_long_overdue.txt:4
 #: sezam/templates/emails/reminder_overdue.txt:4
 msgid "this is a reminder about a Public Information Request number"
-msgstr "E-mail ten jest przypomnieniem o wniosku o informację publiczną,"
+msgstr "E-mail ten jest przypomnieniem o wniosku o informację publiczną, któremu w sytemie ZapytajPaństwo nadano numer "
 
 #: sezam/templates/emails/reminder_long_overdue.txt:4
 #: sezam/templates/emails/reminder_overdue.txt:4
