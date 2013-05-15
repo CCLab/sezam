@@ -2399,7 +2399,7 @@ msgstr "Wprowadzone hasła różnią się"
 #: registration/forms.py:85 registration/forms.py:103
 msgid "I have read and agree to the Terms of Service"
 msgstr ""
-"Przeczytałem i zgadzam się na <a href='/regulamin'>regulamin usługi</a>"
+"Przeczytałem i zgadzam się na regulamin usługi"
 
 #: registration/forms.py:86 registration/forms.py:104
 msgid "You must agree to the terms to register"
