@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ZapytajPanstwo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-13 21:26+0200\n"
-"PO-Revision-Date: 2013-05-15 14:04+0100\n"
+"PO-Revision-Date: 2013-05-15 14:09+0100\n"
 "Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
 "Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpolske.pl>\n"
 "Language: Polish\n"
@@ -2398,7 +2398,8 @@ msgstr "Wprowadzone hasła różnią się"
 
 #: registration/forms.py:85 registration/forms.py:103
 msgid "I have read and agree to the Terms of Service"
-msgstr "Przeczytałem i zgadzam się na regulamin usługi"
+msgstr ""
+"Przeczytałem i zgadzam się na <a href=\"/regulamin\">regulamin usługi</a>"
 
 #: registration/forms.py:86 registration/forms.py:104
 msgid "You must agree to the terms to register"
