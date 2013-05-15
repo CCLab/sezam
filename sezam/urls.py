@@ -10,6 +10,7 @@ admin.autodiscover()
 urlpatterns= patterns('',
     url(r'^$', 'apps.browser.views.display_index', {'template': 'index.html'}),
     url(r'^help/', direct_to_template, {'template': 'help.html'}),
+    url(r'^regulamin/', direct_to_template, {'template': 'regulamin.html'}),
     url(r'^search/', include('apps.browser.urls')),
     url(r'^authority/', include('apps.authority.urls')),
     url(r'^request/', include('apps.pia_request.urls')),
