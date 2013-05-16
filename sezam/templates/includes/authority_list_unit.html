@@ -28,7 +28,7 @@
           {% endif %}
 
           <small>
-            <p></p><p style="padding-left: 20px;">
+            <p></p><p>
             {% with result.authority_requests.count as request_count %}
               {% if request_count = 0 %} {% else %} <strong>{% trans 'Requests made' %}:</strong> {{ request_count }}<br/> {% endif %}
             {% endwith %}
