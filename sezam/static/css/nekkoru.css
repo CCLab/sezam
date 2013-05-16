@@ -10,8 +10,8 @@ ul.nav.pull-right{
 .footer{
 	padding: 20px !important;
 	min-height: 50px;
-	width: 960px;
-	margin: 0 auto;
+	position:absolute;
+	bottom: 0; left: 0;
 	color: #ccc;
 	}
 	
@@ -27,7 +27,7 @@ ul.nav.pull-right{
 	}
 
 #big_info{
-	width: 922px;
+	width: 920px;
 	height: 250px;
 	background-image:url('/static/img/big_info.png');
 	margin-bottom: 40px;
@@ -92,30 +92,47 @@ a.orange_button:link, a.orange_button:visited{
 	font-weight: bold;
 	width: auto;
 	float: left;
+	margin-top:10px;
+	margin-bottom:10px;
+        border:1px solid #fff;
+
 }
+
+a.orange_button:hover, a.orange_button:active {
+	text-decoration:none;
+	background: #fff;
+	color: #FF7D00;
+	border:1px solid #FF7D00;
+}
+
 	
-.span4 h1, .span7 h1{
+.span4 h1, .span7 h1 {
 	font-size: 22px;
 	line-height: 28px !important;
+	margin:0;
+	margin-bottom:10px;
 	}
 	
 .graybg{
 	background: url('/static/img/graybg.png') top right no-repeat white;
 	border: 1px #ccc solid;
-	padding: 10px 20px 10px 20px;
+	padding: 10px 20px;
+	margin:0;
+	margin-bottom: 20px;
 	width: 400px !important;
-	margin-bottom: 30px;
 	}
 	
 .gradientbg{
-	padding: 10px 20px 10px 20px;
-	width: 400px !important;
 	background: linear-gradient(45deg, #e5e5e5 5%, #fff 70%) repeat scroll 0 0 transparent !important;
-	margin-bottom: 30px;
+	padding:0;
+	padding: 10px 20px;
+	margin:0; 
+	margin-bottom: 20px;
 	font-size: 16px;
+	width: 400px !important;
 	}
 	
-span.right.big{
+span.right.big {
 	text-align: right;
 	float: right;
 	font-weight: bold;
