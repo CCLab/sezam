@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ZapytajPanstwo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-13 21:26+0200\n"
-"PO-Revision-Date: 2013-05-15 14:09+0100\n"
+"PO-Revision-Date: 2013-05-16 13:36+0100\n"
 "Last-Translator: Lukasz Jachowicz <ljachowicz@centrumcyfrowe.pl>\n"
 "Language-Team: Lukasz Jachowicz, Denis Kokol <info@zapytajpolske.pl>\n"
 "Language: Polish\n"
@@ -1369,9 +1369,11 @@ msgstr "Początek"
 msgid "Dear Sir/Madam, %(space3)sYours faithfully %(space1)s%(user_name)s"
 msgstr ""
 "Szanowni Państwo, %(space3)sNa podstawie artykułu 61 Konstytucji RP oraz na "
-"podstawie Ustawy o dostępie do informacji publicznej wnoszę o "
-"udostępnienie:  %(space3)sOdpowiedź proszę przesłać drogą elektroniczną.  "
-"%(space3)sZ poważaniem %(space1)s%(user_name)s"
+"podstawie ustawy o dostępie do informacji publicznej wnoszę o "
+"udostępnienie:  %(space3)sOdpowiedź proszę przesłać drogą elektroniczną, w "
+"postaci skanu dokumentów oraz, jeśli to możliwe, w formie przeszukiwalnej "
+"lub edytowalnej (PDF, txt, doc itp).  %(space3)sZ poważaniem %(space1)s"
+"%(user_name)s"
 
 #: apps/pia_request/forms.py:13 apps/pia_request/forms.py:99
 msgid "You are sending a request to"
@@ -2398,8 +2400,7 @@ msgstr "Wprowadzone hasła różnią się"
 
 #: registration/forms.py:85 registration/forms.py:103
 msgid "I have read and agree to the Terms of Service"
-msgstr ""
-"Przeczytałem i zgadzam się na regulamin usługi"
+msgstr "Przeczytałem i zgadzam się na regulamin usługi"
 
 #: registration/forms.py:86 registration/forms.py:104
 msgid "You must agree to the terms to register"
@@ -2873,8 +2874,9 @@ msgid ""
 "request."
 msgstr ""
 "To jest wniosek o udostępnienie informacji publicznej, wysłany na podstawie "
-"Ustawy o dostępie do informacji publicznej. Zgodnie z prawem, odpowiedź "
-"powinna zostać udzielona w ciągu 14 dni."
+"Ustawy o dostępie do informacji publicznej, za pośrednictwem systemu "
+"ZapytajPaństwo. Zgodnie z prawem, odpowiedź powinna zostać udzielona "
+"niezwłącznie, nie później niż w ciągu 14 dni."
 
 #: sezam/templates/emails/request_to_authority.txt:8
 #: sezam/templates/emails/user_reply.txt:11
