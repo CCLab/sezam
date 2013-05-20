@@ -9,7 +9,9 @@
       <h2>{% trans 'Search' %}</h2>
       <form class="form-inline" action="/search/" method="get">
         <div class="control-group">
-          {{ form.q }} <input class="btn btn-primary" type="submit" value="{% trans 'Search' %}">
+{% if not form.q %} <input autocomplete="off" name="q" placeholder="Szukaj" type="text" class="search-query" id="id_q" /> {% else %}
+          {{ form.q }} {% endif %}
+<input class="btn btn-primary" type="submit" value="{% trans 'Search' %}">
         </div>
         <!-- {{ form.cleaned_data }} {{ query }} -->
         {% trans 'Filter results' %} 
