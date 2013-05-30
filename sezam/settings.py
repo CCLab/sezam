@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 
-# Django settings for sezam project.
+""" Django settings for sezam project.
+"""
 
 import os
-import sys
-from platform import platform
-from django.utils.translation import ugettext as _
+#import sys
+#from platform import platform
+#from django.utils.translation import ugettext as _
 
 PROJECT_TITLE = 'zapytajpanstwo.pl'
 
-ROOT_PATH = os.path.dirname(__file__)
+ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -40,6 +41,8 @@ TIME_ZONE = 'Europe/Warsaw'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'pl'
+
+_ = lambda s: s
 
 LANGUAGES = (
   ('pl', _('Polish')),
@@ -76,7 +79,7 @@ MEDIA_URL = '/site_media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(ROOT_PATH, 'static/')
+STATIC_ROOT = os.path.join(ROOT_PATH, 'static_collect/')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -84,6 +87,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    os.path.join(ROOT_PATH, 'static/'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -213,7 +217,7 @@ DEFAULT_FROM_EMAIL = ''
 USE_DEFAULT_FROM_EMAIL = False
 
 # User management
-LOGIN_URL= '/accounts/login/'
+LOGIN_URL = '/accounts/login/'
 
 # MPTT settings
 MPTT_ADMIN_LEVEL_INDENT = 20
@@ -286,7 +290,7 @@ HAYSTACK_CUSTOM_HIGHLIGHTER = 'apps.backend.StretchHighlighter'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = PAGINATE_BY
 
 # Passwords, etc.
-from conf import *
+from sezam.conf import *
 
 # Django-celery
 import djcelery

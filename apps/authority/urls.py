@@ -1,5 +1,7 @@
-from django.conf import settings
-from django.conf.urls import patterns, include, url
+""" authority urls
+"""
+#from django.conf import settings
+from django.conf.urls import patterns, url
 from haystack.query import SearchQuerySet
 from haystack.views import SearchView
 from apps.browser.forms import ModelSearchForm
@@ -40,7 +42,7 @@ urlpatterns = patterns('apps.authority.views',
         {'template': 'includes/authority_list.html'},
         name='get_authority_list'),
 
-    url(r'^list/(?P<id>\d+)/$', 'get_authority_list',
+    url(r'^list/(?P<a_id>\d+)/$', 'get_authority_list',
         {'template': 'includes/authority_list.html'},
         name='get_authority_list_id'),
 
