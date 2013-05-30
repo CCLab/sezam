@@ -1,30 +1,33 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 """
 Classes used all accross the modules in the project.
 """
-import re
-import os
-import sys
-import csv
-import email
-import codecs
-import base64
-import imaplib
-import cStringIO
-import mimetypes
-from datetime import datetime
 
+import base64
+import codecs
+import cStringIO
+import csv
+from datetime import datetime
+import email
+import imaplib
+import logging
+import mimetypes
+import os
+import re
+import sys
+
+from django.core.mail import mail_managers
 from django.db import models
 from django.utils.timezone import utc
-from django.core.mail import mail_managers
 from django.utils.translation import ugettext as _
 
 from apps.backend.html2text import html2text
 
-"""
-CountryField
-"""
+logger = logging.getLogger('sezam.mail.parse')
+
+#  CountryField
 COUNTRIES = (
     ('000', ''),
     ('AFG', _('Afghanistan')),
@@ -267,6 +270,9 @@ COUNTRIES = (
     )
 
 class CountryField(models.CharField):
+    """ CountryField
+    """
+
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 3)
         kwargs.setdefault('choices', COUNTRIES)
@@ -276,40 +282,34 @@ class CountryField(models.CharField):
     def get_internal_type(self):
         return "CharField"
 
-"""
-CountryField - end
-"""
+# CountryField - end
 
-
-
-"""
-MailImporter
-"""
+# MailImporter
 class MailImporter():
     """
     `attachment_dir` is the main directory where to save attachments. 
     `addr_template` is to create subdirectories in the `attachment_dir`.
     """
     def __init__(self, connection_opts, **kwargs):
-        self.connection_opts= connection_opts
-        self.attachment_dir= kwargs.get('attachment_dir', '.')
-        self.addr_template= kwargs.get('addr_template', None)
-        self.content_related= ['content-type', 'content-transfer-encoding', 'content-id', 'content-disposition']
-        self.messages= []
+        self.connection_opts = connection_opts
+        self.attachment_dir = kwargs.get('attachment_dir', '.')
+        self.addr_template = kwargs.get('addr_template', None)
+        self.content_related = ['content-type', 'content-transfer-encoding', 'content-id', 'content-disposition']
+        self.messages = []
 
     def imap_connect(self):
         """
         Establish imap connection.
         """
-        host= self.connection_opts['host']
-        port= self.connection_opts['port']
-        login= self.connection_opts['login']
-        password= self.connection_opts['password']
+        host = self.connection_opts['host']
+        port = self.connection_opts['port']
+        login = self.connection_opts['login']
+        password = self.connection_opts['password']
 
         if self.connection_opts['use_ssl']:
-            connection= imaplib.IMAP4_SSL(host, port)
+            connection = imaplib.IMAP4_SSL(host, port)
         else:
-            connection= imaplib.IMAP4(host, port)
+            connection = imaplib.IMAP4(host, port)
 
         connection.login(login, password)
         return connection
@@ -324,21 +324,21 @@ class MailImporter():
             Extract from `to` field what is defined by `addr_template`
             """
             try:
-                field_to= [t.strip() for t in to.split(',') if re.search(self.addr_template, t)][0]
+                field_to = [t.strip() for t in to.split(',') if re.search(self.addr_template, t)][0]
             except:
                 return ''
             return field_to.split('@')[0].replace('.', '_')
         
         connection.select()
-        _u, data= connection.search(None, 'UNSEEN')
+        _u, data = connection.search(None, 'UNSEEN')
 
         for msg_num in data[0].split():
-            header= None
+            header = None
             try:
-                _u, msg_data= connection.fetch(msg_num, '(RFC822)')
-                header= self.extract_mail_header(msg_data)
+                _u, msg_data = connection.fetch(msg_num, '(RFC822)')
+                header = self.extract_mail_header(msg_data)
             except Exception as e:
-                exception= sys.exc_info()[1]
+                exception = sys.exc_info()[1]
                 connection.store(msg_num, '-FLAGS', '\SEEN')
                 print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), exception)
                 mail_managers(
@@ -346,7 +346,7 @@ class MailImporter():
                     '[%s] %s' % (datetime.now().isoformat(), exception),
                     fail_silently=True)
             if header:
-                content, attachments, dir_name= None, None, ''
+                content, attachments, dir_name = None, None, ''
                 if self.addr_template:
                     if not re.search(self.addr_template, header['to']):
                         # Very important! If `addr_template` is given,
@@ -356,9 +356,12 @@ class MailImporter():
                         # Otherwise - ignore the message.
                         continue
                 if not header_only:
-                    dir_name= _get_message_dirname(header['to']) + '/'
-                    content, attachments= self.extract_mail_content(msg_data,
-                        dir_name=dir_name)
+                    dir_name = _get_message_dirname(header['to']) + '/'
+                    try:
+                        content, attachments = self.extract_mail_content(msg_data,
+                            dir_name=dir_name)
+                    except Exception as e:
+                        logger.error(e)
                 self.messages.append({'header': header, 'content': content,
                                       'attachments': attachments})
         return self.messages
@@ -367,10 +370,10 @@ class MailImporter():
         """
         Returns message header.
         """
-        messageHeader= {}
+        messageHeader = {}
         for response_part in message_data:
             if isinstance(response_part, tuple):
-                msg= email.message_from_string(response_part[1])
+                msg = email.message_from_string(response_part[1])
                 for part in msg.walk():
                     for k, v in part.items():
                         if k.lower() not in self.content_related:
@@ -381,17 +384,17 @@ class MailImporter():
         """
         Returns text message content.
         """
-        msg_plain_text, msg_attachments= '', []
+        msg_plain_text, msg_attachments = '', []
         for response_part in message_data:
             if isinstance(response_part, tuple):
-                msg= email.message_from_string(response_part[1])
+                msg = email.message_from_string(response_part[1])
                 for part in msg.walk():
                     if part.is_multipart():
                         continue
-                    attachment_part= part.get_params(None, 'Content-Disposition')
+                    attachment_part = part.get_params(None, 'Content-Disposition')
                     if attachment_part:
-                        attachment_size= len(part.get_payload(decode=True))
-                        attachment_name= self._process_attachment(part, **kwargs)
+                        attachment_size = len(part.get_payload(decode=True))
+                        attachment_name = self._process_attachment(part, **kwargs)
                         if attachment_name:
                             msg_attachments.append({'filename': attachment_name,
                                                     'filesize': attachment_size})
@@ -400,10 +403,10 @@ class MailImporter():
                         # Update `msg_plain_text` only if it isn't updated yet.
                         if len(msg_plain_text) == 0:
                             if str(part.get_content_type()) == 'text/plain':
-                                msg_plain_text= unicode(part.get_payload(decode=True),
+                                msg_plain_text = unicode(part.get_payload(decode=True),
                                                         part.get_content_charset(), 'ignore').encode('utf8','replace')
                             elif str(part.get_content_type()) == 'text/html':
-                                msg_plain_text= unicode(html2text(part.get_payload(decode=True)),
+                                msg_plain_text = unicode(html2text(part.get_payload(decode=True)),
                                                         part.get_content_charset(), 'ignore').encode('utf8','replace')
         return msg_plain_text, msg_attachments
 
@@ -411,22 +414,26 @@ class MailImporter():
         """
         Processes the Content-Disposition part of the current message.
         """
-        dir_name= kwargs.get('dir_name', '')
-        now= datetime.strftime(datetime.utcnow().replace(
+        dir_name = kwargs.get('dir_name', '')
+        now = datetime.strftime(datetime.utcnow().replace(
             tzinfo=utc), '%d-%m-%Y_%H-%M')
-        ext= mimetypes.guess_extension(part.get_content_type())
-        filename= self._clean_text_encoded(part.get_filename())
+        ext = mimetypes.guess_extension(part.get_content_type())
+        filename = part.get_filename()
         if not filename:
             if not ext: # Use a generic bag-of-bits extension.
-                ext= '.bin'
-            filename= 'part_%s%s' % (now, ext)
+                ext = ['.bin']
+            filename = 'part_%s%s' % (now, ext)
         else:
-            if ext not in filename:
-                filename= '.'.join([filename, ext])
-        message_dir= self.ensure_directory(self.attachment_dir + dir_name + now)
-        fp= open(os.path.join(message_dir, filename), 'wb')
+            filename = self._clean_text_encoded(filename)
+            if '.' not in filename[-5:]:
+                if ext:
+                    filename = '.'.join([filename, ext])
+                else:
+                    filename = '.'.join([filename, 'bin'])
+        message_dir = self.ensure_directory(self.attachment_dir + dir_name + now)
+        fp = open(os.path.join(message_dir, filename), 'wb')
         try:
-            fp.write(part.get_payload(decode=True))
+            fp.write(part.get_payload(decode=False))
             fp.close()
 
             # Returns not the full path, but only what was created.
@@ -444,16 +451,16 @@ class MailImporter():
         Cleaning and decoding input_text.
         """
         if re.search(r'=\?', input_text):
-            encoding= None
+            encoding = None
             try:
-                input_text, encoding= email.Header.decode_header(input_text)[0]
+                input_text, encoding = email.Header.decode_header(input_text)[0]
             except Exception as e:
-                input_text= None
+                input_text = None
             if encoding:
                 try:
-                    input_text= input_text.decode(encoding)
+                    input_text = input_text.decode(encoding)
                 except:
-                    input_text= None
+                    input_text = None
         return input_text
 
     def ensure_directory(self, dir_name):
@@ -464,22 +471,18 @@ class MailImporter():
         if not os.path.exists(dir_name):
             os.makedirs(dir_name)
         return dir_name
-"""
-MailImporter - end
-"""
+# MailImporter - end
 
 
+# APP_MESSAGES is a dictionary of all possible messages, with which
+# any project module send a message to any other module or to front-end:
 
-"""
-APP_MESSAGES is a dictionary of all possible messages, with which
-any project module send a message to any other module or to front-end:
+# message_code: {
+#     message: <message verbose text>,
+#    response: <response_code>, (optional)
+#    <any additional key, value pair if necessary>
+#    }
 
-message_code: {
-    message: <message verbose text>,
-    response: <response_code>, (optional)
-    <any additional key, value pair if necessary>
-    }
-"""
 APP_MESSAGES = {
     'MailboxNotFound': {
         'message': _(u'Mailbox with the specified name not found! Check MAILBOXES dict in the main project settings!')
@@ -569,38 +572,39 @@ class AppMessage():
     Returns messages. Used for alerts, errors and log items.
     """
     def __init__(self, message_code=None, **kwargs):
-        self.message_code= message_code
-        self.kwargs= kwargs
+        self.message_code = message_code
+        self.kwargs = kwargs
         if message_code is None:
-            self.message= ''
+            self.message = ''
         try:
-            self.message= APP_MESSAGES[message_code]['message']
+            self.message = APP_MESSAGES[message_code]['message']
         except KeyError:
-            self.message= 'ERROR: Message with code `%s` not found!' % message_code
+            self.message = 'ERROR: Message with code `%s` not found!' % message_code
 
     def __unicode__(self):
         if self.kwargs:
             return '%s\n%s' % (self.message, self.kwargs)
         return self.message
-"""
-AppMessage - end
-"""
+# AppMessage - end
 
 
-"""
-StretchHighlighter - a subclass of haystack's Highlighter to highlight
-the the text before and after the search phrase.
-"""
+
 from haystack.utils import Highlighter
 
 class StretchHighlighter(Highlighter):
+    """
+        StretchHighlighter - a subclass of haystack's Highlighter to highlight
+        the the text before and after the search phrase.
+
+    """
+
     def render_html(self, highlight_locations=None, start_offset=None, end_offset=None):
         # Shifting offset to 50 max symbols "back", so that the
         # highlighted chunk would appear in the middle of the result.
-        window= end_offset - start_offset
-        shifted_by= 50
+        window = end_offset - start_offset
+        shifted_by = 50
         if max(start_offset - shifted_by, 0) == 0:
-            shifted_by= start_offset
+            shifted_by = start_offset
         start_offset -= shifted_by
         end_offset -= shifted_by
 
@@ -608,47 +612,44 @@ class StretchHighlighter(Highlighter):
         # extend the window to the length of the longest word with the limit
         # of 1.33 of the original window.
         try:
-            max_location= max([max(v) for k, v in highlight_locations.iteritems()])
-            max_word_len= max([len(k) for k in highlight_locations.keys()])
+            max_location = max([max(v) for k, v in highlight_locations.iteritems()])
+            max_word_len = max([len(k) for k in highlight_locations.keys()])
             if end_offset < (max_location + max_word_len):
-                end_offset= min(max_location + max_word_len,
+                end_offset = min(max_location + max_word_len,
                                 start_offset + int(window * 1.33))
-        except: pass
+        except:
+            pass
 
-        highlighted_chunk= self.text_block[start_offset:end_offset]
+        highlighted_chunk = self.text_block[start_offset:end_offset]
 
         if self.css_class:
-            _css_class= self.css_class
+            _css_class = self.css_class
         else:
-            _css_class= 'highlighted'
+            _css_class = 'highlighted'
 
         # Creating `query_words` manually, because haystack applies .lower()
         # to each word, which makes .replace() impossible.
-        _query_words= set([word for word in self.query.split() if not word.startswith('-')])
+        _query_words = set([word for word in self.query.split() if not word.startswith('-')])
 
         # Highlight should be case insensitive!
         for word in _query_words:
-            p= re.compile(word, re.IGNORECASE)
-            found= p.findall(highlighted_chunk)
+            p = re.compile(word, re.IGNORECASE)
+            found = p.findall(highlighted_chunk)
             if found:
                 for w in set(found):
-                    highlighted_chunk= highlighted_chunk.replace(w,
+                    highlighted_chunk = highlighted_chunk.replace(w,
                         '<%(tag)s class="%(css)s">%(word)s</%(tag)s>' % {
                             'tag': self.html_tag, 'css':_css_class, 'word': w})
         if start_offset > 0:
-            highlighted_chunk= '...' + highlighted_chunk
+            highlighted_chunk = '...' + highlighted_chunk
         if end_offset < len(self.text_block):
             highlighted_chunk += '...'
 
         return highlighted_chunk
-"""
-StretchHighlighter - end
-"""
+# StretchHighlighter - end
 
 
-"""
-UnicodeWriter
-"""
+# UnicodeWriter
 class UnicodeWriter:
     """
     A CSV writer. Writes rows to CSV file `f` encoded in the given encoding.
@@ -657,23 +658,30 @@ class UnicodeWriter:
         """
         Redirect output to a queue
         """
-        self.queue= cStringIO.StringIO()
-        self.writer= csv.writer(self.queue, dialect=dialect,
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect,
                                 delimiter=';', **kwargs)
-        self.stream= f
-        self.encoder= codecs.getincrementalencoder(encoding)()
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
 
     def writerow(self, row):
+        """
+        writeow
+        """
+
         self.writer.writerow([s.encode("utf-8") for s in row])
-        data= self.queue.getvalue() # Fetch UTF-8 output from the queue.
-        data= data.decode("utf-8")
-        data= self.encoder.encode(data) # Re-encode it into the target encoding.
+        data = self.queue.getvalue() # Fetch UTF-8 output from the queue.
+        data = data.decode("utf-8")
+        data = self.encoder.encode(data) # Re-encode it into the target encoding.
         self.stream.write(data) # Write to the target stream
         self.queue.truncate(0) # Clean the queue.
 
     def writerows(self, rows):
+        """
+        writeows
+        """
+
         for row in rows:
             self.writerow(row)
-"""
-UnicodeWriter - end.
-"""
+# UnicodeWriter - end.
+

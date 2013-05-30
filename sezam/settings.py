@@ -17,6 +17,7 @@ TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     ('Denis Kolokol', 'denis_kolokol@ukr.net'),
+    ('Info' , 'info@zapytajpanstwo.pl'),
 )
 
 MANAGERS = ADMINS
@@ -194,6 +195,11 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'sezam': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
