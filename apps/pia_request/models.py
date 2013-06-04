@@ -3,7 +3,8 @@ PIA - Public Information Access.
 """
 import sys
 
-from django.db.models import *
+from django.db.models import ForeignKey, CharField, BooleanField, DateTimeField, \
+    ManyToManyField, OneToOneField 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
@@ -12,11 +13,11 @@ from django.dispatch import receiver
 from datetime import datetime
 
 from apps.vocabulary.models import AuthorityProfile
-from apps.backend.models import GenericText, GenericPost, GenericMessage,\
+from apps.backend.models import GenericText, GenericMessage, \
     GenericFile, GenericEvent, TaggedItem
-from apps.backend.utils import increment_id, send_notification
+from apps.backend.utils import send_notification
 
-PIA_REQUEST_STATUS= (
+PIA_REQUEST_STATUS = (
     ('in_progress', _(u'In progress')),
     ('successful', _(u'Successful')),
     ('part_successful', _(u'Partially successful')),
@@ -33,9 +34,9 @@ def get_request_status(status='in_progress'):
     Simply return the proper element to fill the status of the PIARequest.
     """
     try:
-        status_index= [i[0] for i in PIA_REQUEST_STATUS].index(status)
+        status_index = [i[0] for i in PIA_REQUEST_STATUS].index(status)
     except: # The most neutral 'in_progress'.
-        status_index= 0
+        status_index = 0
     return PIA_REQUEST_STATUS[status_index][0]
 
 
@@ -53,7 +54,7 @@ class PIAAttachment(GenericFile):
     """
     A file attached to he message in the Thread.
     """
-    message= ForeignKey(PIAMessage, related_name='attachments')
+    message = ForeignKey(PIAMessage, related_name='attachments')
 
     def __unicode__(self):
         return self.filename
@@ -71,14 +72,16 @@ class PIARequest(GenericEvent):
     it is a nesessary measure for getting details of the request and its
     last update in one query (as it goes through pagination).
     """
-    user= ForeignKey(User, related_name='requests_made',
+    user = ForeignKey(User, related_name='requests_made',
                      verbose_name=_(u'User'))
-    authority= ForeignKey(AuthorityProfile, related_name='authority_requests',
+    authority = ForeignKey(AuthorityProfile, related_name='authority_requests',
                           verbose_name=_(u'Authority'))
-    status= CharField(max_length=50, choices=PIA_REQUEST_STATUS,
+    status = CharField(max_length=50, choices=PIA_REQUEST_STATUS,
         default=PIA_REQUEST_STATUS[0][0], verbose_name=_(u'Request status'))
-    latest_thread_post= ForeignKey('PIAThread', null=True, blank=True,
-        related_name='latest_thread_post', verbose_name=_(u'latest message'))
+    latest_thread_post = ForeignKey('PIAThread', null=True, blank=True,
+        related_name ='latest_thread_post', verbose_name=_(u'latest message'))
+    overdue_confirm_send = BooleanField(default=False)
+    long_overdue_confirm_send = BooleanField(default=False)
 
     def __unicode__(self):
         return "%d: %s" % (self.id, self.summary[:30])
@@ -89,9 +92,9 @@ class PIAThread(PIAMessage):
     Any message (incoming or outgoing) in the thread following
     a particular Request.
     """
-    request= ForeignKey(PIARequest, related_name='thread',
+    request = ForeignKey(PIARequest, related_name='thread',
                         verbose_name=_(u'request'))
-    is_response= BooleanField(default=True,
+    is_response = BooleanField(default=True,
                               verbose_name=_(u'Is it a response?'))
 
     def __unicode__(self):
@@ -102,10 +105,10 @@ class PIAAnnotation(GenericText):
     """
     Annotation to a message in the Thread.
     """
-    thread_message= ForeignKey(PIAThread, related_name='annotations',
+    thread_message = ForeignKey(PIAThread, related_name='annotations',
                                verbose_name=_(u'Message'))
-    user= ForeignKey(User, verbose_name=_(u'User'))
-    created= DateTimeField(auto_now_add=True, verbose_name=_(u'Posted'))
+    user = ForeignKey(User, verbose_name=_(u'User'))
+    created = DateTimeField(auto_now_add=True, verbose_name=_(u'Posted'))
 
 
 class PIARequestDraft(PIAMessage):
@@ -124,13 +127,13 @@ class PIARequestDraft(PIAMessage):
     on which it is a reply, and should _always_ have a link to the specified
     Authority - the one from the message the Draft is pointing to.
     """
-    authority= ManyToManyField(AuthorityProfile,
+    authority = ManyToManyField(AuthorityProfile,
                                verbose_name=_(u'Authority(ies)'))
-    user= ForeignKey(User, help_text=_(u'Request from user'))
-    lastchanged= DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
-    thread_message= OneToOneField(PIAThread, null=True, blank=True,
+    user = ForeignKey(User, help_text=_(u'Request from user'))
+    lastchanged = DateTimeField(auto_now=True, verbose_name=_(u'Updated'))
+    thread_message = OneToOneField(PIAThread, null=True, blank=True,
         default=None, related_name='draft', verbose_name=_(u'Message'))
-    is_response= BooleanField(default=True,
+    is_response = BooleanField(default=True,
         verbose_name=_(u'Is it a response from authority?'))
 
     def fill_authority(self, authority=None, **kwargs):
@@ -140,7 +143,7 @@ class PIARequestDraft(PIAMessage):
         if authority:
             self.authority.clear()
             if not isinstance(authority, list):
-                authority= list(authority)
+                authority = list(authority)
                 for auth in authority:
                     self.authority.add(auth)
 
@@ -163,37 +166,37 @@ def _post_save(sender, **kwargs):
         Call a function that sends notifications to the Users, following
         given Request or Authority, to which this request is made.
         """
-        p= kwargs.get('piarequest', None)
-        a= kwargs.get('authority', None)
+        p = kwargs.get('piarequest', None)
+        a = kwargs.get('authority', None)
         if (p is None) and (a is None):
             return
-        g= ContentType.objects.get_for_model
+        g = ContentType.objects.get_for_model
 
-        items= TaggedItem.objects.filter(
+        items = TaggedItem.objects.filter(
             Q(object_id=p.id, content_type_id=g(p.__class__).id)|\
             Q(object_id=a.id, content_type_id=g(a.__class__).id))
         if not items:
             return
         for item in items:
-            notifications= item.notification.filter(**act)
+            notifications = item.notification.filter(**act)
             if notifications:
                 for notification in notifications:
                     if send_notification(notification):
                         pass
                     else:
-                        print "Cannot send notification:\n %s" %\
+                        print "Cannot send notification:\n %s" % \
                             notification.__unicode__()
 
-    instance= kwargs.get('instance')
+    instance = kwargs.get('instance')
     if sender == PIAThread:
         # Update `latest_thread_post` in PIARequest only
         # if it's not the first message in Thread.
         if kwargs.get('created', False):
-            instance.request.latest_thread_post= instance
+            instance.request.latest_thread_post = instance
             instance.request.save()
 
         # Manage subscriptions to PIARequest and Authority after update.
-        act= {'action__in': ['new_message']}
+        act = {'action__in': ['new_message']}
         if instance.is_response:
             act['action__in'].append('response_from')
         else:
@@ -208,3 +211,4 @@ def _post_save(sender, **kwargs):
                 authority=instance.thread_message.request.authority)
         except Exception as e:
             print >> sys.stderr, '[%s] %s' % (datetime.now().isoformat(), e)
+
