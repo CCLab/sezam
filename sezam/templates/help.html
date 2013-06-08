@@ -50,7 +50,9 @@
     <div class="row span8">
         <a name="about"></a>
         <h2>{% trans 'About' %} {{ resource_name }}</h2>
+        {% autoescape off %}
         <p>{% trans 'About text' %}</p>
+        {% endautoescape %}
     </div>
 </div>
 

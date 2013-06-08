@@ -17,8 +17,10 @@
             </div>
             <div>&nbsp;</div>
             <div>
+                {% autoescape off %}
                 <p>{% trans 'Your photo will be shown <strong>in public</strong> on the Internet.' %}
                 <p>{% trans 'Please do not upload offensive pictures. We will take down images that we consider inappropriate.' %}</p>
+                {% endautoescape %}
             </div>
             <div class="form-actions">
                 <input class="btn btn-primary" name="submit_userpic" type="submit" value='{% trans "Submit" %}' />

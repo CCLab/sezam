@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, Http404
 from django.core.paginator import Paginator, EmptyPage
@@ -479,7 +480,7 @@ def send_request(request, id=None, **kwargs):
     for authority in data['draft'].authority.all():
         email_to= authority.get_authority_email()
         if email_to is None:
-            failed.append('%s: <a href="/authority/%s">%s</a>' % (
+            failed.append('%s: <a href="/instytucje/%s">%s</a>' % (
                 AppMessage('AuthEmailNotFound').message, authority.name))
             continue
 
@@ -517,7 +518,7 @@ def send_request(request, id=None, **kwargs):
                 pia_request.delete()
             except:
                 pass
-            failed.append('<a href="/authority/%s">%s</a> (%s)' % (
+            failed.append('<a href="/instytucje/%s">%s</a> (%s)' % (
                 authority.slug, authority.name, e))
             continue
 
@@ -534,7 +535,7 @@ def send_request(request, id=None, **kwargs):
         # Link the attachments from draft to the message created.
         pia_msg= ensure_attachments(pia_msg, data['draft'])
 
-        successful.append('<a href="/authority/%s">%s</a>' % (
+        successful.append('<a href="/instytucje/%s">%s</a>' % (
             authority.slug, authority.name))
         data['draft'].authority.remove(authority)
 
@@ -768,8 +769,8 @@ def download_thread(request, id=None, **kwargs):
         response['Content-Disposition'] = 'attachment; filename=%s.zip' % basename
         response.write(zip_file)
         return response
-    return HttpResponse(_(u'There are errors in the template <pre>%s</pre>') %\
-                        cgi.escape(html))
+    return HttpResponse(mark_safe(_(u'There are errors in the template <pre>%s</pre>') %\
+                        cgi.escape(html)))
 
 def zip_thread(thread, pdf_content, basename):
     """

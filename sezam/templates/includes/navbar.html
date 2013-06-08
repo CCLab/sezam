@@ -11,15 +11,15 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li class="active"><a href="/">{% trans 'Home' %}</a></li>
-                <li class="active"><a href="/authority/find/">{% trans 'Make request' %}</a></li>
+                <li class="active"><a href="{% url "search_authority_blank" %}">{% trans 'Make request' %}</a></li>
                 <li class="active"><a href="/request/">{% trans 'View requests' %}</a></li>
-                <li class="active"><a href="/authority/">{% trans 'Authorities' %}</a></li>
+                <li class="active"><a href="{% url "display_authorities" %}">{% trans 'Authorities' %}</a></li>
 		<li class="active"><a href="/regulamin/">{% trans 'Terms of service' %}</a></li>
-		<li class="active"><a href="/help/">{% trans 'Help' %}</a></li>
+		<li class="active"><a href="{% url 'main-help' %}">{% trans 'Help' %}</a></li>
             </ul>
 			<ul class="nav pull-right">
               <li>
-                <form class="navbar-search" method="get" action="/search/">
+                <form class="navbar-search" method="get" action="{% url "haystack_search" %}">
                   <input id="id_query" class="search-query" type="text" placeholder="Szukaj" name="q">
                 </form>
               </li>
@@ -29,7 +29,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.first_name }} {{ user.last_name }} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="/user/{{user.id}}/profile/">{% trans 'My profile' %}</a></li>
-                        <li><a href="/authority/find/">{% trans 'Make a request' %}</a></li>
+                        <li><a href="{% url "search_authority_blank" %}">{% trans 'Make a request' %}</a></li>
                         <li><a href="/accounts/password/change">{% trans 'Password change' %}</a></li>
                         <li><a href="/help">{% trans 'Help' %}</a></li>
                         <li class="divider"></li>

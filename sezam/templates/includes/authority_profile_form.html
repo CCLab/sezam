@@ -9,7 +9,7 @@
     <p>{% trans "Required fields are marked by the red star " %}<span class="required"> * </span>.</p>
     <hr class="narrow">
 
-    <form class="form-horizontal" name="formAuthorityProfile" id="form_AuthorityProfile" enctype="multipart/form-data" action="/authority/add/{% if authority %}{{ authority.slug }}/{% endif %}" method="post">
+    <form class="form-horizontal" name="formAuthorityProfile" id="form_AuthorityProfile" enctype="multipart/form-data" action="{% url "add_authority" %}{% if authority %}{{ authority.slug }}/{% endif %}" method="post">
       {% csrf_token %}
       <div class="control-group">
         <div class="controls">

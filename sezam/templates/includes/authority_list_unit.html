@@ -4,7 +4,7 @@
 
       <div class="row">
         <div class="container span5">
-          <h4><a href="/authority/{{ result.slug }}">{% highlight result.name with query %}</a></h4>
+          <h4><a href="{% url "display_authorities" %}{{ result.slug }}">{% highlight result.name with query %}</a></h4>
           <p>
           {% if obj_result.report_text %}
             {% with obj_result.report_text|hide_all_emails as result %}

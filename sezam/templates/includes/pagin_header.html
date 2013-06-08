@@ -5,5 +5,7 @@
   {% trans 'Found' %} <strong>{{ page.paginator.count }}</strong> {% trans 'records' %}.
 {% endifequal %}
 {% if page.object_list %}
+{% autoescape off %}
   {% trans 'Showing' %} {{ page.object_list|length }} {% trans 'results on page' %} <strong>{{ page.number }}</strong> {% trans 'of' %} <strong>{{ page.paginator.num_pages }}</strong>
+  {% endautoescape %}
 {% endif %}

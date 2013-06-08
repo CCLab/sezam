@@ -30,7 +30,7 @@ urlpatterns = patterns('apps.authority.views',
 
     url(r'^search/autocomplete/$', 'autocomplete', name='autocomplete'),
 
-    url(r'^tree/$', 'get_authority_tree'),
+    url(r'^tree/$', 'get_authority_tree', name='authority-tree'),
 
     url(r'^add/$', 'add_authority', {'template': 'add_record.html'},
         name='add_authority'),

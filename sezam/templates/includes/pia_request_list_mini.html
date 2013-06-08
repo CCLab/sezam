@@ -5,7 +5,7 @@
             <h2>{% trans 'What information has been released?' %}</h2>
             <p class="lead">{{ PROJECT_TITLE|capfirst }} {% trans 'has made so far' %} <strong>{{ data.requests_count }}</strong> {% trans 'requests, including' %}:</p>
             {% for pia_request in data.request_list %}
-            <p/>{% trans 'The request to' %} <strong><a href="/authority/{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a></strong> {% trans 'about' %} <strong><a href="/request/{{ pia_request.id }}">{{ pia_request.summary|hide_all_emails }}</a></strong>. {% trans 'Sent' %} {{ pia_request.latest_thread_post.created|date:"j E Y" }}, {% trans 'last changed' %} {{ pia_request.lastchanged|date:"j E Y" }}
+            <p/>{% trans 'The request to' %} <strong><a href="{% url "display_authorities" %}{{ pia_request.authority.slug }}">{{ pia_request.authority.name }}</a></strong> {% trans 'about' %} <strong><a href="/request/{{ pia_request.id }}">{{ pia_request.summary|hide_all_emails }}</a></strong>. {% trans 'Sent' %} {{ pia_request.latest_thread_post.created|date:"j E Y" }}, {% trans 'last changed' %} {{ pia_request.lastchanged|date:"j E Y" }}
                 <blockquote><small><a href="/request/{{ pia_request.id }}">{{ pia_request.latest_thread_post.body|default:""|slice:":180"|hide_all_emails }}... </a></small></blockquote>
             {% endfor %}
             </p>

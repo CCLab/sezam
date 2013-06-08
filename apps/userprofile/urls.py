@@ -1,4 +1,7 @@
-from django.conf import settings
+"""
+Userprofile app urls
+"""
+
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('apps.userprofile.views',
@@ -19,5 +22,5 @@ urlpatterns = patterns('apps.userprofile.views',
 
     # Change userpic.
     url(r'^(?P<id>\d+)/userpic/$', 'user_set_userpic',
-        {'template': 'user.html'}, name='user_set_userpic'),
+        {'template': 'user.html'}),
 )

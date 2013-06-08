@@ -2,7 +2,8 @@
 {% load i18n %}
 Szanowni Państwo,
 
-{% trans "There is a response in the thread from authority, that you are following on our service. Please, have a look at" %} http://{{ domain }}/authority/{{ notification.item.content_object.slug }}/
+{% trans "There is a response in the thread from authority, that you are following on our service. Please, have a look
+at" %} http://{{ domain }}{% url "display_authorities" %}{{ notification.item.content_object.slug }}/
 
 {% trans "You received this email because you are subscribed to the updates in our service" %} {{ PROJECT_TITLE }}, {% trans "that require notification" %}.
 

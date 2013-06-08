@@ -13,7 +13,8 @@
               {% if forloop.first %}
               <div>
                  <h2>{{ msg.request.summary }}</h2>
-                   <p class="lead">{% trans 'Request from' %} <a href="/user/{{ msg.request.user.id }}">{{ msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="/authority/{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
+                   <p class="lead">{% trans 'Request from' %} <a href="/user/{{ msg.request.user.id }}">{{
+                   msg.request.user.get_full_name }}</a> {% trans 'to' %} <a href="{% url "display_authorities" %}{{ msg.request.authority.slug }}/">{{ msg.request.authority.name }}</a>
                    <br/>{% with msg.request as pia_request %}{% include 'includes/pia_request_status.html' %}{% endwith %}
                    </p>
               </div>

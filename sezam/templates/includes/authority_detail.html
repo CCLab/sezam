@@ -2,8 +2,8 @@
     <div id="authority_list" class="row">
       {% for result in results %}
       <div class="well well-small">
-        <a href="/authority/{{ result.slug }}"><h5>{{ result.name }}</h5></a>
-        <p class="small">{{ result.description|default:''|slice:":270"|urlize }}{% if result.description %}{% if result.description|length > 270 %}... <a href="/authority/{{ result.slug }}"> » full profile</a>{% endif %}{% endif %}</p>
+        <a href="{% url "display_authorities" %}{{ result.slug }}"><h5>{{ result.name }}</h5></a>
+        <p class="small">{{ result.description|default:''|slice:":270"|urlize }}{% if result.description %}{% if result.description|length > 270 %}... <a href="{% url "display_authorities" %}{{ result.slug }}"> » full profile</a>{% endif %}{% endif %}</p>
         <p>{% if result.web_site %}{{ result.web_site|urlize }}{% endif %}</p>
         <p>{{ result.notes|default:'' }}</p>
         <div class="row">

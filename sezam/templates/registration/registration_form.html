@@ -87,8 +87,10 @@
                             </div>
 
                             <div class="span6">
+                                {% autoescape off %}
                                 <p>{% trans 'Fill out the form (all fields are required), and your account will be created; you will be sent an email with instructions of how to finish your registration.' %}</p>
                                 <p>{% trans 'We will only use your email to send you signup instructions. We hate spam as much as you do.' %}</p>
+                                {% endautoescape %}
                             </div>
 
                         </form>

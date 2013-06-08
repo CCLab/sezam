@@ -11,13 +11,13 @@
         {% if search_only %}
           <p>{% trans 'Before going on with the request, you must find the Authority.' %}</p>
         {% endif %}
-        <form class="form-inline" action="/authority/search/" method="get">
+        <form class="form-inline" action="{% url "search_authority" %}" method="get">
           {{ form.q }} <input class="btn btn-primary" type="submit" name="authority" value="{% trans 'Search' %}">
         </form>
         {% if search_only or query %}
           <p>{% trans "Type the name of the public authority you'd like information from, and press" %} <strong>{% trans 'Search' %}.</strong></p>
           <p>{% trans "You can also use a tree of categories" %}&nbsp;
-            <a class="btn btn-mini btn-success" href="/authority/">{% trans 'Open the tree' %}</a></p>
+            <a class="btn btn-mini btn-success" href="{% url "display_authorities" %}">{% trans 'Open the tree' %}</a></p>
         {% endif %}
 
       </div>
@@ -30,15 +30,15 @@
       {% endif %}
     <div class="row">
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="/authority/add/?from={{ request.path|urlencode }}">{% trans "Can't find authority?" %}</a></li>
+        <li><a href="{% url "add_authority" %}?from={{ request.path|urlencode }}">{% trans "Can't find authority?" %}</a></li>
         <li class="disabled"><a href="#">&nbsp;</a></li>
         {% if user.is_authenticated %}
           {% if user.profile.trusted %}
         <li class="disabled"><a href="#">{% trans "List of ALL authorities" %} »</a></li>
         <li>
           <ul class="nav nav-pills">
-            <li><a href="/authority/download/pdf/">PDF</a></li>
-            <li><a href="/authority/download/csv/">CSV</a></li>
+            <li><a href="{% url "download_authority_list" "pdf" %}">PDF</a></li>
+            <li><a href="{% url "download_authority_list" "csv" %}">CSV</a></li>
           </ul>
         </li>
           {% endif %}

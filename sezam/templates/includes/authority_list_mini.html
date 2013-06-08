@@ -5,9 +5,9 @@
             <p class="lead">{{ PROJECT_TITLE|capfirst }} {% trans 'covers requests to' %} <strong>{{ data.authorities_count }}</strong> {% trans 'authorities, including' %}:</p>
             {% for auth in data.authority_list %}
                 {% with auth.authority_requests.count as auth_request_count %}
-            <strong><a href="/authority/{{ auth.slug }}">{{ auth.name }}</a></strong> {% if auth_request_count = 0 %}&nbsp;{% else %}{{ auth_request_count }} {% trans 'requests' %} {% endif %}<br/>
+            <strong><a href="{% url "display_authorities" %}{{ auth.slug }}">{{ auth.name }}</a></strong> {% if auth_request_count = 0 %}&nbsp;{% else %}{{ auth_request_count }} {% trans 'requests' %} {% endif %}<br/>
                 {% endwith %}
             {% endfor %}
             </p>
-            <p><a class="btn" href="/authority/">{% trans 'Browse all authorities' %} &#187;</a></p>
+            <p><a class="btn" href="{% url "display_authorities" %}">{% trans 'Browse all authorities' %} &#187;</a></p>
         </div>

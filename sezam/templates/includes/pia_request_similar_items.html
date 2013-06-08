@@ -8,7 +8,7 @@
       {% for rq in similar_items %}
       <h5><a href="/request/{{ rq.pk }}/">{{ rq.summary }}</a></h5>
       <small>
-        {% trans 'To' %} <a href="/authority/{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
+        {% trans 'To' %} <a href="{% url "display_authorities" %}{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
       </small>
       {% endfor %}
     </div>

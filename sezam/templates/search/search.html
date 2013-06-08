@@ -7,7 +7,7 @@
     <!-- Search form -->
     <div class="row">
       <h2>{% trans 'Search' %}</h2>
-      <form class="form-inline" action="/search/" method="get">
+      <form class="form-inline" action="{% url "haystack_search" %}" method="get">
         <div class="control-group">
 {% if not form.q %} <input autocomplete="off" name="q" placeholder="Szukaj" type="text" class="search-query" id="id_q" /> {% else %}
           {{ form.q }} {% endif %}

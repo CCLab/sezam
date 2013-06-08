@@ -18,6 +18,7 @@ from datetime import datetime
 from django.db import models
 from django.utils.timezone import utc
 from django.core.mail import mail_managers
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from apps.backend.html2text import html2text
@@ -518,7 +519,7 @@ APP_MESSAGES = {
         'message': _(u'The response from the Authority has not been classified yet. If you are satisfied or unsatisfied with the response, set the appropriate status, please.')
         },
     'ClassifyRespAnonim': {
-        'message': _("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%(user_id)s/\">%(user_name)s</a>, please sign in and let everyone know."),
+        'message': mark_safe(_("We don't know whether the most recent response to this request contains information or not. If you are <a href=\"/user/%(user_id)s/\">%(user_name)s</a>, please sign in and let everyone know.")),
         },
     'ClassifyRespAlien': {
         'message': _("We don't know whether the most recent response to this request contains information or not."),
@@ -548,13 +549,13 @@ APP_MESSAGES = {
         'message': _(u'Error sending notification: %s')
         },        
     'AuthSavedInactive': {
-        'message': _(u'Athority <strong>%s</strong> successfully saved in the db! <br/>It will remain inactive until our moderator finish reviewing and confirming the record. We will notify you upon this by email. <p>Thanks a lot for your participation!</p>'),
+        'message': mark_safe(_(u'Athority <strong>%s</strong> successfully saved in the db! <br/>It will remain inactive until our moderator finish reviewing and confirming the record. We will notify you upon this by email. <p>Thanks a lot for your participation!</p>')),
         },
     'AddDetailsToThread': {
-        'message': _(u"<h5>Status was updated successfully.</h5><p>If you have any additional information concerning this request (for example, an answer sent via snail mail), and feel like adding something would help users to find the right answer to their requests in the future, please, use <a href=\"%(url)s\">this form</a>.<br/>Thank you!</p>"),
+        'message': mark_safe(_(u"<h5>Status was updated successfully.</h5><p>If you have any additional information concerning this request (for example, an answer sent via snail mail), and feel like adding something would help users to find the right answer to their requests in the future, please, use <a href=\"%(url)s\">this form</a>.<br/>Thank you!</p>")),
         },
     'ReportRequest': {
-        'message': _(u"<strong>You are going to report this request as offensive or unsuitable!</strong><br>An email will be sent to the managers of %s.<p>Are you sure you want to proceed?</p>"),
+        'message': mark_safe(_(u"<strong>You are going to report this request as offensive or unsuitable!</strong><br>An email will be sent to the managers of %s.<p>Are you sure you want to proceed?</p>")),
         },
     'AuthorCantFollow': {
         'message': _(u'You cannot follow your own request. As its author you are getting all updates anyway.'),

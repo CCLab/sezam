@@ -37,7 +37,8 @@
         </div>
 
         <h3>{% trans 'Offensive? Unsuitable?' %}</h3>
-        <p>{% trans 'Requests for personal information and vexatious requests are not considered valid for FOI purposes' %} (<a href="/help/#whatis">{% trans 'read more' %}</a>).</p>
+        <p>{% trans 'Requests for personal information and vexatious requests are not considered valid for FOI purposes'
+        %} (<a href="{% url 'main-help' %}#whatis">{% trans 'read more' %}</a>).</p>
         <p>{% trans "If you believe this request is not suitable, you can report it for attention by the site administrators." %}).</p>
         <div class="nav nav-pills nav-stacked">
           <ul class="nav nav-list">
@@ -50,7 +51,7 @@
           {% for rq in similar_items %}
             <h4><a href="/request/{{ rq.pk }}/">{{ rq.summary }}</a></h4>
             <small>
-              {% trans 'To' %} <a href="/authority/{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
+              {% trans 'To' %} <a href="{% url "display_authorities" %}{{ rq.object.authority.slug }}/">{{ rq.object.authority.name }}</a>
               {% trans 'by' %} <a href="/user/rq.object.user.pk">{{ rq.object.user.get_full_name }}</a><br/>
               {{ rq.object.latest_thread_post.created|date:"j E Y" }}
             </small>

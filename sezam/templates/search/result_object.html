@@ -12,7 +12,7 @@
     <small>
       {% trans 'sent' %}: {{ pia_request.created|date:"j E Y" }} 
       by <a href="/user/{{ pia_request.user.pk }}">{% highlight pia_request.user.get_full_name with query %}</a> 
-      to <a href="/authority/{{ pia_request.authority.slug }}">{% highlight pia_request.authority.name with query %}</a>, 
+      to <a href="{% url "display_authorities" %}{{ pia_request.authority.slug }}">{% highlight pia_request.authority.name with query %}</a>, 
       {% trans 'last update' %}: {{ pia_request.latest_thread_post.created|date:"j E Y" }}
     </small>
   </div>
@@ -22,7 +22,7 @@
 
       {% else %}
 
-      <h4><a href="/authority/{{ obj.slug }}/">{% highlight obj.name with query %}</a></h4>
+      <h4><a href="{% url "display_authorities" %}{{ obj.slug }}/">{% highlight obj.name with query %}</a></h4>
       <small>
         <strong>{% trans 'Authority record' %}:</strong> 
         {% trans 'created' %}: {{ obj.created|date:"j E Y" }}, 

@@ -42,10 +42,10 @@ TIME_ZONE = 'Europe/Warsaw'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'pl'
 
-_ = lambda s: s
+ugettext = lambda s: s
 
 LANGUAGES = (
-  ('pl', _('Polish')),
+  ('pl', ugettext('Polish')),
 )
 
 SITE_ID = 1
